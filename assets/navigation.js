@@ -6,6 +6,16 @@
 (function() {
     'use strict';
 
+    // 相対→絶対URLヘルパー
+    function toAbsUrl(href) {
+        if (!href || href === '#') return new URL(window.location.href);
+        try {
+            return new URL(href, window.location.href); // 基準URLを必ず指定
+        } catch (e) {
+            return new URL(window.location.href); // フォールバック
+        }
+    }
+
     // 設定
     const CONFIG = {
         SELECTORS: {
@@ -75,7 +85,7 @@
         disableNavButtons(calendar, true);
 
         // URLからパラメータを抽出
-        const params = extractParamsFromUrl(url);
+        const params = extractParamsFromUrl(toAbsUrl(url).href);
         const apiUrl = buildApiUrl(params);
 
         // Fetch API でリクエスト
@@ -125,7 +135,7 @@
             return;
         }
 
-        const params = extractParamsFromUrl(url);
+        const params = extractParamsFromUrl(toAbsUrl(url).href);
         const apiUrl = buildApiUrl(params);
 
         // バックグラウンドでフェッチ
@@ -148,14 +158,14 @@
     /**
      * URLからカレンダーパラメータを抽出
      */
-    function extractParamsFromUrl(url) {
-        const urlObj = new URL(url);
+    function extractParamsFromUrl(href) {
+        const urlObj = toAbsUrl(href); // ← 相対でもOK
         const searchParams = urlObj.searchParams;
         
         return {
             tour: searchParams.get('tour') || 'A1',
             month: searchParams.get('tpc_month') || getCurrentMonth(),
-            duration: parseInt(searchParams.get('duration') || '4'),
+            duration: parseInt(searchParams.get('duration') || '4', 10) || 0,
             heatmap: searchParams.get('heatmap') !== 'false',
             confirmed_only: searchParams.get('confirmed_only') === 'true',
             show_legend: searchParams.get('show_legend') !== 'false',
