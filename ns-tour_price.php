@@ -51,6 +51,7 @@ class NS_Tour_Price {
 		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Heatmap.php';
 		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Renderer.php';
 		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Helpers.php';
+		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Rest/Annual_Controller.php';
 
 		if ( is_admin() ) {
 			require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Admin.php';
@@ -119,37 +120,9 @@ class NS_Tour_Price {
 			),
 		) );
 
-		// 年間価格概要用RESTルート
-		register_rest_route( 'ns-tour-price/v1', '/annual', array(
-			'methods' => 'POST',
-			'callback' => array( $this, 'rest_annual_callback' ),
-			'permission_callback' => '__return_true',
-			'args' => array(
-				'tour' => array(
-					'required' => false,
-					'type' => 'string',
-					'sanitize_callback' => 'sanitize_text_field',
-					'default' => 'A1',
-				),
-				'duration' => array(
-					'required' => false,
-					'type' => 'integer',
-					'sanitize_callback' => 'absint',
-					'default' => 4,
-				),
-				'year' => array(
-					'required' => false,
-					'type' => 'integer',
-					'sanitize_callback' => 'absint',
-					'default' => gmdate( 'Y' ),
-				),
-				'show' => array(
-					'required' => false,
-					'type' => 'boolean',
-					'default' => true,
-				),
-			),
-		) );
+		// 年間価格概要用RESTルート（新しいコントローラー使用）
+		$annual_controller = new NS_Tour_Price_Annual_Controller();
+		$annual_controller->register_routes();
 
 		// 予約プレビュー価格計算用RESTルート
 		register_rest_route( 'ns-tour-price/v1', '/price-calc', array(
@@ -244,7 +217,7 @@ class NS_Tour_Price {
 		}
 
 		try {
-			$builder = new NS_Tour_Price_AnnualBuilder();
+			$builder = new NS_Tour_Price_Annual_Builder();
 			$annual_data = $builder->build( $tour, $duration, $year );
 
 			return new WP_REST_Response( array(

@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class NS_Tour_Price_AnnualBuilder {
+class NS_Tour_Price_Annual_Builder {
 
 	private $repo;
 	private $heatmap;
