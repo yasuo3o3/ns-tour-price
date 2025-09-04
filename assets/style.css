@@ -178,7 +178,7 @@
     font-weight: 500;
     line-height: 1.2;
     word-break: break-all;
-    margin-top: auto;
+    /* margin-top: auto; */
 }
 
 .day-price.no-data {
@@ -535,7 +535,93 @@
         box-shadow: none;
     }
     
-    .tpc-nav {
+    .tpc-nav,
+    .tpc-duration-tabs {
         display: none;
+    }
+}
+
+/* ==== Duration タブ ==== */
+.tpc-duration-tabs {
+    display: flex;
+    gap: 6px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.tpc-duration-tab {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.2;
+    transition: all 0.2s ease;
+    min-width: 44px;
+    white-space: nowrap;
+}
+
+.tpc-duration-tab:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+    color: white;
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+.tpc-duration-tab:active {
+    transform: translateY(0);
+}
+
+.tpc-duration-tab.is-active {
+    background: rgba(255, 255, 255, 0.9);
+    color: #2d3748;
+    border-color: rgba(255, 255, 255, 0.9);
+    font-weight: 600;
+}
+
+.tpc-duration-tab.is-active:hover {
+    background: rgba(255, 255, 255, 0.95);
+    color: #2d3748;
+    transform: none;
+}
+
+/* フォーカス表示 */
+.tpc-duration-tab:focus {
+    outline: 2px solid rgba(255, 255, 255, 0.8);
+    outline-offset: 2px;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .tpc-duration-tabs {
+        gap: 4px;
+        margin-top: 10px;
+    }
+    
+    .tpc-duration-tab {
+        padding: 5px 10px;
+        font-size: 13px;
+        min-width: 40px;
+    }
+}
+
+@media (max-width: 480px) {
+    .tpc-duration-tabs {
+        gap: 3px;
+        margin-top: 8px;
+    }
+    
+    .tpc-duration-tab {
+        padding: 4px 8px;
+        font-size: 12px;
+        min-width: 36px;
     }
 }

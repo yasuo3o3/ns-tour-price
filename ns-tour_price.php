@@ -163,6 +163,11 @@ class NS_Tour_Price {
 		// 注意: CalendarBuilder でも実行されるが、統一性のためここでも適用
 		$args['month'] = NS_Tour_Price_Helpers::resolve_month( $args['month'] );
 
+		// 日数を解決（QueryString > 属性 > 最小値の優先順位）
+		$repo = NS_Tour_Price_Repo::getInstance();
+		$available_durations = $repo->getAvailableDurations( $args['tour'] );
+		$args['duration'] = NS_Tour_Price_Helpers::resolve_duration( $args['duration'], $available_durations );
+
 		$renderer = new NS_Tour_Price_Renderer();
 		return $renderer->render( $args );
 	}
@@ -226,8 +231,32 @@ class NS_Tour_Price {
 }
 
 function ns_tour_price_render_block( $attributes ) {
+	$defaults = array(
+		'tour' => 'A1',
+		'month' => '',
+		'duration' => 4,
+		'showLegend' => true,
+		'confirmedOnly' => false,
+		'heatmap' => true,
+	);
+
+	$args = wp_parse_args( $attributes, $defaults );
+
+	// block.json の showLegend → show_legend に変換
+	$args['show_legend'] = $args['showLegend'];
+	$args['confirmed_only'] = $args['confirmedOnly'];
+	unset( $args['showLegend'], $args['confirmedOnly'] );
+
+	// 月を解決（QueryString > 属性 > 現在月の優先順位）
+	$args['month'] = NS_Tour_Price_Helpers::resolve_month( $args['month'] );
+
+	// 日数を解決（QueryString > 属性 > 最小値の優先順位）
+	$repo = NS_Tour_Price_Repo::getInstance();
+	$available_durations = $repo->getAvailableDurations( $args['tour'] );
+	$args['duration'] = NS_Tour_Price_Helpers::resolve_duration( $args['duration'], $available_durations );
+
 	$renderer = new NS_Tour_Price_Renderer();
-	return $renderer->render( $attributes );
+	return $renderer->render( $args );
 }
 
 new NS_Tour_Price();

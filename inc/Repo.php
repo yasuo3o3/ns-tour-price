@@ -582,6 +582,48 @@ class NS_Tour_Price_Repo {
 		return $result;
 	}
 
+	/**
+	 * 指定ツアーで利用可能な日数を取得
+	 * 
+	 * @param string $tour_id ツアーID
+	 * @return int[] 昇順ユニークな日数配列
+	 */
+	public function getAvailableDurations( $tour_id ) {
+		// transientキャッシュを確認
+		$cache_key = sprintf( 'tpc_durations_%s', $tour_id );
+		$cached = get_transient( $cache_key );
+		
+		if ( false !== $cached ) {
+			return $cached;
+		}
+
+		// base_pricesから日数を取得
+		$prices = $this->getBasePrices( $tour_id );
+		
+		if ( empty( $prices ) ) {
+			$result = array();
+			set_transient( $cache_key, $result, 3600 );
+			return $result;
+		}
+
+		// duration_daysを収集してユニーク昇順ソート
+		$durations = array();
+		foreach ( $prices as $price ) {
+			$duration = intval( $price['duration_days'] );
+			if ( $duration > 0 ) {
+				$durations[] = $duration;
+			}
+		}
+
+		$result = array_values( array_unique( $durations ) );
+		sort( $result, SORT_NUMERIC );
+
+		// キャッシュに保存（1時間）
+		set_transient( $cache_key, $result, 3600 );
+
+		return $result;
+	}
+
 	public function clearCache() {
 		// CSV データソースのキャッシュをクリア
 		$csv_source = new NS_Tour_Price_DataSourceCsv();
@@ -650,6 +692,20 @@ class NS_Tour_Price_Repo {
 			$wpdb->prepare(
 				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
 				$wpdb->esc_like( '_transient_timeout_ns_tour_price_all_prices_' ) . '%'
+			)
+		);
+
+		// getAvailableDurations のキャッシュもクリア
+		$wpdb->query(
+			$wpdb->prepare(
+				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
+				$wpdb->esc_like( '_transient_tpc_durations_' ) . '%'
+			)
+		);
+		$wpdb->query(
+			$wpdb->prepare(
+				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
+				$wpdb->esc_like( '_transient_timeout_tpc_durations_' ) . '%'
 			)
 		);
 		

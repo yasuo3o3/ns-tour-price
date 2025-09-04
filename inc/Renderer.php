@@ -173,6 +173,40 @@ class NS_Tour_Price_Renderer {
 				<div class="calendar-meta">
 					<span class="tour-id"><?php printf( esc_html__( 'ツアー: %s', 'ns-tour_price' ), esc_html( $args['tour'] ) ); ?></span>
 				</div>
+				
+				<?php
+				// durationタブの表示
+				$repo = NS_Tour_Price_Repo::getInstance();
+				$available_durations = $repo->getAvailableDurations( $args['tour'] );
+				$current_duration = intval( $args['duration'] );
+				
+				if ( count( $available_durations ) > 1 ) :
+				?>
+					<div class="tpc-duration-tabs">
+						<?php foreach ( $available_durations as $duration ) : 
+							$is_active = ( $duration === $current_duration );
+							$tab_url = add_query_arg( array( 'tpc_duration' => $duration ) );
+							
+							$tab_classes = array( 'tpc-duration-tab', 'tpc-nav-link' );
+							if ( $is_active ) {
+								$tab_classes[] = 'is-active';
+							}
+						?>
+							<a href="<?php echo esc_url( $tab_url ); ?>" 
+							   class="<?php echo esc_attr( implode( ' ', $tab_classes ) ); ?>"
+							   data-duration="<?php echo esc_attr( $duration ); ?>"
+							   data-tour="<?php echo esc_attr( $args['tour'] ); ?>"
+							   data-month="<?php echo esc_attr( $args['month'] ); ?>"
+							   data-heatmap="<?php echo esc_attr( $args['heatmap'] ? '1' : '0' ); ?>"
+							   data-show-legend="<?php echo esc_attr( $args['show_legend'] ? '1' : '0' ); ?>"
+							   data-confirmed-only="<?php echo esc_attr( $args['confirmed_only'] ? '1' : '0' ); ?>"
+							   <?php if ( $is_active ) : ?>aria-current="page"<?php endif; ?>
+							   aria-label="<?php printf( esc_attr__( '%d日間に切替', 'ns-tour_price' ), $duration ); ?>">
+								<?php printf( esc_html__( '%d日', 'ns-tour_price' ), $duration ); ?>
+							</a>
+						<?php endforeach; ?>
+					</div>
+				<?php endif; ?>
 			</div>
 
 			<?php if ( ! empty( $calendar_data['invalid_season_codes'] ) ) : ?>

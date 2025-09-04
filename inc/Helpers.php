@@ -289,6 +289,38 @@ class NS_Tour_Price_Helpers {
 	}
 
 	/**
+	 * 日数を解決する（QueryString > 属性 > 最小値の優先順位）
+	 *
+	 * @param int|null $attr_duration ブロック/ショートコード属性の日数
+	 * @param int[] $available 利用可能な日数配列（昇順）
+	 * @return int 解決された日数
+	 */
+	public static function resolve_duration( $attr_duration, $available ) {
+		if ( empty( $available ) ) {
+			return 4; // デフォルト値
+		}
+
+		// ① $_GET['tpc_duration'] が最優先
+		if ( ! empty( $_GET['tpc_duration'] ) ) {
+			$get_duration = intval( $_GET['tpc_duration'] );
+			if ( in_array( $get_duration, $available, true ) ) {
+				return $get_duration;
+			}
+		}
+
+		// ② 属性の duration
+		if ( ! empty( $attr_duration ) ) {
+			$attr_duration = intval( $attr_duration );
+			if ( in_array( $attr_duration, $available, true ) ) {
+				return $attr_duration;
+			}
+		}
+
+		// ③ 利用可能な最小値（フォールバック）
+		return $available[0];
+	}
+
+	/**
 	 * 指定月の前月・翌月を取得
 	 *
 	 * @param string $yyyymm YYYY-MM形式の月

@@ -21,6 +21,7 @@
         SELECTORS: {
             calendar: '.ns-tour-price-calendar',
             navButton: '.tpc-nav__btn',
+            navLink: '.tpc-nav-link', // durationタブも含む汎用セレクター
             loading: '.tpc-loading',
         },
         CLASSES: {
@@ -53,9 +54,9 @@
      * カレンダーにナビゲーション機能をセットアップ
      */
     function setupCalendarNavigation(calendar) {
-        const navButtons = calendar.querySelectorAll(CONFIG.SELECTORS.navButton);
+        const navLinks = calendar.querySelectorAll(CONFIG.SELECTORS.navLink);
         
-        navButtons.forEach(function(button) {
+        navLinks.forEach(function(button) {
             // プリフェッチ設定
             button.addEventListener('mouseenter', function() {
                 const url = button.getAttribute('href');
@@ -165,7 +166,7 @@
         return {
             tour: searchParams.get('tour') || 'A1',
             month: searchParams.get('tpc_month') || getCurrentMonth(),
-            duration: parseInt(searchParams.get('duration') || '4', 10) || 0,
+            duration: parseInt(searchParams.get('tpc_duration') || searchParams.get('duration') || '4', 10) || 4,
             heatmap: searchParams.get('heatmap') !== 'false',
             confirmed_only: searchParams.get('confirmed_only') === 'true',
             show_legend: searchParams.get('show_legend') !== 'false',
@@ -232,9 +233,9 @@
      * ナビゲーションボタンを無効/有効化
      */
     function disableNavButtons(calendar, disabled) {
-        const navButtons = calendar.querySelectorAll(CONFIG.SELECTORS.navButton);
+        const navLinks = calendar.querySelectorAll(CONFIG.SELECTORS.navLink);
         
-        navButtons.forEach(function(button) {
+        navLinks.forEach(function(button) {
             if (disabled) {
                 button.style.pointerEvents = 'none';
                 button.style.opacity = '0.5';
