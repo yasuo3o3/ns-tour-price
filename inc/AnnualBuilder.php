@@ -124,6 +124,9 @@ class NS_Tour_Price_Annual_Builder {
 					'has_price' => $has_price,
 					'heatmap_class' => $heatmap_class,
 					'is_today' => $date_str === gmdate( 'Y-m-d' ),
+					'has_season' => false,
+					'season_code' => null,
+					'season_color' => '#f3f4f6',
 				);
 			}
 
@@ -497,17 +500,22 @@ class NS_Tour_Price_Annual_Builder {
 								// 日付セル
 								foreach ( $month_data['days'] as $day_data ) :
 									$day_classes = array( 'tpc-mini-day' );
-									if ( $day_data['has_season'] ) {
-										$day_classes[] = 'tpc-has-season';
+									if ( $day_data['has_price'] ) {
+										$day_classes[] = 'has-price';
+										$day_classes[] = $day_data['heatmap_class'];
 									}
-									if ( $day_data['is_today'] ) {
+									if ( $day_data['is_today'] ?? false ) {
 										$day_classes[] = 'tpc-today';
+									}
+									
+									$title = $day_data['date'];
+									if ( $day_data['has_price'] ) {
+										$title .= ' (¥' . number_format( $day_data['price'] ) . ')';
 									}
 									?>
 									<div class="<?php echo esc_attr( implode( ' ', $day_classes ) ); ?>"
-										 style="background-color: <?php echo esc_attr( $day_data['season_color'] ); ?>"
-										 title="<?php echo esc_attr( $day_data['date'] . ( $day_data['season_code'] ? ' (' . $day_data['season_code'] . ')' : '' ) ); ?>">
-										<?php echo esc_html( $day_data['day'] ); ?>
+										 title="<?php echo esc_attr( $title ); ?>">
+										<span class="day-number"><?php echo esc_html( $day_data['day'] ); ?></span>
 									</div>
 								<?php endforeach; ?>
 							</div>

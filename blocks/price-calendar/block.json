@@ -1,6 +1,6 @@
 {
   "apiVersion": 3,
-  "name": "ns-tour_price/price-calendar",
+  "name": "ns-tour-price/price-calendar",
   "title": "ツアー価格カレンダー",
   "category": "widgets",
   "icon": "calendar",
