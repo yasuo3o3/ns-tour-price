@@ -146,6 +146,7 @@ class NS_Tour_Price_Renderer {
 			echo '</style>';
 		}
 		?>
+		<div class="tpc-booking-container">
 		<div class="ns-tour-price-calendar" 
 			 data-tour="<?php echo esc_attr( $args['tour'] ); ?>"
 			 data-month="<?php echo esc_attr( $args['month'] ); ?>"
@@ -284,6 +285,8 @@ class NS_Tour_Price_Renderer {
 		</div>
 
 		<?php echo $this->renderBookingPanel( $args ); ?>
+		</div>
+		
 		<?php
 		
 		return ob_get_clean();

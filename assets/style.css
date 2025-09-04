@@ -984,8 +984,10 @@
 
 .calendar-week {
     display: grid;
+    gap: 1px;
     grid-template-columns: repeat(7, 1fr);
     border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 1px;
 }
 
 .calendar-week:last-child {
@@ -1006,7 +1008,7 @@
 }
 
 .calendar-day.empty {
-    background: #f9fafb;
+    background: #fff;
 }
 
 .calendar-day.hidden {
@@ -1828,3 +1830,19 @@
         color: rgba(255, 255, 255, 0.9);
     }
 }
+
+
+.tpc-booking-container {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+  }
+
+  .ns-tour-price-calendar {
+      flex: 1;
+  }
+
+  .tpc-booking-panel {
+      flex-shrink: 0;
+      width: 320px;
+  }
