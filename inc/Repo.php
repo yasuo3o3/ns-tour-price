@@ -53,6 +53,27 @@ class NS_Tour_Price_Repo {
 		return $source->getDailyFlags( $tour_id );
 	}
 
+	public function getSoloFees( $tour_id ) {
+		if ( ! $this->loader->isDataAvailable() ) {
+			return array();
+		}
+
+		$source = $this->loader->getActiveSource();
+		return $source->getSoloFees( $tour_id );
+	}
+
+	public function getSoloFee( $tour_id, $duration_days ) {
+		$solo_fees = $this->getSoloFees( $tour_id );
+
+		foreach ( $solo_fees as $fee ) {
+			if ( intval( $fee['duration_days'] ) === intval( $duration_days ) ) {
+				return intval( $fee['solo_fee'] );
+			}
+		}
+
+		return 0;
+	}
+
 	public function getPriceForDate( $tour_id, $date, $duration ) {
 		$seasons = $this->getSeasons( $tour_id );
 		$prices = $this->getBasePrices( $tour_id );

@@ -103,7 +103,10 @@ class NS_Tour_Price_CalendarBuilder {
 
 		for ( $day = 1; $day <= $month_data['days_in_month']; $day++ ) {
 			$date_str = $current_date->format( 'Y-m-d' );
-			$price = $this->repo->getPriceForDate( $args['tour'], $date_str, $args['duration'] );
+			$base_price = $this->repo->getPriceForDate( $args['tour'], $date_str, $args['duration'] );
+			$solo_fee = $this->repo->getSoloFee( $args['tour'], $args['duration'] );
+			$price = ( null !== $base_price && $base_price > 0 ) ? $base_price + $solo_fee : $base_price;
+			
 			$is_confirmed = $confirmed_badge_enabled ? $this->repo->isConfirmedDate( $args['tour'], $date_str ) : false;
 			$note = $confirmed_badge_enabled ? $this->repo->getDateNote( $args['tour'], $date_str ) : '';
 

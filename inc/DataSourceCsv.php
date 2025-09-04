@@ -124,6 +124,37 @@ class NS_Tour_Price_DataSourceCsv implements NS_Tour_Price_DataSourceInterface {
 		return $result;
 	}
 
+	public function getSoloFees( $tour_id ) {
+		$cache_key = $this->cache_prefix . 'solo_fees_' . $tour_id;
+		$cached = get_transient( $cache_key );
+		
+		if ( false !== $cached ) {
+			return $cached;
+		}
+
+		$data = $this->readCsvFile( 'solo_fees.csv' );
+		$result = array();
+
+		foreach ( $data as $row ) {
+			if ( ! isset( $row['tour_id'] ) || $row['tour_id'] !== $tour_id ) {
+				continue;
+			}
+
+			$solo_fee = array(
+				'tour_id' => sanitize_text_field( $row['tour_id'] ),
+				'duration_days' => intval( $row['duration_days'] ),
+				'solo_fee' => intval( $row['solo_fee'] ),
+			);
+
+			if ( $this->validateSoloFeeData( $solo_fee ) ) {
+				$result[] = $solo_fee;
+			}
+		}
+
+		set_transient( $cache_key, $result, $this->cache_expiry );
+		return $result;
+	}
+
 	public function isAvailable() {
 		// 最低限、seasons.csvとbase_prices.csvが存在するかチェック
 		$seasons_path = $this->findCsvFile( 'seasons.csv' );
@@ -233,6 +264,18 @@ class NS_Tour_Price_DataSourceCsv implements NS_Tour_Price_DataSourceInterface {
 		// 日付形式チェック
 		$date = DateTime::createFromFormat( 'Y-m-d', $flag['date'] );
 		return ( false !== $date );
+	}
+
+	private function validateSoloFeeData( $solo_fee ) {
+		if ( empty( $solo_fee['tour_id'] ) ) {
+			return false;
+		}
+
+		if ( $solo_fee['duration_days'] <= 0 || $solo_fee['solo_fee'] < 0 ) {
+			return false;
+		}
+
+		return true;
 	}
 
 	public function clearCache() {

@@ -36,6 +36,14 @@ interface NS_Tour_Price_DataSourceInterface {
 	public function getDailyFlags( $tour_id );
 
 	/**
+	 * ソロフィー情報を取得
+	 *
+	 * @param string $tour_id ツアーID
+	 * @return array ソロフィー情報の配列
+	 */
+	public function getSoloFees( $tour_id );
+
+	/**
 	 * データソースが利用可能かチェック
 	 *
 	 * @return bool 利用可能な場合はtrue

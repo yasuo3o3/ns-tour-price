@@ -182,6 +182,37 @@ class NS_Tour_Price_Admin {
 
 			<hr>
 
+			<h2><?php esc_html_e( 'ソロフィー設定', 'ns-tour_price' ); ?></h2>
+
+			<div class="card">
+				<h3><?php esc_html_e( 'solo_fees.csv について', 'ns-tour_price' ); ?></h3>
+				<p><?php esc_html_e( 'ツアーの基本価格にソロフィーを加算するための設定です。ツアーIDと日数の組み合わせでソロフィーが決定されます。', 'ns-tour_price' ); ?></p>
+				
+				<p><strong><?php esc_html_e( '配置場所:', 'ns-tour_price' ); ?></strong></p>
+				<ol>
+					<li><code><?php echo esc_html( NS_TOUR_PRICE_PLUGIN_DIR . 'data/solo_fees.csv' ); ?></code> (<?php esc_html_e( '優先', 'ns-tour_price' ); ?>)</li>
+					<li><code><?php echo esc_html( wp_upload_dir()['basedir'] . '/ns-tour_price/solo_fees.csv' ); ?></code> (<?php esc_html_e( 'フォールバック', 'ns-tour_price' ); ?>)</li>
+				</ol>
+
+				<p><strong><?php esc_html_e( 'CSVスキーマ:', 'ns-tour_price' ); ?></strong></p>
+				<pre style="background: #f1f1f1; padding: 10px; border-radius: 4px;">tour_id,duration_days,solo_fee
+A1,4,18000
+A1,5,22000
+A1,6,26000
+A2,5,22000
+A2,6,26000</pre>
+
+				<p><strong><?php esc_html_e( '機能:', 'ns-tour_price' ); ?></strong></p>
+				<ul>
+					<li><?php esc_html_e( 'tour_id と duration_days の組み合わせでソロフィーを指定', 'ns-tour_price' ); ?></li>
+					<li><?php esc_html_e( 'カレンダー表示価格は「ベース価格 + ソロフィー」で計算される', 'ns-tour_price' ); ?></li>
+					<li><?php esc_html_e( 'ベース価格が取得できない日付ではソロフィーも加算されない', 'ns-tour_price' ); ?></li>
+					<li><?php esc_html_e( 'solo_fees.csv にない組み合わせのソロフィーは0円', 'ns-tour_price' ); ?></li>
+				</ul>
+			</div>
+
+			<hr>
+
 			<h2><?php esc_html_e( 'Season Code エイリアス', 'ns-tour_price' ); ?></h2>
 
 			<div class="card">
@@ -386,6 +417,7 @@ A1,WINTER,WINTER</pre>
 			'seasons' => $this->repo->getSeasons( $tour_id ),
 			'prices' => $this->repo->getBasePrices( $tour_id ),
 			'flags' => $this->repo->getDailyFlags( $tour_id ),
+			'solo_fees' => $this->repo->getSoloFees( $tour_id ),
 			'data_source' => $this->repo->getDataSourceInfo(),
 		);
 

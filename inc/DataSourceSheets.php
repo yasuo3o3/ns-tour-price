@@ -26,6 +26,11 @@ class NS_Tour_Price_DataSourceSheets implements NS_Tour_Price_DataSourceInterfac
 		return array();
 	}
 
+	public function getSoloFees( $tour_id ) {
+		// Google Sheets実装は将来のバージョンで対応予定
+		return array();
+	}
+
 	public function isAvailable() {
 		// Google Sheets実装は将来のバージョンで対応予定
 		return false;
