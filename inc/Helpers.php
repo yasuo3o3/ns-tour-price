@@ -471,4 +471,26 @@ class NS_Tour_Price_Helpers {
 
 		return $start <= $end;
 	}
+
+	/**
+	 * 常に「?key=value...」形式の相対クエリを返す。
+	 * RESTコンテキストでも /wp-json を含む絶対URLにならない。
+	 *
+	 * @param array $args キー=>値の配列
+	 * @return string 例: "?tpc_month=2025-08&tpc_duration=7"
+	 */
+	public static function build_relative_query( array $args ): string {
+		// boolean は "1"/"0" に、他は文字列化
+		$normalized = array();
+		foreach ( $args as $key => $value ) {
+			if ( is_bool( $value ) ) {
+				$normalized[ $key ] = $value ? '1' : '0';
+			} else {
+				$normalized[ $key ] = (string) $value;
+			}
+		}
+
+		$query_string = http_build_query( $normalized, '', '&', PHP_QUERY_RFC3986 );
+		return $query_string === '' ? '?' : '?' . $query_string; // 最低でも "?" を返す（リンク構文上安全）
+	}
 }

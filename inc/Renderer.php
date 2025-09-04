@@ -165,13 +165,13 @@ class NS_Tour_Price_Renderer {
 					<?php 
 					$month_nav = NS_Tour_Price_Helpers::month_prev_next( $args['month'] );
 					
-					// 相対クエリで月ナビURLを生成
-					$prev_url = add_query_arg( array( 'tpc_month' => $month_nav['prev'] ), '' );
-					$next_url = add_query_arg( array( 'tpc_month' => $month_nav['next'] ), '' );
+					// 相対クエリ専用ヘルパーで月ナビURLを生成
+					$prev_href = NS_Tour_Price_Helpers::build_relative_query( array( 'tpc_month' => $month_nav['prev'] ) );
+					$next_href = NS_Tour_Price_Helpers::build_relative_query( array( 'tpc_month' => $month_nav['next'] ) );
 					?>
 					
 					<nav class="tpc-nav">
-						<a href="<?php echo esc_url( $prev_url ); ?>" 
+						<a href="<?php echo esc_attr( $prev_href ); ?>" 
 						   class="tpc-nav__btn tpc-nav__btn--prev tpc-nav-link" 
 						   data-month="<?php echo esc_attr( $month_nav['prev'] ); ?>"
 						   data-tour="<?php echo esc_attr( $args['tour'] ); ?>"
@@ -182,7 +182,7 @@ class NS_Tour_Price_Renderer {
 						   aria-label="<?php esc_attr_e( '前月', 'ns-tour_price' ); ?>">
 							<span class="tpc-nav__arrow">◀</span>
 						</a>
-						<a href="<?php echo esc_url( $next_url ); ?>" 
+						<a href="<?php echo esc_attr( $next_href ); ?>" 
 						   class="tpc-nav__btn tpc-nav__btn--next tpc-nav-link"
 						   data-month="<?php echo esc_attr( $month_nav['next'] ); ?>"
 						   data-tour="<?php echo esc_attr( $args['tour'] ); ?>"
@@ -211,15 +211,15 @@ class NS_Tour_Price_Renderer {
 					<div class="tpc-duration-tabs">
 						<?php foreach ( $available_durations as $duration ) : 
 							$is_active = ( $duration === $current_duration );
-							// 相対クエリでdurationタブURLを生成
-							$tab_url = add_query_arg( array( 'tpc_duration' => $duration ), '' );
+							// 相対クエリ専用ヘルパーでdurationタブURLを生成
+							$tab_href = NS_Tour_Price_Helpers::build_relative_query( array( 'tpc_duration' => $duration ) );
 							
 							$tab_classes = array( 'tpc-duration-tab', 'tpc-nav-link' );
 							if ( $is_active ) {
 								$tab_classes[] = 'is-active';
 							}
 						?>
-							<a href="<?php echo esc_url( $tab_url ); ?>" 
+							<a href="<?php echo esc_attr( $tab_href ); ?>" 
 							   class="<?php echo esc_attr( implode( ' ', $tab_classes ) ); ?>"
 							   data-duration="<?php echo esc_attr( $duration ); ?>"
 							   data-tour="<?php echo esc_attr( $args['tour'] ); ?>"
