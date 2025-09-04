@@ -92,6 +92,14 @@ class NS_Tour_Price_Admin {
 			'ns_tour_price_settings',
 			'ns_tour_price_general'
 		);
+
+		add_settings_field(
+			'heatmap_colors',
+			__( 'Heatmap Color List', 'ns-tour_price' ),
+			array( $this, 'heatmapColorsFieldCallback' ),
+			'ns_tour_price_settings',
+			'ns_tour_price_general'
+		);
 	}
 
 	public function adminPage() {
@@ -445,6 +453,49 @@ A1,WINTER,WINTER</pre>
 		<?php
 	}
 
+	public function heatmapColorsFieldCallback() {
+		$options = get_option( 'ns_tour_price_options', array() );
+		$default_colors = array(
+			'#ADCCEB', '#ADE0EB', '#ADEBE0', '#ADEBCC', '#ADEBB3', '#C7EBAD',
+			'#EBEBAD', '#EBE0AD', '#EBD6AD', '#EBCCAD', '#EBBDAD', '#EBADAD', '#EAADC6'
+		);
+		$current_colors = isset( $options['heatmap_colors'] ) ? $options['heatmap_colors'] : $default_colors;
+		$colors_text = implode( "\n", $current_colors );
+		?>
+		<textarea id="heatmap_colors" name="ns_tour_price_options[heatmap_colors]" rows="13" cols="50"><?php echo esc_textarea( $colors_text ); ?></textarea>
+		<p class="description">
+			<?php esc_html_e( 'ヒートマップの色を1行1色で指定してください（#RRGGBB形式）。色数がビン数と異なる場合は自動的に調整されます。', 'ns-tour_price' ); ?><br>
+			<?php esc_html_e( '空の場合はデフォルトの13色パレット（安→高：寒色→暖色）が使用されます。', 'ns-tour_price' ); ?>
+		</p>
+		<div id="heatmap-color-preview" style="margin-top: 10px;"></div>
+		<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			var textarea = document.getElementById('heatmap_colors');
+			var preview = document.getElementById('heatmap-color-preview');
+			
+			function updatePreview() {
+				var colors = textarea.value.split('\n').filter(function(c) {
+					return c.trim() && c.match(/^#[0-9A-Fa-f]{6}$/);
+				});
+				
+				preview.innerHTML = '';
+				if (colors.length > 0) {
+					preview.innerHTML = '<strong>プレビュー (' + colors.length + '色):</strong><br>';
+					colors.forEach(function(color) {
+						var swatch = document.createElement('span');
+						swatch.style.cssText = 'display:inline-block;width:20px;height:20px;background-color:' + color + ';margin:2px;border:1px solid #ddd;';
+						preview.appendChild(swatch);
+					});
+				}
+			}
+			
+			textarea.addEventListener('input', updatePreview);
+			updatePreview();
+		});
+		</script>
+		<?php
+	}
+
 	public function sanitizeOptions( $input ) {
 		$sanitized = array();
 		
@@ -472,6 +523,35 @@ A1,WINTER,WINTER</pre>
 		if ( isset( $input['heatmap_mode'] ) ) {
 			$mode = sanitize_text_field( $input['heatmap_mode'] );
 			$sanitized['heatmap_mode'] = in_array( $mode, array( 'quantile', 'linear' ), true ) ? $mode : 'quantile';
+		}
+
+		// ヒートマップ色リストの検証
+		if ( isset( $input['heatmap_colors'] ) ) {
+			$colors_text = sanitize_textarea_field( $input['heatmap_colors'] );
+			$colors = array();
+			
+			if ( ! empty( $colors_text ) ) {
+				$lines = explode( "\n", $colors_text );
+				foreach ( $lines as $line ) {
+					$color = trim( $line );
+					if ( ! empty( $color ) ) {
+						$validated_color = sanitize_hex_color( $color );
+						if ( $validated_color ) {
+							$colors[] = $validated_color;
+						}
+					}
+				}
+			}
+			
+			// 有効な色が1つもない場合はデフォルトを使用
+			if ( empty( $colors ) ) {
+				$colors = array(
+					'#ADCCEB', '#ADE0EB', '#ADEBE0', '#ADEBCC', '#ADEBB3', '#C7EBAD',
+					'#EBEBAD', '#EBE0AD', '#EBD6AD', '#EBCCAD', '#EBBDAD', '#EBADAD', '#EAADC6'
+				);
+			}
+			
+			$sanitized['heatmap_colors'] = $colors;
 		}
 
 		return $sanitized;

@@ -280,18 +280,18 @@ class NS_Tour_Price_CalendarBuilder {
 			$prices_with_classes[ $class_num ][] = $price;
 		}
 
-		// 新パレットから指定ビン数の色を取得
-		$custom_palette = $this->heatmap->getCustomPalette();
-		$sampled_colors = NS_Tour_Price_Heatmap::samplePalette( $custom_palette, $bins );
+		// 管理画面設定の色リストから指定ビン数の色を取得
+		$colors = $this->heatmap->getHeatmapColors();
+		$adjusted_colors = NS_Tour_Price_Heatmap::adjustColorsForBins( $colors, $bins );
 
 		$legend = array();
 		for ( $i = 0; $i <= 9; $i++ ) {
 			if ( isset( $prices_with_classes[ $i ] ) ) {
 				$prices = $prices_with_classes[ $i ];
 				
-				// 新パレットから色を取得
-				$color_index = min( $i, count( $sampled_colors ) - 1 );
-				$color = $sampled_colors[ $color_index ] ?? '#cccccc';
+				// 調整済み色配列から色を取得
+				$color_index = min( $i, count( $adjusted_colors ) - 1 );
+				$color = $adjusted_colors[ $color_index ] ?? '#cccccc';
 				
 				$legend[] = array(
 					'class' => 'hp-' . $i,

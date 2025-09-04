@@ -168,16 +168,16 @@ class NS_Tour_Price_Heatmap {
 			}
 		}
 
-		// 新パレットから実際のビン数に合わせた色を取得
-		$custom_palette = $this->getCustomPalette();
-		$sampled_colors = self::samplePalette( $custom_palette, $bins );
+		// 管理画面設定の色リストから実際のビン数に合わせた色を取得
+		$colors = $this->getHeatmapColors();
+		$adjusted_colors = self::adjustColorsForBins( $colors, $bins );
 
 		$legend_data = array();
 		foreach ( $levels as $level => $level_prices ) {
 			if ( ! empty( $level_prices ) ) {
-				// 色は新パレットから取得
-				$color_index = min( $level, count( $sampled_colors ) - 1 );
-				$color = $sampled_colors[ $color_index ] ?? '#cccccc';
+				// 色は調整済み色配列から取得
+				$color_index = min( $level, count( $adjusted_colors ) - 1 );
+				$color = $adjusted_colors[ $color_index ] ?? '#cccccc';
 				
 				$legend_data[] = array(
 					'level' => $level,
@@ -194,54 +194,99 @@ class NS_Tour_Price_Heatmap {
 	}
 
 	/**
-	 * 指定パレットから等間隔サンプリングで色を抽出
+	 * 色リストとビン数に応じて適切な色配列を生成
+	 * - 色数 > ビン数: 等間隔サンプリング
+	 * - 色数 < ビン数: 色をループして使用
+	 * - 色数 == ビン数: そのまま使用
 	 *
-	 * @param array $palette 13色（安→高）
-	 * @param int $bins 実際に使う段数（<=13）
+	 * @param array $colors 色配列（安→高）
+	 * @param int $bins 実際に使う段数
 	 * @return array bins 個の色（安→高）
 	 */
-	public static function samplePalette( array $palette, int $bins ): array {
-		$n = count( $palette );
+	public static function adjustColorsForBins( array $colors, int $bins ): array {
+		$color_count = count( $colors );
+		
 		if ( $bins <= 1 ) {
-			return array( $palette[0] );
-		}
-		if ( $bins >= $n ) {
-			return $palette;
+			return array( $colors[0] ?? '#cccccc' );
 		}
 		
+		if ( $color_count === $bins ) {
+			// 色数とビン数が一致：そのまま使用
+			return $colors;
+		}
+		
+		if ( $color_count > $bins ) {
+			// 色数 > ビン数：等間隔サンプリング
+			return self::sampleColors( $colors, $bins );
+		} else {
+			// 色数 < ビン数：色をループして使用
+			return self::loopColors( $colors, $bins );
+		}
+	}
+
+	/**
+	 * 等間隔サンプリングで色を抽出
+	 *
+	 * @param array $colors 色配列
+	 * @param int $bins 目標ビン数
+	 * @return array サンプリングされた色配列
+	 */
+	private static function sampleColors( array $colors, int $bins ): array {
+		$color_count = count( $colors );
 		$out = array();
+		
 		for ( $j = 0; $j < $bins; $j++ ) {
-			$idx = (int) round( $j * ( $n - 1 ) / ( $bins - 1 ) );
-			$out[] = $palette[ $idx ];
+			$idx = (int) round( $j * ( $color_count - 1 ) / ( $bins - 1 ) );
+			$out[] = $colors[ $idx ];
 		}
 		
-		// 端数で重複が出た場合のユニーク化（保守的に再計算）
+		// 重複除去（保守的処理）
 		$out = array_values( array_unique( $out ) );
 		while ( count( $out ) < $bins ) {
-			$out[] = end( $palette );
+			$out[] = end( $colors );
 		}
 		
 		return $out;
 	}
 
 	/**
-	 * 新しい13色カスタムパレットを取得
+	 * 色をループして必要なビン数まで拡張
 	 *
-	 * @return array 13色パレット（安→高）
+	 * @param array $colors 色配列
+	 * @param int $bins 目標ビン数
+	 * @return array ループ拡張された色配列
 	 */
-	public function getCustomPalette(): array {
-		return array(
-			'#ADCCEB', '#ADE0EB', '#ADEBE0', '#ADEBCC', '#ADEBB3', '#C7EBAD',
-			'#EBEBAD', '#EBE0AD', '#EBD6AD', '#EBCCAD', '#EBBDAD', '#EBADAD', '#EAADC6'
-		);
+	private static function loopColors( array $colors, int $bins ): array {
+		$color_count = count( $colors );
+		$out = array();
+		
+		for ( $i = 0; $i < $bins; $i++ ) {
+			$out[] = $colors[ $i % $color_count ];
+		}
+		
+		return $out;
 	}
 
-	public function getLevelColor( $level ) {
-		// 新しいカスタムパレットから10色を取得
-		$custom_palette = $this->getCustomPalette();
-		$sampled_colors = self::samplePalette( $custom_palette, 10 );
+	/**
+	 * 管理画面設定またはデフォルトの色パレットを取得
+	 *
+	 * @return array 色パレット（安→高）
+	 */
+	public function getHeatmapColors(): array {
+		$loader = new NS_Tour_Price_Loader();
+		return $loader->getHeatmapColors();
+	}
+
+	public function getLevelColor( $level, $bins = null ) {
+		if ( null === $bins ) {
+			$bins = $this->levels;
+		}
 		
-		return $sampled_colors[ $level ] ?? '#cccccc';
+		// 管理画面設定の色リストを取得
+		$colors = $this->getHeatmapColors();
+		$adjusted_colors = self::adjustColorsForBins( $colors, $bins );
+		
+		return $adjusted_colors[ $level ] ?? '#cccccc';
 	}
 
 	/**
@@ -255,14 +300,14 @@ class NS_Tour_Price_Heatmap {
 			$bins = $this->levels;
 		}
 
-		// 新パレットから指定ビン数の色を取得
-		$custom_palette = $this->getCustomPalette();
-		$sampled_colors = self::samplePalette( $custom_palette, $bins );
+		// 管理画面設定の色リストから指定ビン数の色を取得
+		$colors = $this->getHeatmapColors();
+		$adjusted_colors = self::adjustColorsForBins( $colors, $bins );
 		
 		$css = '';
 		for ( $i = 0; $i < $this->levels; $i++ ) {
-			$color_index = min( $i, count( $sampled_colors ) - 1 );
-			$color = $sampled_colors[ $color_index ];
+			$color_index = min( $i, count( $adjusted_colors ) - 1 );
+			$color = $adjusted_colors[ $color_index ];
 			
 			$css .= ".ns-tour-price-calendar .hp-{$i} {\n";
 			$css .= "  background-color: {$color};\n";
