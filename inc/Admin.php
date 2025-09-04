@@ -394,8 +394,38 @@ A1,WINTER,WINTER</pre>
 			wp_send_json_error( 'Insufficient permissions' );
 		}
 
+		// キャッシュクリア実行
 		$this->repo->clearCache();
-		wp_send_json_success( 'Cache cleared successfully' );
+		
+		// キャッシュクリア後の確認とログ出力のため、強制的に各CSVを再読込
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			error_log( 'NS Tour Price: Cache cleared, forcing CSV reload for log verification' );
+		}
+
+		// テスト用のデータロードでログを出力（デバッグ目的）
+		$test_tours = array( 'A1', 'A2' ); // よく使われるツアーIDでテスト
+		foreach ( $test_tours as $test_tour_id ) {
+			$seasons_count = count( $this->repo->getSeasons( $test_tour_id ) );
+			$prices_count = count( $this->repo->getBasePrices( $test_tour_id ) );
+			$solo_fees_count = count( $this->repo->getSoloFees( $test_tour_id ) );
+			
+			// 再ロード成功の場合のみ統計ログを出力
+			if ( $seasons_count > 0 || $prices_count > 0 ) {
+				$this->repo->logNormalizationStatistics( $test_tour_id );
+				break; // 一つ成功したら終了
+			}
+		}
+
+		// データソース可用性も再チェック
+		$data_source_info = $this->repo->getDataSourceInfo();
+		
+		$response_message = sprintf( 
+			'Cache cleared successfully. Data source: %s (%s)', 
+			$data_source_info['active'] ?? 'none',
+			$this->repo->isDataAvailable() ? 'available' : 'unavailable'
+		);
+		
+		wp_send_json_success( $response_message );
 	}
 
 	public function ajaxTestData() {

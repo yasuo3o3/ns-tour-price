@@ -14,9 +14,74 @@ class NS_Tour_Price_Repo {
 	private $loader;
 	private static $instance = null;
 	private $aliases_cache = array();
+	private $statistics_logged = array(); // 統計ログ出力済みマーク
 
 	public function __construct() {
 		$this->loader = new NS_Tour_Price_Loader();
+	}
+
+	/**
+	 * ログ出力（WP_DEBUGに連動）
+	 */
+	private function log( $message, $level = 'info' ) {
+		if ( ! defined( 'WP_DEBUG' ) || ! WP_DEBUG ) {
+			// WP_DEBUG が無効の場合はwarning以上のみログ出力
+			if ( ! in_array( $level, array( 'warning', 'error' ) ) ) {
+				return;
+			}
+		}
+		error_log( $message );
+	}
+
+	/**
+	 * 正規化・エイリアス統計ログを出力
+	 */
+	public function logNormalizationStatistics( $tour_id ) {
+		// 一度のリクエストで一回だけ出力
+		$log_key = 'normalization_' . $tour_id;
+		if ( isset( $this->statistics_logged[ $log_key ] ) ) {
+			return;
+		}
+		$this->statistics_logged[ $log_key ] = true;
+
+		$seasons = $this->getSeasons( $tour_id );
+		$prices = $this->getBasePrices( $tour_id );
+		
+		if ( empty( $seasons ) || empty( $prices ) ) {
+			return;
+		}
+
+		// seasons の正規化後 season_code セット
+		$season_codes = array();
+		foreach ( $seasons as $season ) {
+			$normalized = NS_Tour_Price_Helpers::normalize_season_code( $season['season_code'] );
+			$season_codes[ $normalized ] = true;
+		}
+
+		// base_prices の正規化後 season_code セット
+		$price_codes = array();
+		foreach ( $prices as $price ) {
+			$normalized = NS_Tour_Price_Helpers::normalize_season_code( $price['season_code'] );
+			$price_codes[ $normalized ] = true;
+		}
+
+		$this->log( sprintf( 
+			'NS Tour Price: seasons(normalized)={%s}', 
+			implode( ',', array_keys( $season_codes ) ) 
+		), 'info' );
+
+		$this->log( sprintf( 
+			'NS Tour Price: base_prices(normalized)={%s}', 
+			implode( ',', array_keys( $price_codes ) ) 
+		), 'info' );
+
+		// DataSourceからロードサマリーも出力
+		if ( $this->loader->isDataAvailable() ) {
+			$source = $this->loader->getActiveSource();
+			if ( method_exists( $source, 'logLoadSummary' ) ) {
+				$source->logLoadSummary();
+			}
+		}
 	}
 
 	public static function getInstance() {
@@ -75,24 +140,48 @@ class NS_Tour_Price_Repo {
 	}
 
 	public function getPriceForDate( $tour_id, $date, $duration ) {
+		// 統計ログを出力（初回のみ）
+		$this->logNormalizationStatistics( $tour_id );
+
 		$seasons = $this->getSeasons( $tour_id );
 		$prices = $this->getBasePrices( $tour_id );
 
-		if ( empty( $seasons ) || empty( $prices ) ) {
+		// データ不足チェック
+		if ( empty( $seasons ) && empty( $prices ) ) {
+			$this->log( sprintf( 
+				'NS Tour Price: No price - reason=missing_csv_data for tour=%s date=%s duration=%d (both seasons.csv and base_prices.csv not loaded)', 
+				$tour_id, $date, $duration 
+			), 'warning' );
+			return null;
+		} else if ( empty( $seasons ) ) {
+			$this->log( sprintf( 
+				'NS Tour Price: No price - reason=missing_csv_seasons for tour=%s date=%s duration=%d (seasons.csv not loaded)', 
+				$tour_id, $date, $duration 
+			), 'warning' );
+			return null;
+		} else if ( empty( $prices ) ) {
+			$this->log( sprintf( 
+				'NS Tour Price: No price - reason=missing_csv_base_prices for tour=%s date=%s duration=%d (base_prices.csv not loaded)', 
+				$tour_id, $date, $duration 
+			), 'warning' );
 			return null;
 		}
 
 		// エイリアスを読み込み
 		$aliases = $this->loadSeasonAliases( $tour_id );
 
-		// 指定日付に適用されるシーズンを見つける
-		$season_code = null;
+		// 日付形式チェック
 		$date_obj = DateTime::createFromFormat( 'Y-m-d', $date );
-		
 		if ( false === $date_obj ) {
+			$this->log( sprintf( 
+				'NS Tour Price: No price - reason=invalid_date_format for tour=%s date=%s duration=%d', 
+				$tour_id, $date, $duration 
+			), 'warning' );
 			return null;
 		}
 
+		// 指定日付に適用されるシーズンを見つける
+		$season_code = null;
 		foreach ( $seasons as $season ) {
 			$start_date = DateTime::createFromFormat( 'Y-m-d', $season['date_start'] );
 			$end_date = DateTime::createFromFormat( 'Y-m-d', $season['date_end'] );
@@ -104,7 +193,16 @@ class NS_Tour_Price_Repo {
 			}
 		}
 
+		// シーズン未一致チェック
 		if ( null === $season_code ) {
+			$season_ranges = array();
+			foreach ( $seasons as $season ) {
+				$season_ranges[] = sprintf( '%s(%s-%s)', $season['season_code'], $season['date_start'], $season['date_end'] );
+			}
+			$this->log( sprintf( 
+				'NS Tour Price: No price - reason=no_season_match for tour=%s date=%s duration=%d (available seasons: %s)', 
+				$tour_id, $date, $duration, implode( ', ', $season_ranges )
+			), 'warning' );
 			return null;
 		}
 
@@ -112,7 +210,12 @@ class NS_Tour_Price_Repo {
 		$normalized_season_code = NS_Tour_Price_Helpers::normalize_season_code( $season_code );
 
 		// シーズンコードと日数に一致する価格を見つける（正規化＆エイリアス対応）
+		$matching_durations = array();
+		$matching_seasons = array();
 		foreach ( $prices as $price ) {
+			$matching_durations[ $price['duration_days'] ] = true;
+			$matching_seasons[ $price['season_code'] ] = true;
+
 			if ( intval( $duration ) !== $price['duration_days'] ) {
 				continue;
 			}
@@ -133,6 +236,14 @@ class NS_Tour_Price_Repo {
 				}
 			}
 		}
+
+		// 価格未一致の詳細原因
+		$this->log( sprintf( 
+			'NS Tour Price: No price - reason=no_price_match for tour=%s date=%s duration=%d season=%s(normalized:%s) (available durations: %s, available seasons: %s)', 
+			$tour_id, $date, $duration, $season_code, $normalized_season_code, 
+			implode( ',', array_keys( $matching_durations ) ), 
+			implode( ',', array_keys( $matching_seasons ) )
+		), 'warning' );
 
 		return null;
 	}
@@ -363,22 +474,36 @@ class NS_Tour_Price_Repo {
 		// base_prices にあって seasons に無いコードを検出（正規化＆エイリアス適用後）
 		$invalid_codes = array_diff( $used_season_codes, $valid_season_codes );
 
-		// 不整合があればログに詳細記録
-		if ( ! empty( $invalid_codes ) ) {
-			error_log( sprintf(
-				'NS Tour Price: season_code mismatch for tour %s: {%s} not found in seasons. Aliases resolved: %d, Remaining mismatches: %d',
+		// エイリアス解決状況を詳細ログ
+		if ( $resolved_count > 0 || ! empty( $invalid_codes ) ) {
+			$this->log( sprintf(
+				'NS Tour Price: season_code validation for tour %s: aliases_resolved=%d, final_mismatches=%d',
 				$tour_id,
-				implode( ', ', $invalid_codes ),
 				$resolved_count,
 				count( $invalid_codes )
-			) );
-		} else if ( $resolved_count > 0 ) {
-			// 全て解決された場合のみ成功ログ
-			error_log( sprintf(
-				'NS Tour Price: All season_codes resolved for tour %s. Aliases resolved: %d',
+			), 'info' );
+		}
+
+		// 不整合があればエラーログに詳細記録
+		if ( ! empty( $invalid_codes ) ) {
+			$this->log( sprintf(
+				'NS Tour Price: season_code mismatch for tour %s: {%s} not found in seasons after normalization and alias resolution',
 				$tour_id,
-				$resolved_count
-			) );
+				implode( ', ', $invalid_codes )
+			), 'error' );
+
+			// エイリアス情報も出力
+			if ( ! empty( $aliases ) ) {
+				$alias_list = array();
+				foreach ( $aliases as $alias => $target ) {
+					$alias_list[] = $alias . '->' . $target;
+				}
+				$this->log( sprintf(
+					'NS Tour Price: available aliases for tour %s: {%s}',
+					$tour_id,
+					implode( ', ', $alias_list )
+				), 'info' );
+			}
 		}
 
 		// 結果をキャッシュ（1時間）
@@ -425,9 +550,13 @@ class NS_Tour_Price_Repo {
 
 		// インメモリキャッシュもクリア
 		$this->aliases_cache = array();
+		$this->statistics_logged = array(); // 統計ログも再出力可能にリセット
 
 		// 他のキャッシュもクリア
 		delete_transient( 'ns_tour_price_calendar_cache' );
+		
+		// キャッシュクリア実行をログ出力
+		$this->log( 'NS Tour Price: All caches cleared, next CSV access will trigger fresh logs', 'info' );
 		
 		do_action( 'ns_tour_price_cache_cleared' );
 	}
