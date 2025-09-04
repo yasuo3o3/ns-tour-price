@@ -709,9 +709,104 @@ class NS_Tour_Price_Repo {
 			)
 		);
 		
+		// 年間ビューのキャッシュもクリア
+		$wpdb->query(
+			$wpdb->prepare(
+				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
+				$wpdb->esc_like( '_transient_tpc:annual:' ) . '%'
+			)
+		);
+		$wpdb->query(
+			$wpdb->prepare(
+				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
+				$wpdb->esc_like( '_transient_timeout_tpc:annual:' ) . '%'
+			)
+		);
+
 		// キャッシュクリア実行をログ出力
 		$this->log( 'NS Tour Price: All caches cleared, next CSV access will trigger fresh logs', 'info' );
 		
 		do_action( 'ns_tour_price_cache_cleared' );
+	}
+
+	/**
+	 * 指定日のシーズンコードを取得
+	 *
+	 * @param string $tour_id ツアーID
+	 * @param string $date YYYY-MM-DD形式の日付
+	 * @return string シーズンコード（該当なしの場合は空文字）
+	 */
+	public function getSeasonForDate( $tour_id, $date ) {
+		$seasons = $this->getSeasons( $tour_id );
+		if ( empty( $seasons ) ) {
+			return '';
+		}
+
+		foreach ( $seasons as $season ) {
+			$start_date = NS_Tour_Price_Helpers::normalize_date( $season['date_start'] );
+			$end_date = NS_Tour_Price_Helpers::normalize_date( $season['date_end'] );
+
+			if ( false !== $start_date && false !== $end_date ) {
+				if ( $date >= $start_date && $date <= $end_date ) {
+					return NS_Tour_Price_Helpers::normalize_season_code( $season['season_code'] );
+				}
+			}
+		}
+
+		return '';
+	}
+
+	/**
+	 * 全シーズンデータを取得
+	 *
+	 * @param string $tour_id ツアーID
+	 * @return array シーズンデータの配列
+	 */
+	public function getAllSeasonsData( $tour_id ) {
+		$seasons = $this->getSeasons( $tour_id );
+		if ( empty( $seasons ) ) {
+			return array();
+		}
+
+		$result = array();
+		foreach ( $seasons as $season ) {
+			$season_code = NS_Tour_Price_Helpers::normalize_season_code( $season['season_code'] );
+			$result[] = array(
+				'season_code' => $season_code,
+				'season_label' => $season['season_label'] ?? $season_code,
+				'date_start' => $season['date_start'],
+				'date_end' => $season['date_end'],
+			);
+		}
+
+		return $result;
+	}
+
+	/**
+	 * シーズン別価格を取得
+	 *
+	 * @param string $tour_id ツアーID
+	 * @param string $season_code シーズンコード
+	 * @param int $duration 日数
+	 * @return int|null 価格（見つからない場合はnull）
+	 */
+	public function getPriceForSeason( $tour_id, $season_code, $duration ) {
+		$prices = $this->getBasePrices( $tour_id );
+		if ( empty( $prices ) ) {
+			return null;
+		}
+
+		$normalized_season = NS_Tour_Price_Helpers::normalize_season_code( $season_code );
+
+		foreach ( $prices as $price_row ) {
+			$row_season = NS_Tour_Price_Helpers::normalize_season_code( $price_row['season_code'] );
+			$row_duration = intval( $price_row['duration_days'] );
+
+			if ( $row_season === $normalized_season && $row_duration === $duration ) {
+				return intval( $price_row['base_price'] );
+			}
+		}
+
+		return null;
 	}
 }

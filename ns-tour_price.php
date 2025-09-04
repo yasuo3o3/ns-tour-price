@@ -46,6 +46,7 @@ class NS_Tour_Price {
 		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Loader.php';
 		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Repo.php';
 		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/CalendarBuilder.php';
+		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/AnnualBuilder.php';
 		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Heatmap.php';
 		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Renderer.php';
 		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Helpers.php';
@@ -116,6 +117,38 @@ class NS_Tour_Price {
 				),
 			),
 		) );
+
+		// 年間価格概要用RESTルート
+		register_rest_route( 'ns-tour-price/v1', '/annual', array(
+			'methods' => 'POST',
+			'callback' => array( $this, 'rest_annual_callback' ),
+			'permission_callback' => '__return_true',
+			'args' => array(
+				'tour' => array(
+					'required' => false,
+					'type' => 'string',
+					'sanitize_callback' => 'sanitize_text_field',
+					'default' => 'A1',
+				),
+				'duration' => array(
+					'required' => false,
+					'type' => 'integer',
+					'sanitize_callback' => 'absint',
+					'default' => 4,
+				),
+				'year' => array(
+					'required' => false,
+					'type' => 'integer',
+					'sanitize_callback' => 'absint',
+					'default' => gmdate( 'Y' ),
+				),
+				'show' => array(
+					'required' => false,
+					'type' => 'boolean',
+					'default' => true,
+				),
+			),
+		) );
 	}
 
 	public function rest_calendar_callback( $request ) {
@@ -141,6 +174,37 @@ class NS_Tour_Price {
 			'prev_month' => $prev_next['prev'],
 			'next_month' => $prev_next['next'],
 		), 200 );
+	}
+
+	public function rest_annual_callback( $request ) {
+		$tour = $request->get_param( 'tour' );
+		$duration = $request->get_param( 'duration' );
+		$year = $request->get_param( 'year' );
+		$show = $request->get_param( 'show' );
+
+		// show=falseの場合は空のHTMLを返す
+		if ( ! $show ) {
+			return new WP_REST_Response( array(
+				'success' => true,
+				'html' => '',
+			), 200 );
+		}
+
+		try {
+			$builder = new NS_Tour_Price_AnnualBuilder();
+			$annual_data = $builder->build( $tour, $duration, $year );
+
+			return new WP_REST_Response( array(
+				'success' => true,
+				'html' => $annual_data['html'],
+				'meta' => $annual_data['meta'],
+			), 200 );
+		} catch ( Exception $e ) {
+			return new WP_REST_Response( array(
+				'success' => false,
+				'message' => $e->getMessage(),
+			), 500 );
+		}
 	}
 
 	public function shortcode_callback( $atts ) {

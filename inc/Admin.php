@@ -625,4 +625,56 @@ A1,WINTER,WINTER</pre>
 
 		wp_send_json_success( $test_data );
 	}
+
+	/**
+	 * 年間価格概要の説明セクション
+	 */
+	public function renderAnnualViewHelpSection() {
+		?>
+		<div class="postbox">
+			<h2 class="hndle"><?php esc_html_e( '年間価格概要機能', 'ns-tour_price' ); ?></h2>
+			<div class="inside">
+				<p><?php esc_html_e( 'メインカレンダーの下に「年間価格概要を表示」チェックボックスが表示されます。これを有効にすると：', 'ns-tour_price' ); ?></p>
+				
+				<h4><?php esc_html_e( '12ヶ月ミニカレンダー', 'ns-tour_price' ); ?></h4>
+				<ul>
+					<li><?php esc_html_e( '1年間の全日がシーズン色で表示されます', 'ns-tour_price' ); ?></li>
+					<li><?php esc_html_e( '価格テキストは表示せず、色のみでシーズンを識別', 'ns-tour_price' ); ?></li>
+					<li><?php esc_html_e( '4〜10月運用でも1〜12月すべてを表示（該当なし日はグレー）', 'ns-tour_price' ); ?></li>
+					<li><?php esc_html_e( 'ホバー時に日付とシーズンコードがツールチップで表示', 'ns-tour_price' ); ?></li>
+				</ul>
+
+				<h4><?php esc_html_e( 'シーズン料金まとめ表', 'ns-tour_price' ); ?></h4>
+				<ul>
+					<li><?php esc_html_e( 'シーズンコード、期間、料金を一覧表示', 'ns-tour_price' ); ?></li>
+					<li><?php esc_html_e( '年跨ぎ期間は当年分にトリミング', 'ns-tour_price' ); ?></li>
+					<li><?php esc_html_e( '複数期間がある場合はカンマ区切りで結合（例: 4/1–5/31, 6/15–6/30）', 'ns-tour_price' ); ?></li>
+					<li><?php esc_html_e( '料金順で自動ソート', 'ns-tour_price' ); ?></li>
+				</ul>
+
+				<h4><?php esc_html_e( '動作仕様', 'ns-tour_price' ); ?></h4>
+				<ul>
+					<li><?php esc_html_e( 'Ajax部分差し替えに対応（JS無効時は通常遷移）', 'ns-tour_price' ); ?></li>
+					<li><?php esc_html_e( '月送り・日数タブ切替で自動更新（年が変わった場合）', 'ns-tour_price' ); ?></li>
+					<li><?php esc_html_e( 'メモリキャッシュとTransientキャッシュで高速化', 'ns-tour_price' ); ?></li>
+					<li><?php esc_html_e( '「Clear Cache」で年間ビューのキャッシュも削除', 'ns-tour_price' ); ?></li>
+				</ul>
+
+				<h4><?php esc_html_e( 'シーズン色の設定', 'ns-tour_price' ); ?></h4>
+				<p><?php esc_html_e( '上記「ヒートマップ色パレット」設定が年間ビューのシーズン色にも使用されます。', 'ns-tour_price' ); ?></p>
+				<p><?php esc_html_e( 'シーズンコード別の色マッピングを変更したい場合は、inc/AnnualBuilder.phpのgetSeasonColor()メソッドを修正してください。', 'ns-tour_price' ); ?></p>
+
+				<div style="background: #f1f1f1; padding: 10px; margin: 10px 0; border-left: 4px solid #0073aa;">
+					<strong><?php esc_html_e( 'レスポンシブ対応', 'ns-tour_price' ); ?>:</strong><br>
+					<?php esc_html_e( 'スマホ（480px以下）では、12ヶ月カレンダーは1列表示、シーズン表はカード型表示に切り替わります。', 'ns-tour_price' ); ?>
+				</div>
+
+				<div style="background: #fff3cd; padding: 10px; margin: 10px 0; border-left: 4px solid #ffc107;">
+					<strong><?php esc_html_e( '注意', 'ns-tour_price' ); ?>:</strong><br>
+					<?php esc_html_e( '年間ビューはCSVデータを基準とします。seasons.csvやbase_prices.csvが正しく設定されていることを確認してください。', 'ns-tour_price' ); ?>
+				</div>
+			</div>
+		</div>
+		<?php
+	}
 }

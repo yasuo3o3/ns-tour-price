@@ -316,4 +316,189 @@
         prefetchCache.add(url);
     }
 
+    // 年間ビュー機能
+    const AnnualView = {
+        cache: new Map(), // 年間ビューのキャッシュ (key: tour:duration:year, value: html)
+        isEnabled: false,
+        currentData: null,
+
+        /**
+         * 年間ビューを初期化
+         */
+        init: function() {
+            this.setupToggleButton();
+            this.bindEvents();
+        },
+
+        /**
+         * トグルボタンを設定
+         */
+        setupToggleButton: function() {
+            const calendars = document.querySelectorAll(CONFIG.SELECTORS.calendar);
+            
+            calendars.forEach(function(calendar) {
+                // 年間ビュー切替チェックボックスを追加
+                const header = calendar.querySelector('.calendar-header');
+                if (header && !header.querySelector('.tpc-annual-toggle')) {
+                    const toggleContainer = document.createElement('div');
+                    toggleContainer.className = 'tpc-annual-toggle';
+                    toggleContainer.innerHTML = `
+                        <label>
+                            <input type="checkbox" id="tpc-annual-checkbox"> 年間価格概要を表示
+                        </label>
+                    `;
+                    
+                    header.appendChild(toggleContainer);
+                    
+                    // 年間ビュー表示エリアを追加
+                    const annualRoot = document.createElement('div');
+                    annualRoot.id = 'tpc-annual-root';
+                    annualRoot.className = 'tpc-annual-root';
+                    calendar.appendChild(annualRoot);
+                }
+            });
+        },
+
+        /**
+         * イベントを設定
+         */
+        bindEvents: function() {
+            document.addEventListener('change', function(e) {
+                if (e.target.id === 'tpc-annual-checkbox') {
+                    AnnualView.isEnabled = e.target.checked;
+                    
+                    if (AnnualView.isEnabled) {
+                        AnnualView.loadAnnualView();
+                    } else {
+                        AnnualView.hideAnnualView();
+                    }
+                }
+            });
+        },
+
+        /**
+         * 年間ビューを読み込み
+         */
+        loadAnnualView: function() {
+            const calendar = document.querySelector(CONFIG.SELECTORS.calendar);
+            if (!calendar) return;
+
+            const tour = calendar.dataset.tour || 'A1';
+            const duration = parseInt(calendar.dataset.duration) || 4;
+            const month = calendar.dataset.month || getCurrentMonth();
+            const year = parseInt(month.substring(0, 4));
+
+            this.currentData = { tour, duration, year };
+            
+            // キャッシュチェック
+            const cacheKey = `${tour}:${duration}:${year}`;
+            if (this.cache.has(cacheKey)) {
+                this.displayAnnualView(this.cache.get(cacheKey));
+                return;
+            }
+
+            // Ajax で年間データを取得
+            this.fetchAnnualData(tour, duration, year);
+        },
+
+        /**
+         * Ajax で年間データを取得
+         */
+        fetchAnnualData: function(tour, duration, year) {
+            const apiUrl = new URL('/wp-json/ns-tour-price/v1/annual', window.location.origin);
+            
+            fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    tour: tour,
+                    duration: duration,
+                    year: year,
+                    show: true
+                })
+            })
+            .then(function(response) {
+                if (!response.ok) {
+                    throw new Error('HTTP ' + response.status);
+                }
+                return response.json();
+            })
+            .then(function(data) {
+                if (data.success && data.html) {
+                    // キャッシュに保存
+                    const cacheKey = `${tour}:${duration}:${year}`;
+                    AnnualView.cache.set(cacheKey, data.html);
+                    
+                    AnnualView.displayAnnualView(data.html);
+                } else {
+                    throw new Error('Invalid response data');
+                }
+            })
+            .catch(function(error) {
+                console.error('Annual view load failed:', error);
+                AnnualView.displayAnnualView('<div class="tpc-annual-error">年間概要の読み込みに失敗しました</div>');
+            });
+        },
+
+        /**
+         * 年間ビューを表示
+         */
+        displayAnnualView: function(html) {
+            const annualRoot = document.getElementById('tpc-annual-root');
+            if (annualRoot) {
+                annualRoot.innerHTML = html;
+                annualRoot.style.display = 'block';
+            }
+        },
+
+        /**
+         * 年間ビューを非表示
+         */
+        hideAnnualView: function() {
+            const annualRoot = document.getElementById('tpc-annual-root');
+            if (annualRoot) {
+                annualRoot.style.display = 'none';
+            }
+        },
+
+        /**
+         * 月送り・日数タブ切替時の自動更新
+         */
+        updateForNavigation: function(tour, duration, month) {
+            if (!this.isEnabled) return;
+
+            const year = parseInt(month.substring(0, 4));
+            
+            // データが変わった場合のみ更新
+            if (!this.currentData || 
+                this.currentData.tour !== tour || 
+                this.currentData.duration !== duration || 
+                this.currentData.year !== year) {
+                
+                this.currentData = { tour, duration, year };
+                this.loadAnnualView();
+            }
+        }
+    };
+
+    // 既存のカレンダー更新時に年間ビューも更新
+    const originalUpdateCalendarContent = updateCalendarContent;
+    updateCalendarContent = function(calendar, newHtml) {
+        originalUpdateCalendarContent(calendar, newHtml);
+        
+        // 更新されたカレンダーから情報を取得して年間ビューを更新
+        const tour = calendar.dataset.tour || 'A1';
+        const duration = parseInt(calendar.dataset.duration) || 4;
+        const month = calendar.dataset.month || getCurrentMonth();
+        
+        AnnualView.updateForNavigation(tour, duration, month);
+    };
+
+    // DOMContentLoaded で年間ビューを初期化
+    document.addEventListener('DOMContentLoaded', function() {
+        AnnualView.init();
+    });
+
 })();
