@@ -557,6 +557,68 @@ class NS_Tour_Price_DataSourceCsv implements NS_Tour_Price_DataSourceInterface {
 		return true;
 	}
 
+	public function getTourOptions( $tour_id = null ) {
+		$cache_key = $this->cache_prefix . 'tour_options_' . ( $tour_id ? $tour_id : 'all' );
+		$cached = get_transient( $cache_key );
+		
+		if ( false !== $cached ) {
+			return $cached;
+		}
+
+		$file_path = $this->data_dir . 'tour_options.csv';
+		if ( ! file_exists( $file_path ) ) {
+			return array();
+		}
+
+		$data = $this->readCsvFile( $file_path );
+		if ( empty( $data ) ) {
+			return array();
+		}
+
+		$result = array();
+		foreach ( $data as $row ) {
+			// ツアーIDでフィルタ（指定されている場合）
+			if ( $tour_id && ( ! isset( $row['tour_id'] ) || $row['tour_id'] !== $tour_id ) ) {
+				continue;
+			}
+
+			$option = array(
+				'tour_id' => sanitize_text_field( $row['tour_id'] ?? '' ),
+				'option_id' => sanitize_text_field( $row['option_id'] ?? '' ),
+				'option_label' => sanitize_text_field( $row['option_label'] ?? '' ),
+				'price_min' => intval( $row['price_min'] ?? 0 ),
+				'price_max' => intval( $row['price_max'] ?? 0 ),
+				'show_price' => filter_var( $row['show_price'] ?? true, FILTER_VALIDATE_BOOLEAN ),
+				'description' => sanitize_text_field( $row['description'] ?? '' ),
+				'image_url' => esc_url_raw( $row['image_url'] ?? '' ),
+				'affects_total' => filter_var( $row['affects_total'] ?? true, FILTER_VALIDATE_BOOLEAN ),
+			);
+
+			if ( $this->validateTourOptionData( $option ) ) {
+				$result[] = $option;
+			}
+		}
+
+		set_transient( $cache_key, $result, $this->cache_expiry );
+		return $result;
+	}
+
+	private function validateTourOptionData( $option ) {
+		if ( empty( $option['tour_id'] ) || empty( $option['option_id'] ) ) {
+			return false;
+		}
+
+		if ( $option['price_min'] < 0 || $option['price_max'] < 0 ) {
+			return false;
+		}
+
+		if ( $option['price_max'] < $option['price_min'] ) {
+			return false;
+		}
+
+		return true;
+	}
+
 	public function clearCache() {
 		global $wpdb;
 		

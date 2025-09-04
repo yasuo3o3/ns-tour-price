@@ -139,6 +139,15 @@ class NS_Tour_Price_Repo {
 		return 0;
 	}
 
+	public function getTourOptions( $tour_id = null ) {
+		if ( ! $this->loader->isDataAvailable() ) {
+			return array();
+		}
+
+		$source = $this->loader->getActiveSource();
+		return $source->getTourOptions( $tour_id );
+	}
+
 	public function getPriceForDate( $tour_id, $date, $duration ) {
 		// 統計ログを出力（初回のみ）
 		$this->logNormalizationStatistics( $tour_id );

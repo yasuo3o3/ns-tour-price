@@ -47,6 +47,7 @@ class NS_Tour_Price {
 		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Repo.php';
 		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/CalendarBuilder.php';
 		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/AnnualBuilder.php';
+		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/BookingPreview.php';
 		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Heatmap.php';
 		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Renderer.php';
 		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Helpers.php';
@@ -149,6 +150,44 @@ class NS_Tour_Price {
 				),
 			),
 		) );
+
+		// 予約プレビュー価格計算用RESTルート
+		register_rest_route( 'ns-tour-price/v1', '/price-calc', array(
+			'methods' => 'POST',
+			'callback' => array( $this, 'rest_price_calc_callback' ),
+			'permission_callback' => '__return_true',
+			'args' => array(
+				'tour' => array(
+					'required' => false,
+					'type' => 'string',
+					'sanitize_callback' => 'sanitize_text_field',
+					'default' => 'A1',
+				),
+				'date' => array(
+					'required' => false,
+					'type' => 'string',
+					'sanitize_callback' => 'sanitize_text_field',
+					'default' => gmdate( 'Y-m-d' ),
+				),
+				'duration' => array(
+					'required' => false,
+					'type' => 'integer',
+					'sanitize_callback' => 'absint',
+					'default' => 4,
+				),
+				'pax' => array(
+					'required' => false,
+					'type' => 'integer',
+					'sanitize_callback' => 'absint',
+					'default' => 1,
+				),
+				'options' => array(
+					'required' => false,
+					'type' => 'array',
+					'default' => array(),
+				),
+			),
+		) );
 	}
 
 	public function rest_calendar_callback( $request ) {
@@ -174,6 +213,20 @@ class NS_Tour_Price {
 			'prev_month' => $prev_next['prev'],
 			'next_month' => $prev_next['next'],
 		), 200 );
+	}
+
+	public function rest_price_calc_callback( $request ) {
+		try {
+			$booking_preview = new NS_Tour_Price_BookingPreview();
+			$result = $booking_preview->ajaxCalculatePrice( $request );
+			
+			return $result;
+		} catch ( Exception $e ) {
+			return new WP_REST_Response( array(
+				'success' => false,
+				'message' => $e->getMessage(),
+			), 500 );
+		}
 	}
 
 	public function rest_annual_callback( $request ) {
@@ -246,6 +299,14 @@ class NS_Tour_Price {
 		wp_enqueue_script(
 			'ns-tour-price-navigation',
 			NS_TOUR_PRICE_PLUGIN_URL . 'assets/navigation.js',
+			array(),
+			NS_TOUR_PRICE_VERSION,
+			true
+		);
+
+		wp_enqueue_script(
+			'ns-tour-price-booking-preview',
+			NS_TOUR_PRICE_PLUGIN_URL . 'assets/booking-preview.js',
 			array(),
 			NS_TOUR_PRICE_VERSION,
 			true

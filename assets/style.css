@@ -187,6 +187,420 @@
 .season-E { background-color: #9C27B0; }
 .season-F { background-color: #795548; }
 
+/* ==== 予約プレビューフォーム ==== */
+.tpc-booking-preview {
+    max-width: 800px;
+    margin: 20px 0;
+    font-family: inherit;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.tpc-booking-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px 30px;
+    text-align: center;
+}
+
+.tpc-booking-title {
+    margin: 0 0 8px 0;
+    font-size: 1.6em;
+    font-weight: 600;
+}
+
+.tpc-booking-subtitle {
+    margin: 0;
+    font-size: 0.9em;
+    opacity: 0.9;
+}
+
+.tpc-booking-form {
+    padding: 20px 30px;
+}
+
+.tpc-booking-section {
+    margin-bottom: 30px;
+}
+
+.tpc-booking-section:last-child {
+    margin-bottom: 0;
+}
+
+.tpc-section-title {
+    margin: 0 0 15px 0;
+    font-size: 1.2em;
+    font-weight: 600;
+    color: #2d3748;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 8px;
+}
+
+/* 選択済み情報 */
+.tpc-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.tpc-info-item {
+    background: #f7fafc;
+    border-radius: 8px;
+    padding: 15px;
+    border-left: 4px solid #4299e1;
+}
+
+.tpc-info-item label {
+    display: block;
+    font-size: 0.9em;
+    color: #718096;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.tpc-info-value {
+    font-size: 1.1em;
+    color: #2d3748;
+}
+
+.tpc-weekday {
+    color: #718096;
+    font-size: 0.9em;
+    margin-left: 8px;
+}
+
+.tpc-season-badge {
+    display: inline-block;
+    background: #4299e1;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: 600;
+}
+
+/* 日数タブ */
+.tpc-duration-tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.tpc-duration-tab {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px 20px;
+    background: white;
+    transition: all 0.2s ease;
+}
+
+.tpc-duration-tab input[type="radio"] {
+    display: none;
+}
+
+.tpc-duration-tab.active {
+    background: #4299e1;
+    border-color: #4299e1;
+    color: white;
+}
+
+.tpc-duration-tab:hover {
+    border-color: #4299e1;
+    background: #f7fafc;
+}
+
+.tpc-duration-tab.active:hover {
+    background: #3182ce;
+}
+
+.tpc-tab-text {
+    font-weight: 600;
+    font-size: 0.95em;
+}
+
+/* 出発地選択 */
+.tpc-departure-select {
+    width: 100%;
+    max-width: 300px;
+    padding: 12px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1em;
+    background: white;
+    color: #2d3748;
+}
+
+.tpc-departure-select:focus {
+    outline: none;
+    border-color: #4299e1;
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+}
+
+/* 人数コントロール */
+.tpc-pax-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tpc-pax-btn {
+    width: 36px;
+    height: 36px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    background: white;
+    color: #4a5568;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2em;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.tpc-pax-btn:hover {
+    border-color: #4299e1;
+    background: #f7fafc;
+}
+
+.tpc-pax-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.tpc-pax-input {
+    width: 80px;
+    padding: 8px 12px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 1.1em;
+    font-weight: 600;
+}
+
+.tpc-pax-input:focus {
+    outline: none;
+    border-color: #4299e1;
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+}
+
+.tpc-pax-unit {
+    color: #718096;
+    font-weight: 600;
+    margin-left: 4px;
+}
+
+.tpc-pax-notice {
+    margin: 10px 0 0 0;
+    color: #e53e3e;
+}
+
+/* オプション */
+.tpc-options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.tpc-option-item {
+    display: flex;
+    align-items: flex-start;
+    cursor: pointer;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 15px;
+    background: white;
+    transition: all 0.2s ease;
+}
+
+.tpc-option-item:hover {
+    border-color: #4299e1;
+    background: #f7fafc;
+}
+
+.tpc-option-item input[type="checkbox"] {
+    margin: 2px 12px 0 0;
+    transform: scale(1.2);
+}
+
+.tpc-option-info {
+    flex: 1;
+}
+
+.tpc-option-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.tpc-option-label {
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.tpc-option-price {
+    color: #4299e1;
+    font-weight: 600;
+    font-size: 0.95em;
+}
+
+.tpc-option-description {
+    margin: 0;
+    color: #718096;
+    font-size: 0.9em;
+}
+
+/* 料金表示 */
+.tpc-pricing-breakdown {
+    background: #f7fafc;
+    border-radius: 8px;
+    padding: 20px;
+    border: 1px solid #e2e8f0;
+}
+
+.tpc-price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.tpc-price-row:last-child {
+    border-bottom: none;
+}
+
+.tpc-total-row {
+    margin-top: 10px;
+    padding-top: 15px;
+    border-top: 2px solid #4299e1;
+    font-size: 1.1em;
+    font-weight: 700;
+}
+
+.tpc-price-label {
+    color: #4a5568;
+    font-weight: 600;
+}
+
+.tpc-price-label small {
+    color: #718096;
+    font-weight: 400;
+    margin-left: 8px;
+}
+
+.tpc-price-value {
+    color: #2d3748;
+    font-weight: 600;
+}
+
+.tpc-total-price {
+    color: #4299e1;
+    font-size: 1.2em;
+    font-weight: 700;
+}
+
+.tpc-pricing-note {
+    margin: 15px 0 0 0;
+    color: #718096;
+    text-align: center;
+}
+
+/* 申込ボタン */
+.tpc-submit-section {
+    text-align: center;
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.tpc-submit-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 15px 40px;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.tpc-submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+.tpc-submit-arrow {
+    transition: transform 0.2s ease;
+}
+
+.tpc-submit-btn:hover .tpc-submit-arrow {
+    transform: translateX(4px);
+}
+
+.tpc-submit-note {
+    margin: 15px 0 0 0;
+    color: #718096;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .tpc-booking-preview {
+        margin: 10px;
+    }
+
+    .tpc-booking-header,
+    .tpc-booking-form {
+        padding: 20px;
+    }
+
+    .tpc-info-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .tpc-duration-tabs {
+        flex-direction: column;
+    }
+
+    .tpc-duration-tab {
+        justify-content: center;
+    }
+
+    .tpc-pax-controls {
+        justify-content: center;
+    }
+
+    .tpc-option-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+
+    .tpc-price-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+
+    .tpc-total-row {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+}
+
 /* ==== カレンダー全体 ==== */
 .ns-tour-price-calendar {
     max-width: 800px;
