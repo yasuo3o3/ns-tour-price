@@ -85,8 +85,8 @@
         setLoadingState(calendar, true);
         disableNavButtons(calendar, true);
 
-        // URLからパラメータを抽出
-        const params = extractParamsFromUrl(toAbsUrl(url).href);
+        // URLとdata属性からパラメータを抽出
+        const params = extractParamsFromUrl(toAbsUrl(url).href, clickedButton);
         const apiUrl = buildApiUrl(params);
 
         // Fetch API でリクエスト
@@ -157,13 +157,14 @@
     }
 
     /**
-     * URLからカレンダーパラメータを抽出
+     * URLまたはdata属性からカレンダーパラメータを抽出
      */
-    function extractParamsFromUrl(href) {
+    function extractParamsFromUrl(href, clickedButton = null) {
         const urlObj = toAbsUrl(href); // ← 相対でもOK
         const searchParams = urlObj.searchParams;
         
-        return {
+        // data属性から直接パラメータを取得（より確実）
+        let params = {
             tour: searchParams.get('tour') || 'A1',
             month: searchParams.get('tpc_month') || getCurrentMonth(),
             duration: parseInt(searchParams.get('tpc_duration') || searchParams.get('duration') || '4', 10) || 4,
@@ -171,6 +172,19 @@
             confirmed_only: searchParams.get('confirmed_only') === 'true',
             show_legend: searchParams.get('show_legend') !== 'false',
         };
+        
+        // クリックされたボタンのdata属性で上書き（優先）
+        if (clickedButton) {
+            const dataAttrs = clickedButton.dataset;
+            if (dataAttrs.tour) params.tour = dataAttrs.tour;
+            if (dataAttrs.month) params.month = dataAttrs.month;
+            if (dataAttrs.duration) params.duration = parseInt(dataAttrs.duration, 10);
+            if (dataAttrs.heatmap) params.heatmap = dataAttrs.heatmap !== '0';
+            if (dataAttrs.confirmedOnly) params.confirmed_only = dataAttrs.confirmedOnly === '1';
+            if (dataAttrs.showLegend) params.show_legend = dataAttrs.showLegend !== '0';
+        }
+        
+        return params;
     }
 
     /**
@@ -209,10 +223,24 @@
 
     /**
      * ブラウザURLを更新（履歴に追加）
+     * フロントエンドURLのクエリパラメータとして維持
      */
     function updateBrowserUrl(url) {
         if (window.history && window.history.pushState) {
-            window.history.pushState(null, '', url);
+            // 相対URLの場合、現在のパス（RESTエンドポイント以外）にクエリを追加
+            const targetUrl = toAbsUrl(url);
+            const currentUrl = new URL(window.location.href);
+            
+            // RESTエンドポイントURLの場合は、フロントエンドページとして構築
+            if (targetUrl.pathname.includes('/wp-json/')) {
+                // クエリパラメータのみを現在のフロントページに適用
+                const newUrl = new URL(currentUrl.pathname, window.location.origin);
+                newUrl.search = targetUrl.search;
+                window.history.pushState(null, '', newUrl.toString());
+            } else {
+                // 通常の相対URLの場合はそのまま使用
+                window.history.pushState(null, '', targetUrl.toString());
+            }
         }
     }
 

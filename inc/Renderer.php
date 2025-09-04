@@ -164,22 +164,33 @@ class NS_Tour_Price_Renderer {
 					
 					<?php 
 					$month_nav = NS_Tour_Price_Helpers::month_prev_next( $args['month'] );
-					$current_url = remove_query_arg( 'tpc_month' );
 					
-					$prev_url = add_query_arg( array(
-						'tpc_month' => $month_nav['prev'],
-					), $current_url );
-					
-					$next_url = add_query_arg( array(
-						'tpc_month' => $month_nav['next'],
-					), $current_url );
+					// 相対クエリで月ナビURLを生成
+					$prev_url = add_query_arg( array( 'tpc_month' => $month_nav['prev'] ), '' );
+					$next_url = add_query_arg( array( 'tpc_month' => $month_nav['next'] ), '' );
 					?>
 					
 					<nav class="tpc-nav">
-						<a href="<?php echo esc_url( $prev_url ); ?>" class="tpc-nav__btn tpc-nav__btn--prev" aria-label="<?php esc_attr_e( '前月', 'ns-tour_price' ); ?>">
+						<a href="<?php echo esc_url( $prev_url ); ?>" 
+						   class="tpc-nav__btn tpc-nav__btn--prev tpc-nav-link" 
+						   data-month="<?php echo esc_attr( $month_nav['prev'] ); ?>"
+						   data-tour="<?php echo esc_attr( $args['tour'] ); ?>"
+						   data-duration="<?php echo esc_attr( $args['duration'] ); ?>"
+						   data-heatmap="<?php echo esc_attr( $args['heatmap'] ? '1' : '0' ); ?>"
+						   data-show-legend="<?php echo esc_attr( $args['show_legend'] ? '1' : '0' ); ?>"
+						   data-confirmed-only="<?php echo esc_attr( $args['confirmed_only'] ? '1' : '0' ); ?>"
+						   aria-label="<?php esc_attr_e( '前月', 'ns-tour_price' ); ?>">
 							<span class="tpc-nav__arrow">◀</span>
 						</a>
-						<a href="<?php echo esc_url( $next_url ); ?>" class="tpc-nav__btn tpc-nav__btn--next" aria-label="<?php esc_attr_e( '翌月', 'ns-tour_price' ); ?>">
+						<a href="<?php echo esc_url( $next_url ); ?>" 
+						   class="tpc-nav__btn tpc-nav__btn--next tpc-nav-link"
+						   data-month="<?php echo esc_attr( $month_nav['next'] ); ?>"
+						   data-tour="<?php echo esc_attr( $args['tour'] ); ?>"
+						   data-duration="<?php echo esc_attr( $args['duration'] ); ?>"
+						   data-heatmap="<?php echo esc_attr( $args['heatmap'] ? '1' : '0' ); ?>"
+						   data-show-legend="<?php echo esc_attr( $args['show_legend'] ? '1' : '0' ); ?>"
+						   data-confirmed-only="<?php echo esc_attr( $args['confirmed_only'] ? '1' : '0' ); ?>"
+						   aria-label="<?php esc_attr_e( '翌月', 'ns-tour_price' ); ?>">
 							<span class="tpc-nav__arrow">▶</span>
 						</a>
 					</nav>
@@ -200,7 +211,8 @@ class NS_Tour_Price_Renderer {
 					<div class="tpc-duration-tabs">
 						<?php foreach ( $available_durations as $duration ) : 
 							$is_active = ( $duration === $current_duration );
-							$tab_url = add_query_arg( array( 'tpc_duration' => $duration ) );
+							// 相対クエリでdurationタブURLを生成
+							$tab_url = add_query_arg( array( 'tpc_duration' => $duration ), '' );
 							
 							$tab_classes = array( 'tpc-duration-tab', 'tpc-nav-link' );
 							if ( $is_active ) {
