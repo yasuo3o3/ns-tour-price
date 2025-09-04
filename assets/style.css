@@ -926,9 +926,11 @@
 
 /* ヒートマップセルのホバー効果 */
 .calendar-day.has-price:hover {
-    transform: translateY(-2px);
+    /*transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    z-index: 10;
+    z-index: 10;*/
+    box-sizing: border-box;
+    border: 5px #a7e14a solid;
 }
 
 /* ==== 凡例 ==== */
