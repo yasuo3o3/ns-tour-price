@@ -72,7 +72,7 @@ class NS_Tour_Price_CalendarBuilder {
 				$heatmap_classes = $this->heatmap->generateHeatmapClassesWithBuckets( $monthly_prices, $buckets );
 				
 				// 全期間価格を基準とした凡例を生成
-				$legend = $this->buildGlobalLegendWithBuckets( $all_prices, $buckets );
+				$legend = $this->buildGlobalLegendWithBuckets( $all_prices, $buckets, $bins );
 			}
 		}
 
@@ -265,7 +265,7 @@ class NS_Tour_Price_CalendarBuilder {
 		return $legend;
 	}
 
-	private function buildGlobalLegendWithBuckets( $all_prices, $buckets ) {
+	private function buildGlobalLegendWithBuckets( $all_prices, $buckets, $bins = 7 ) {
 		if ( empty( $all_prices ) || empty( $buckets ) ) {
 			return array();
 		}
@@ -280,16 +280,26 @@ class NS_Tour_Price_CalendarBuilder {
 			$prices_with_classes[ $class_num ][] = $price;
 		}
 
+		// 新パレットから指定ビン数の色を取得
+		$custom_palette = $this->heatmap->getCustomPalette();
+		$sampled_colors = NS_Tour_Price_Heatmap::samplePalette( $custom_palette, $bins );
+
 		$legend = array();
 		for ( $i = 0; $i <= 9; $i++ ) {
 			if ( isset( $prices_with_classes[ $i ] ) ) {
 				$prices = $prices_with_classes[ $i ];
+				
+				// 新パレットから色を取得
+				$color_index = min( $i, count( $sampled_colors ) - 1 );
+				$color = $sampled_colors[ $color_index ] ?? '#cccccc';
+				
 				$legend[] = array(
 					'class' => 'hp-' . $i,
 					'min_price' => min( $prices ),
 					'max_price' => max( $prices ),
 					'formatted_min' => $this->formatPrice( min( $prices ) ),
 					'formatted_max' => $this->formatPrice( max( $prices ) ),
+					'color' => $color,
 				);
 			}
 		}

@@ -138,9 +138,22 @@ class NS_Tour_Price_Heatmap {
 		return $classes;
 	}
 
-	public function getHeatmapLegendData( $prices, $classes ) {
+	/**
+	 * ヒートマップ凡例データを生成（新パレット対応）
+	 *
+	 * @param array $prices 価格配列
+	 * @param array $classes 価格=>レベルのマッピング
+	 * @param int $bins 実際のビン数（動的パレット生成用）
+	 * @return array 凡例データ
+	 */
+	public function getHeatmapLegendData( $prices, $classes, $bins = null ) {
 		if ( empty( $prices ) || empty( $classes ) ) {
 			return array();
+		}
+
+		// ビン数が指定されていない場合は従来の10色を使用
+		if ( null === $bins ) {
+			$bins = $this->levels;
 		}
 
 		$levels = array();
@@ -155,16 +168,24 @@ class NS_Tour_Price_Heatmap {
 			}
 		}
 
+		// 新パレットから実際のビン数に合わせた色を取得
+		$custom_palette = $this->getCustomPalette();
+		$sampled_colors = self::samplePalette( $custom_palette, $bins );
+
 		$legend_data = array();
 		foreach ( $levels as $level => $level_prices ) {
 			if ( ! empty( $level_prices ) ) {
+				// 色は新パレットから取得
+				$color_index = min( $level, count( $sampled_colors ) - 1 );
+				$color = $sampled_colors[ $color_index ] ?? '#cccccc';
+				
 				$legend_data[] = array(
 					'level' => $level,
 					'class' => 'hp-' . $level,
 					'min_price' => min( $level_prices ),
 					'max_price' => max( $level_prices ),
 					'count' => count( $level_prices ),
-					'color' => $this->getLevelColor( $level ),
+					'color' => $color,
 				);
 			}
 		}
@@ -172,27 +193,77 @@ class NS_Tour_Price_Heatmap {
 		return $legend_data;
 	}
 
-	public function getLevelColor( $level ) {
-		$colors = array(
-			0 => '#1a73e8', // 青（最安）
-			1 => '#2d87f0',
-			2 => '#4095f7',
-			3 => '#54a3ff',
-			4 => '#67b1ff',
-			5 => '#7bbfff', // 中間
-			6 => '#8ecd00', // 緑
-			7 => '#ff9f00', // オレンジ
-			8 => '#ff6d01', // 濃いオレンジ
-			9 => '#d73027', // 赤（最高）
-		);
-
-		return $colors[ $level ] ?? '#cccccc';
+	/**
+	 * 指定パレットから等間隔サンプリングで色を抽出
+	 *
+	 * @param array $palette 13色（安→高）
+	 * @param int $bins 実際に使う段数（<=13）
+	 * @return array bins 個の色（安→高）
+	 */
+	public static function samplePalette( array $palette, int $bins ): array {
+		$n = count( $palette );
+		if ( $bins <= 1 ) {
+			return array( $palette[0] );
+		}
+		if ( $bins >= $n ) {
+			return $palette;
+		}
+		
+		$out = array();
+		for ( $j = 0; $j < $bins; $j++ ) {
+			$idx = (int) round( $j * ( $n - 1 ) / ( $bins - 1 ) );
+			$out[] = $palette[ $idx ];
+		}
+		
+		// 端数で重複が出た場合のユニーク化（保守的に再計算）
+		$out = array_values( array_unique( $out ) );
+		while ( count( $out ) < $bins ) {
+			$out[] = end( $palette );
+		}
+		
+		return $out;
 	}
 
-	public function generateCssRules() {
+	/**
+	 * 新しい13色カスタムパレットを取得
+	 *
+	 * @return array 13色パレット（安→高）
+	 */
+	public function getCustomPalette(): array {
+		return array(
+			'#ADCCEB', '#ADE0EB', '#ADEBE0', '#ADEBCC', '#ADEBB3', '#C7EBAD',
+			'#EBEBAD', '#EBE0AD', '#EBD6AD', '#EBCCAD', '#EBBDAD', '#EBADAD', '#EAADC6'
+		);
+	}
+
+	public function getLevelColor( $level ) {
+		// 新しいカスタムパレットから10色を取得
+		$custom_palette = $this->getCustomPalette();
+		$sampled_colors = self::samplePalette( $custom_palette, 10 );
+		
+		return $sampled_colors[ $level ] ?? '#cccccc';
+	}
+
+	/**
+	 * 動的CSSルールを生成（新パレット対応）
+	 *
+	 * @param int $bins 実際のビン数（省略時は10）
+	 * @return string CSS文字列
+	 */
+	public function generateCssRules( $bins = null ) {
+		if ( null === $bins ) {
+			$bins = $this->levels;
+		}
+
+		// 新パレットから指定ビン数の色を取得
+		$custom_palette = $this->getCustomPalette();
+		$sampled_colors = self::samplePalette( $custom_palette, $bins );
+		
 		$css = '';
 		for ( $i = 0; $i < $this->levels; $i++ ) {
-			$color = $this->getLevelColor( $i );
+			$color_index = min( $i, count( $sampled_colors ) - 1 );
+			$color = $sampled_colors[ $color_index ];
+			
 			$css .= ".ns-tour-price-calendar .hp-{$i} {\n";
 			$css .= "  background-color: {$color};\n";
 			$css .= "  color: " . $this->getTextColor( $color ) . ";\n";

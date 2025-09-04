@@ -131,6 +131,21 @@ class NS_Tour_Price_Renderer {
 
 		ob_start();
 		?>
+		<?php
+		// 動的CSS生成（新パレット対応）
+		if ( $args['heatmap'] && ! empty( $calendar_data['legend'] ) ) {
+			echo '<style type="text/css">';
+			foreach ( $calendar_data['legend'] as $legend_item ) {
+				if ( isset( $legend_item['color'] ) ) {
+					$class = esc_attr( $legend_item['class'] );
+					$color = esc_attr( $legend_item['color'] );
+					$text_color = $this->getTextColor( $color );
+					echo ".ns-tour-price-calendar .{$class} { background-color: {$color}; color: {$text_color}; }\n";
+				}
+			}
+			echo '</style>';
+		}
+		?>
 		<div class="ns-tour-price-calendar" 
 			 data-tour="<?php echo esc_attr( $args['tour'] ); ?>"
 			 data-month="<?php echo esc_attr( $args['month'] ); ?>"
@@ -406,5 +421,21 @@ class NS_Tour_Price_Renderer {
 		<?php
 
 		return ob_get_clean();
+	}
+
+	/**
+	 * 背景色に基づいて適切なテキスト色を決定
+	 *
+	 * @param string $bg_color 背景色（#ffffff形式）
+	 * @return string テキスト色（#000000 または #ffffff）
+	 */
+	private function getTextColor( $bg_color ) {
+		$hex = ltrim( $bg_color, '#' );
+		$r = hexdec( substr( $hex, 0, 2 ) );
+		$g = hexdec( substr( $hex, 2, 2 ) );
+		$b = hexdec( substr( $hex, 4, 2 ) );
+
+		$brightness = ( ( $r * 299 ) + ( $g * 587 ) + ( $b * 114 ) ) / 1000;
+		return ( $brightness > 128 ) ? '#000000' : '#ffffff';
 	}
 }
