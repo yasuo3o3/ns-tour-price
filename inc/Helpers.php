@@ -343,4 +343,100 @@ class NS_Tour_Price_Helpers {
 
 		return $normalized;
 	}
+
+	/**
+	 * 日付文字列を YYYY-MM-DD 形式に正規化する
+	 * 対応フォーマット: YYYY/M/D, YYYY/MM/DD, YYYY-MM-D, YYYY-MM-DD など
+	 * 全角数字も半角化してから解析
+	 *
+	 * @param string $date_str 日付文字列
+	 * @return string|false 正規化された日付文字列（YYYY-MM-DD）、失敗時はfalse
+	 */
+	public static function normalize_date( $date_str ) {
+		if ( ! is_string( $date_str ) ) {
+			return false;
+		}
+
+		// 前後空白除去
+		$date_str = trim( $date_str );
+		if ( empty( $date_str ) ) {
+			return false;
+		}
+
+		// 全角数字→半角（NFKC正規化 or 手動変換）
+		if ( class_exists( 'Normalizer' ) ) {
+			$date_str = Normalizer::normalize( $date_str, Normalizer::FORM_KC );
+		} else {
+			// 手動で全角数字を半角数字に変換
+			$fullwidth_nums = array( '０', '１', '２', '３', '４', '５', '６', '７', '８', '９' );
+			$halfwidth_nums = array( '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' );
+			$date_str = str_replace( $fullwidth_nums, $halfwidth_nums, $date_str );
+			
+			// 全角記号も半角に変換
+			$fullwidth_symbols = array( '－', '／', '．' );
+			$halfwidth_symbols = array( '-', '/', '.' );
+			$date_str = str_replace( $fullwidth_symbols, $halfwidth_symbols, $date_str );
+		}
+
+		// 複数のフォーマットパターンを試行
+		$patterns = array(
+			'Y-m-d',      // 2025-4-15, 2025-04-15
+			'Y/m/d',      // 2025/4/15, 2025/04/15
+			'Y.m.d',      // 2025.4.15, 2025.04.15
+			'Y-n-j',      // 2025-4-5
+			'Y/n/j',      // 2025/4/5
+			'Y.n.j',      // 2025.4.5
+		);
+
+		foreach ( $patterns as $pattern ) {
+			$date = DateTime::createFromFormat( $pattern, $date_str );
+			if ( false !== $date && $date->format( $pattern ) === $date_str ) {
+				// 年が4桁でない場合は無効として扱う
+				$year = (int) $date->format( 'Y' );
+				if ( $year >= 1900 && $year <= 2100 ) {
+					return $date->format( 'Y-m-d' );
+				}
+			}
+		}
+
+		// DateTime::createFromFormatで失敗した場合、strtotimeで最後のトライ
+		// ただし、明らかに2桁年のパターンは除外する
+		if ( ! preg_match( '/^\d{2}[-\/\.]\d{1,2}[-\/\.]\d{1,2}$/', $date_str ) ) {
+			$timestamp = strtotime( $date_str );
+			if ( false !== $timestamp ) {
+				$date = new DateTime();
+				$date->setTimestamp( $timestamp );
+				
+				// 妥当な日付範囲内かチェック（1900-2100年）
+				$year = (int) $date->format( 'Y' );
+				if ( $year >= 1900 && $year <= 2100 ) {
+					return $date->format( 'Y-m-d' );
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * 日付範囲の妥当性をチェック
+	 *
+	 * @param string $start_date YYYY-MM-DD形式の開始日
+	 * @param string $end_date YYYY-MM-DD形式の終了日
+	 * @return bool 開始日 <= 終了日 の場合true
+	 */
+	public static function validate_date_range( $start_date, $end_date ) {
+		if ( false === $start_date || false === $end_date ) {
+			return false;
+		}
+
+		$start = DateTime::createFromFormat( 'Y-m-d', $start_date );
+		$end = DateTime::createFromFormat( 'Y-m-d', $end_date );
+
+		if ( false === $start || false === $end ) {
+			return false;
+		}
+
+		return $start <= $end;
+	}
 }

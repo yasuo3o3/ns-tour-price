@@ -98,22 +98,102 @@ class NS_Tour_Price_DataSourceCsv implements NS_Tour_Price_DataSourceInterface {
 
 		$data = $this->readCsvFile( 'seasons.csv' );
 		$result = array();
+		$parse_stats = array(
+			'total' => 0,
+			'ok' => 0,
+			'failed' => 0,
+			'failed_examples' => array(),
+		);
 
 		foreach ( $data as $row ) {
 			if ( ! isset( $row['tour_id'] ) || $row['tour_id'] !== $tour_id ) {
 				continue;
 			}
 
+			$parse_stats['total']++;
+			$raw_start = $row['date_start'] ?? '';
+			$raw_end = $row['date_end'] ?? '';
+
+			// 日付正規化を実行
+			$normalized_start = NS_Tour_Price_Helpers::normalize_date( $raw_start );
+			$normalized_end = NS_Tour_Price_Helpers::normalize_date( $raw_end );
+
 			$season = array(
 				'tour_id' => sanitize_text_field( $row['tour_id'] ),
 				'season_code' => sanitize_text_field( $row['season_code'] ),
 				'label' => sanitize_text_field( $row['label'] ),
-				'date_start' => sanitize_text_field( $row['date_start'] ),
-				'date_end' => sanitize_text_field( $row['date_end'] ),
+				'date_start' => $normalized_start,
+				'date_end' => $normalized_end,
 			);
 
+			// 日付正規化チェック
+			if ( false === $normalized_start || false === $normalized_end ) {
+				$parse_stats['failed']++;
+				if ( count( $parse_stats['failed_examples'] ) < 3 ) {
+					$parse_stats['failed_examples'][] = array(
+						'tour_id' => $row['tour_id'],
+						'season_code' => $row['season_code'] ?? '',
+						'raw_date_start' => $raw_start,
+						'raw_date_end' => $raw_end,
+						'reason' => 'date_parse_failed',
+					);
+				}
+				continue;
+			}
+
+			// 日付範囲の妥当性チェック
+			if ( ! NS_Tour_Price_Helpers::validate_date_range( $normalized_start, $normalized_end ) ) {
+				$parse_stats['failed']++;
+				if ( count( $parse_stats['failed_examples'] ) < 3 ) {
+					$parse_stats['failed_examples'][] = array(
+						'tour_id' => $row['tour_id'],
+						'season_code' => $row['season_code'] ?? '',
+						'raw_date_start' => $raw_start,
+						'raw_date_end' => $raw_end,
+						'reason' => 'invalid_date_range',
+					);
+				}
+				continue;
+			}
+
+			// その他の妥当性チェック
 			if ( $this->validateSeasonData( $season ) ) {
 				$result[] = $season;
+				$parse_stats['ok']++;
+			} else {
+				$parse_stats['failed']++;
+				if ( count( $parse_stats['failed_examples'] ) < 3 ) {
+					$parse_stats['failed_examples'][] = array(
+						'tour_id' => $row['tour_id'],
+						'season_code' => $row['season_code'] ?? '',
+						'raw_date_start' => $raw_start,
+						'raw_date_end' => $raw_end,
+						'reason' => 'validation_failed',
+					);
+				}
+			}
+		}
+
+		// パース結果の統計ログ
+		if ( $parse_stats['total'] > 0 ) {
+			$this->log( sprintf( 
+				'NS Tour Price: seasons parsed rows = %d/%d, failed=%d for tour=%s',
+				$parse_stats['ok'],
+				$parse_stats['total'],
+				$parse_stats['failed'],
+				$tour_id
+			), 'info' );
+
+			// 失敗例をサンプル出力（最大3件）
+			foreach ( $parse_stats['failed_examples'] as $example ) {
+				$this->log( sprintf( 
+					'NS Tour Price: seasons parse failed example - tour_id=%s, season_code=%s, raw_start=%s, raw_end=%s, reason=%s',
+					$example['tour_id'],
+					$example['season_code'],
+					$example['raw_date_start'],
+					$example['raw_date_end'],
+					$example['reason']
+				), 'warning' );
 			}
 		}
 
@@ -261,10 +341,41 @@ class NS_Tour_Price_DataSourceCsv implements NS_Tour_Price_DataSourceInterface {
 		$is_available = $seasons_exists && $prices_exists;
 		
 		if ( ! $is_available ) {
-			$this->log( 'NS Tour Price: DataSource not available - missing required CSV files', 'error' );
+			// 失敗理由の詳細分類
+			$failure_reason = $this->getAvailabilityFailureReason( $found_files, $missing_files );
+			$this->log( sprintf( 'NS Tour Price: DataSource not available - %s', $failure_reason ), 'error' );
 		}
 
 		return $is_available;
+	}
+
+	/**
+	 * データソース利用不可の理由を詳細分類して取得
+	 *
+	 * @param array $found_files 見つかったファイル一覧
+	 * @param array $missing_files 見つからないファイル一覧
+	 * @return string 失敗理由の分類メッセージ
+	 */
+	private function getAvailabilityFailureReason( $found_files, $missing_files ) {
+		$required_files = array( 'seasons.csv', 'base_prices.csv' );
+		$missing_required = array();
+
+		foreach ( $required_files as $file ) {
+			if ( ! isset( $found_files[ $file ] ) ) {
+				$missing_required[] = $file;
+			}
+		}
+
+		if ( count( $missing_required ) === 2 ) {
+			return 'missing_csv_data (both seasons.csv and base_prices.csv not found)';
+		} elseif ( in_array( 'seasons.csv', $missing_required, true ) ) {
+			return 'missing_csv_data (seasons.csv not found)';
+		} elseif ( in_array( 'base_prices.csv', $missing_required, true ) ) {
+			return 'missing_csv_data (base_prices.csv not found)';
+		}
+
+		// ここに来ることは通常ないが、念のため
+		return 'missing_csv_data (unknown required file missing)';
 	}
 
 	/**
