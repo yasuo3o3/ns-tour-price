@@ -4,8 +4,8 @@
  * Plugin URI: https://github.com/ns-tech/ns-tour_price
  * Description: Base44風のツアー価格カレンダーを表示するWordPressプラグイン。CSV二段階探索とヒートマップ表示に対応。
  * Version: 1.0.0
- * Author: NS Tech
- * Author URI: https://ns-tech.co.jp
+ * Author: Netservice
+ * Author URI: https://netservice.jp/
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: ns-tour_price
