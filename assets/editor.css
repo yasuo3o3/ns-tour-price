@@ -1,0 +1,260 @@
+/**
+ * NS Tour Price Calendar - Editor Styles
+ * Gutenbergエディタ用のスタイル
+ */
+
+/* ==== ブロックエディタ全体 ==== */
+.ns-tour-price-block-editor {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+    background: white;
+}
+
+.block-editor-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 16px 20px;
+    text-align: center;
+}
+
+.block-editor-header h4 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.block-editor-header p {
+    margin: 0;
+    font-size: 13px;
+    opacity: 0.9;
+}
+
+/* ==== プレースホルダー ==== */
+.block-editor-placeholder {
+    padding: 40px 20px;
+    text-align: center;
+    background: #f7fafc;
+    color: #4a5568;
+}
+
+.block-editor-placeholder__label {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #2d3748;
+}
+
+.block-editor-placeholder__instructions {
+    font-size: 14px;
+    color: #718096;
+}
+
+/* ==== エラー表示 ==== */
+.block-editor-error {
+    padding: 20px;
+    background: #fff5f5;
+    border: 1px solid #feb2b2;
+    margin: 16px;
+    border-radius: 6px;
+}
+
+.block-editor-error h5 {
+    margin: 0 0 12px 0;
+    color: #c53030;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.block-editor-error p {
+    margin: 0 0 12px 0;
+    color: #c53030;
+}
+
+.block-editor-error details {
+    margin-top: 12px;
+}
+
+.block-editor-error summary {
+    cursor: pointer;
+    font-weight: 500;
+    color: #2d3748;
+    margin-bottom: 8px;
+}
+
+.block-editor-error pre {
+    background: #1a202c;
+    color: #f7fafc;
+    padding: 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    overflow-x: auto;
+    margin: 0;
+}
+
+/* ==== ローディング ==== */
+.block-editor-loading {
+    padding: 40px 20px;
+    text-align: center;
+    background: #f7fafc;
+}
+
+.block-editor-loading .spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid #e2e8f0;
+    border-top: 3px solid #3182ce;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 16px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.block-editor-loading p {
+    margin: 0;
+    color: #4a5568;
+    font-size: 14px;
+}
+
+/* ==== インスペクターコントロール ==== */
+.components-panel__body-toggle {
+    font-weight: 600;
+}
+
+.components-base-control__label {
+    font-weight: 500;
+    color: #1e293b;
+}
+
+.components-base-control__help {
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 4px;
+}
+
+/* カスタムコントロールスタイル */
+.components-toggle-control .components-base-control__field {
+    margin-bottom: 8px;
+}
+
+.components-select-control__input {
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+}
+
+.components-select-control__input:focus {
+    border-color: #3182ce;
+    box-shadow: 0 0 0 1px #3182ce;
+}
+
+/* ==== カレンダープレビュー（エディタ内） ==== */
+.wp-block-ns-tour-price-price-calendar {
+    margin: 16px 0;
+}
+
+/* エディタ内でのカレンダー表示調整 */
+.block-editor-block-list__layout .ns-tour-price-calendar {
+    max-width: 100%;
+}
+
+.block-editor-block-list__layout .calendar-day {
+    min-height: 60px;
+}
+
+.block-editor-block-list__layout .day-price {
+    font-size: 11px;
+}
+
+/* ==== 選択状態のスタイル ==== */
+.wp-block-ns-tour-price-price-calendar.is-selected {
+    box-shadow: 0 0 0 1px #007cba;
+}
+
+.wp-block-ns-tour-price-price-calendar.is-hovered {
+    box-shadow: 0 0 0 1px #007cba;
+}
+
+/* ==== レスポンシブ（エディタ） ==== */
+@media (max-width: 782px) {
+    .block-editor-header {
+        padding: 12px 16px;
+    }
+    
+    .block-editor-header h4 {
+        font-size: 16px;
+    }
+    
+    .block-editor-header p {
+        font-size: 12px;
+    }
+    
+    .block-editor-placeholder {
+        padding: 30px 16px;
+    }
+    
+    .block-editor-placeholder__label {
+        font-size: 14px;
+    }
+    
+    .block-editor-placeholder__instructions {
+        font-size: 13px;
+    }
+}
+
+/* ==== アクセシビリティ（エディタ） ==== */
+@media (prefers-reduced-motion: reduce) {
+    .block-editor-loading .spinner {
+        animation: none;
+        border-top-color: #3182ce;
+        opacity: 0.5;
+    }
+}
+
+/* フォーカス表示の改善 */
+.components-select-control__input:focus,
+.components-text-control__input:focus,
+.components-toggle-control__input:focus {
+    outline: 2px solid #007cba;
+    outline-offset: 2px;
+}
+
+/* ==== カスタムセクション ==== */
+.ns-tour-price-inspector-section {
+    padding: 16px 0;
+}
+
+.ns-tour-price-inspector-section:not(:last-child) {
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.ns-tour-price-inspector-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0 0 12px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* ツールチップスタイル */
+.components-tooltip {
+    font-size: 12px;
+}
+
+/* ヘルプテキストのスタイル改善 */
+.components-base-control__help {
+    line-height: 1.4;
+    margin-top: 6px;
+}
+
+.components-base-control__help code {
+    background: #f1f5f9;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 11px;
+    color: #475569;
+}

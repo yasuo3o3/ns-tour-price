@@ -1,0 +1,362 @@
+<?php
+/**
+ * Admin Interface
+ *
+ * @package NS_Tour_Price
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+class NS_Tour_Price_Admin {
+
+	private $repo;
+
+	public function __construct() {
+		$this->repo = NS_Tour_Price_Repo::getInstance();
+		$this->hooks();
+	}
+
+	private function hooks() {
+		add_action( 'admin_menu', array( $this, 'addAdminMenu' ) );
+		add_action( 'admin_init', array( $this, 'adminInit' ) );
+		add_action( 'wp_ajax_ns_tour_price_clear_cache', array( $this, 'ajaxClearCache' ) );
+		add_action( 'wp_ajax_ns_tour_price_test_data', array( $this, 'ajaxTestData' ) );
+	}
+
+	public function addAdminMenu() {
+		add_management_page(
+			__( 'NS Tour Price Settings', 'ns-tour_price' ),
+			__( 'NS Tour Price', 'ns-tour_price' ),
+			'manage_options',
+			'ns-tour-price',
+			array( $this, 'adminPage' )
+		);
+	}
+
+	public function adminInit() {
+		register_setting( 'ns_tour_price_settings', 'ns_tour_price_options', array( $this, 'sanitizeOptions' ) );
+
+		add_settings_section(
+			'ns_tour_price_general',
+			__( 'General Settings', 'ns-tour_price' ),
+			array( $this, 'generalSectionCallback' ),
+			'ns_tour_price_settings'
+		);
+
+		add_settings_field(
+			'data_source',
+			__( 'Data Source', 'ns-tour_price' ),
+			array( $this, 'dataSourceFieldCallback' ),
+			'ns_tour_price_settings',
+			'ns_tour_price_general'
+		);
+
+		add_settings_field(
+			'week_start',
+			__( 'Week Starts On', 'ns-tour_price' ),
+			array( $this, 'weekStartFieldCallback' ),
+			'ns_tour_price_settings',
+			'ns_tour_price_general'
+		);
+
+		add_settings_field(
+			'confirmed_badge_enabled',
+			__( 'Show Confirmed Badges', 'ns-tour_price' ),
+			array( $this, 'confirmedBadgeFieldCallback' ),
+			'ns_tour_price_settings',
+			'ns_tour_price_general'
+		);
+
+		add_settings_field(
+			'cache_expiry',
+			__( 'Cache Expiry (seconds)', 'ns-tour_price' ),
+			array( $this, 'cacheExpiryFieldCallback' ),
+			'ns_tour_price_settings',
+			'ns_tour_price_general'
+		);
+	}
+
+	public function adminPage() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		if ( isset( $_GET['settings-updated'] ) ) {
+			add_settings_error(
+				'ns_tour_price_messages',
+				'ns_tour_price_message',
+				__( 'Settings saved.', 'ns-tour_price' ),
+				'updated'
+			);
+		}
+
+		$data_source_info = $this->repo->getDataSourceInfo();
+		$is_data_available = $this->repo->isDataAvailable();
+		?>
+		<div class="wrap">
+			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
+			
+			<?php settings_errors( 'ns_tour_price_messages' ); ?>
+
+			<div class="notice notice-info">
+				<p><strong><?php esc_html_e( 'Data Source Status:', 'ns-tour_price' ); ?></strong></p>
+				<?php if ( $is_data_available ) : ?>
+					<p style="color: green;">
+						✅ <?php printf( esc_html__( 'Active: %s', 'ns-tour_price' ), esc_html( $data_source_info['active'] ) ); ?>
+					</p>
+				<?php else : ?>
+					<p style="color: red;">
+						❌ <?php esc_html_e( 'No data source available. Please check CSV files.', 'ns-tour_price' ); ?>
+					</p>
+				<?php endif; ?>
+				
+				<details>
+					<summary><?php esc_html_e( 'Show all data sources', 'ns-tour_price' ); ?></summary>
+					<ul>
+					<?php foreach ( $data_source_info['all'] as $key => $info ) : ?>
+						<li>
+							<?php echo esc_html( $info['name'] ); ?>: 
+							<?php if ( $info['available'] ) : ?>
+								<span style="color: green;"><?php esc_html_e( 'Available', 'ns-tour_price' ); ?></span>
+							<?php else : ?>
+								<span style="color: red;"><?php esc_html_e( 'Not available', 'ns-tour_price' ); ?></span>
+							<?php endif; ?>
+						</li>
+					<?php endforeach; ?>
+					</ul>
+				</details>
+			</div>
+
+			<div class="notice notice-warning">
+				<p><strong><?php esc_html_e( 'CSV File Locations:', 'ns-tour_price' ); ?></strong></p>
+				<ol>
+					<li><code><?php echo esc_html( NS_TOUR_PRICE_PLUGIN_DIR . 'data/' ); ?></code> (<?php esc_html_e( 'Priority', 'ns-tour_price' ); ?>)</li>
+					<li><code><?php echo esc_html( wp_upload_dir()['basedir'] . '/ns-tour_price/' ); ?></code> (<?php esc_html_e( 'Fallback', 'ns-tour_price' ); ?>)</li>
+				</ol>
+			</div>
+
+			<form action="options.php" method="post">
+				<?php
+				settings_fields( 'ns_tour_price_settings' );
+				do_settings_sections( 'ns_tour_price_settings' );
+				submit_button();
+				?>
+			</form>
+
+			<hr>
+
+			<h2><?php esc_html_e( 'Tools', 'ns-tour_price' ); ?></h2>
+			
+			<div class="card">
+				<h3><?php esc_html_e( 'Cache Management', 'ns-tour_price' ); ?></h3>
+				<p><?php esc_html_e( 'Clear all cached data to force reload from CSV files.', 'ns-tour_price' ); ?></p>
+				<button type="button" class="button button-secondary" id="clear-cache-btn">
+					<?php esc_html_e( 'Clear Cache', 'ns-tour_price' ); ?>
+				</button>
+				<span id="cache-status"></span>
+			</div>
+
+			<div class="card">
+				<h3><?php esc_html_e( 'Data Test', 'ns-tour_price' ); ?></h3>
+				<p><?php esc_html_e( 'Test data loading for a specific tour ID.', 'ns-tour_price' ); ?></p>
+				<input type="text" id="test-tour-id" placeholder="A1" value="A1">
+				<button type="button" class="button button-secondary" id="test-data-btn">
+					<?php esc_html_e( 'Test Data', 'ns-tour_price' ); ?>
+				</button>
+				<div id="test-results" style="margin-top: 10px;"></div>
+			</div>
+
+			<hr>
+
+			<h2><?php esc_html_e( 'Usage Examples', 'ns-tour_price' ); ?></h2>
+			
+			<div class="card">
+				<h3><?php esc_html_e( 'Shortcode', 'ns-tour_price' ); ?></h3>
+				<code>[tour_price tour="A1" month="2024-07" duration="4" heatmap="true" show_legend="true"]</code>
+				
+				<h3><?php esc_html_e( 'Block', 'ns-tour_price' ); ?></h3>
+				<p><?php esc_html_e( 'Search for "ツアー価格カレンダー" in the block editor.', 'ns-tour_price' ); ?></p>
+			</div>
+		</div>
+
+		<script type="text/javascript">
+		document.addEventListener('DOMContentLoaded', function() {
+			const clearCacheBtn = document.getElementById('clear-cache-btn');
+			const cacheStatus = document.getElementById('cache-status');
+			const testDataBtn = document.getElementById('test-data-btn');
+			const testResults = document.getElementById('test-results');
+
+			clearCacheBtn.addEventListener('click', function() {
+				clearCacheBtn.disabled = true;
+				cacheStatus.innerHTML = '⏳ Clearing...';
+
+				fetch(ajaxurl, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+					body: 'action=ns_tour_price_clear_cache&nonce=' + encodeURIComponent('<?php echo wp_create_nonce( "ns_tour_price_clear_cache" ); ?>')
+				})
+				.then(response => response.json())
+				.then(data => {
+					if (data.success) {
+						cacheStatus.innerHTML = '<span style="color: green;">✅ Cache cleared successfully!</span>';
+					} else {
+						cacheStatus.innerHTML = '<span style="color: red;">❌ Failed to clear cache</span>';
+					}
+					clearCacheBtn.disabled = false;
+					setTimeout(() => { cacheStatus.innerHTML = ''; }, 3000);
+				})
+				.catch(error => {
+					cacheStatus.innerHTML = '<span style="color: red;">❌ Error occurred</span>';
+					clearCacheBtn.disabled = false;
+					setTimeout(() => { cacheStatus.innerHTML = ''; }, 3000);
+				});
+			});
+
+			testDataBtn.addEventListener('click', function() {
+				const tourId = document.getElementById('test-tour-id').value;
+				if (!tourId) {
+					alert('Please enter a tour ID');
+					return;
+				}
+
+				testDataBtn.disabled = true;
+				testResults.innerHTML = '⏳ Testing...';
+
+				fetch(ajaxurl, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+					body: 'action=ns_tour_price_test_data&tour_id=' + encodeURIComponent(tourId) + '&nonce=' + encodeURIComponent('<?php echo wp_create_nonce( "ns_tour_price_test_data" ); ?>')
+				})
+				.then(response => response.json())
+				.then(data => {
+					if (data.success) {
+						testResults.innerHTML = '<pre style="background: #f1f1f1; padding: 10px; border-radius: 4px; overflow-x: auto;">' + 
+							JSON.stringify(data.data, null, 2) + '</pre>';
+					} else {
+						testResults.innerHTML = '<div style="color: red;">❌ ' + (data.data || 'Test failed') + '</div>';
+					}
+					testDataBtn.disabled = false;
+				})
+				.catch(error => {
+					testResults.innerHTML = '<div style="color: red;">❌ Error occurred</div>';
+					testDataBtn.disabled = false;
+				});
+			});
+		});
+		</script>
+		<?php
+	}
+
+	public function generalSectionCallback() {
+		echo '<p>' . esc_html__( 'Configure the basic settings for NS Tour Price Calendar.', 'ns-tour_price' ) . '</p>';
+	}
+
+	public function dataSourceFieldCallback() {
+		$options = get_option( 'ns_tour_price_options', array() );
+		$current = $options['data_source'] ?? 'csv';
+		$sources = $this->repo->getDataSourceInfo()['all'];
+		?>
+		<select name="ns_tour_price_options[data_source]">
+			<?php foreach ( $sources as $key => $info ) : ?>
+				<option value="<?php echo esc_attr( $key ); ?>" <?php selected( $current, $key ); ?>>
+					<?php echo esc_html( $info['name'] ); ?>
+					<?php if ( ! $info['available'] ) : ?>
+						(<?php esc_html_e( 'Not Available', 'ns-tour_price' ); ?>)
+					<?php endif; ?>
+				</option>
+			<?php endforeach; ?>
+		</select>
+		<?php
+	}
+
+	public function weekStartFieldCallback() {
+		$options = get_option( 'ns_tour_price_options', array() );
+		$current = $options['week_start'] ?? 'sunday';
+		?>
+		<select name="ns_tour_price_options[week_start]">
+			<option value="sunday" <?php selected( $current, 'sunday' ); ?>><?php esc_html_e( 'Sunday', 'ns-tour_price' ); ?></option>
+			<option value="monday" <?php selected( $current, 'monday' ); ?>><?php esc_html_e( 'Monday', 'ns-tour_price' ); ?></option>
+		</select>
+		<?php
+	}
+
+	public function confirmedBadgeFieldCallback() {
+		$options = get_option( 'ns_tour_price_options', array() );
+		$current = $options['confirmed_badge_enabled'] ?? false;
+		?>
+		<input type="checkbox" name="ns_tour_price_options[confirmed_badge_enabled]" value="1" <?php checked( $current ); ?>>
+		<span><?php esc_html_e( 'Show confirmed booking badges when daily_flags.csv is available', 'ns-tour_price' ); ?></span>
+		<?php
+	}
+
+	public function cacheExpiryFieldCallback() {
+		$options = get_option( 'ns_tour_price_options', array() );
+		$current = $options['cache_expiry'] ?? 3600;
+		?>
+		<input type="number" name="ns_tour_price_options[cache_expiry]" value="<?php echo esc_attr( $current ); ?>" min="300" max="86400">
+		<span><?php esc_html_e( '(300-86400 seconds)', 'ns-tour_price' ); ?></span>
+		<?php
+	}
+
+	public function sanitizeOptions( $input ) {
+		$sanitized = array();
+		
+		if ( isset( $input['data_source'] ) ) {
+			$sanitized['data_source'] = sanitize_key( $input['data_source'] );
+		}
+
+		if ( isset( $input['week_start'] ) ) {
+			$sanitized['week_start'] = in_array( $input['week_start'], array( 'sunday', 'monday' ) ) 
+				? $input['week_start'] : 'sunday';
+		}
+
+		$sanitized['confirmed_badge_enabled'] = ! empty( $input['confirmed_badge_enabled'] );
+
+		if ( isset( $input['cache_expiry'] ) ) {
+			$cache_expiry = intval( $input['cache_expiry'] );
+			$sanitized['cache_expiry'] = max( 300, min( 86400, $cache_expiry ) );
+		}
+
+		return $sanitized;
+	}
+
+	public function ajaxClearCache() {
+		if ( ! wp_verify_nonce( $_POST['nonce'], 'ns_tour_price_clear_cache' ) ) {
+			wp_send_json_error( 'Invalid nonce' );
+		}
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( 'Insufficient permissions' );
+		}
+
+		$this->repo->clearCache();
+		wp_send_json_success( 'Cache cleared successfully' );
+	}
+
+	public function ajaxTestData() {
+		if ( ! wp_verify_nonce( $_POST['nonce'], 'ns_tour_price_test_data' ) ) {
+			wp_send_json_error( 'Invalid nonce' );
+		}
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( 'Insufficient permissions' );
+		}
+
+		$tour_id = sanitize_text_field( $_POST['tour_id'] );
+		if ( empty( $tour_id ) ) {
+			wp_send_json_error( 'Tour ID required' );
+		}
+
+		$test_data = array(
+			'tour_id' => $tour_id,
+			'seasons' => $this->repo->getSeasons( $tour_id ),
+			'prices' => $this->repo->getBasePrices( $tour_id ),
+			'flags' => $this->repo->getDailyFlags( $tour_id ),
+			'data_source' => $this->repo->getDataSourceInfo(),
+		);
+
+		wp_send_json_success( $test_data );
+	}
+}

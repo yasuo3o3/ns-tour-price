@@ -1,0 +1,37 @@
+<?php
+/**
+ * Google Sheets Data Source Implementation (Stub)
+ *
+ * @package NS_Tour_Price
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+class NS_Tour_Price_DataSourceSheets implements NS_Tour_Price_DataSourceInterface {
+
+	public function getSeasons( $tour_id ) {
+		// Google Sheets実装は将来のバージョンで対応予定
+		return array();
+	}
+
+	public function getBasePrices( $tour_id ) {
+		// Google Sheets実装は将来のバージョンで対応予定
+		return array();
+	}
+
+	public function getDailyFlags( $tour_id ) {
+		// Google Sheets実装は将来のバージョンで対応予定
+		return array();
+	}
+
+	public function isAvailable() {
+		// Google Sheets実装は将来のバージョンで対応予定
+		return false;
+	}
+
+	public function getName() {
+		return __( 'Google Sheets', 'ns-tour_price' );
+	}
+}

@@ -1,0 +1,44 @@
+{
+  "apiVersion": 3,
+  "name": "ns-tour_price/price-calendar",
+  "title": "ツアー価格カレンダー",
+  "category": "widgets",
+  "icon": "calendar",
+  "description": "ツアーID・月・日数に応じた価格カレンダーを表示します。",
+  "textdomain": "ns-tour_price",
+  "supports": { 
+    "html": false,
+    "anchor": true,
+    "align": true
+  },
+  "attributes": {
+    "tour": { 
+      "type": "string", 
+      "default": "A1" 
+    },
+    "month": { 
+      "type": "string", 
+      "default": "" 
+    },
+    "duration": { 
+      "type": "number", 
+      "default": 4 
+    },
+    "showLegend": { 
+      "type": "boolean", 
+      "default": true 
+    },
+    "confirmedOnly": { 
+      "type": "boolean", 
+      "default": false 
+    },
+    "heatmap": { 
+      "type": "boolean", 
+      "default": true 
+    }
+  },
+  "editorScript": "file:./edit.js",
+  "style": "file:../../assets/style.css",
+  "editorStyle": "file:../../assets/editor.css",
+  "render": "ns_tour_price_render_block"
+}

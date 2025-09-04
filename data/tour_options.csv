@@ -1,0 +1,9 @@
+tour_id,option_id,option_label,price_min,price_max,show_price,description,image_url,affects_total
+A1,SINGLE_ROOM,シングル利用,15000,25000,true,お一人様でのお部屋利用追加料金,https://example.com/single.jpg,true
+A1,INSURANCE,旅行保険,3000,5000,true,安心の旅行保険,https://example.com/insurance.jpg,true
+A1,RENTAL_GEAR,レンタル品,3000,4000,true,登山用具レンタル,https://example.com/gear.jpg,true
+B2,SINGLE_ROOM,シングル利用,12000,20000,true,お一人様でのお部屋利用追加料金,https://example.com/single.jpg,true
+B2,MEAL_UPGRADE,お食事アップグレード,5000,8000,true,特別なお食事プランにアップグレード,https://example.com/meal.jpg,true
+B2,INSURANCE,旅行保険,3000,5000,true,安心の旅行保険,https://example.com/insurance.jpg,true
+C3,SINGLE_ROOM,シングル利用,10000,18000,true,お一人様でのお部屋利用追加料金,https://example.com/single.jpg,true
+C3,GUIDE_SERVICE,ガイドサービス,8000,12000,true,専門ガイドによる案内サービス,https://example.com/guide.jpg,true
