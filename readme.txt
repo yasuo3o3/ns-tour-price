@@ -1,6 +1,6 @@
 === NS Tour Price Calendar ===
-Contributors: NS Tech
-Donate link: https://ns-tech.co.jp/donate/
+Author: Netservice
+Author URI: https://netservice.jp/
 Tags: tour, price, calendar, travel, booking, heatmap
 Requires at least: 6.0
 Tested up to: 6.4
