@@ -1,4 +1,4 @@
-tour_id,option_id,option_label,price_min,price_max,show_price,description,image_url,affects_total
+﻿tour_id,option_id,option_label,price_min,price_max,show_price,description,image_url,affects_total
 A1,SINGLE_ROOM,シングル利用,15000,25000,true,お一人様でのお部屋利用追加料金,https://example.com/single.jpg,true
 A1,INSURANCE,旅行保険,3000,5000,true,安心の旅行保険,https://example.com/insurance.jpg,true
 A1,RENTAL_GEAR,レンタル品,3000,4000,true,登山用具レンタル,https://example.com/gear.jpg,true
