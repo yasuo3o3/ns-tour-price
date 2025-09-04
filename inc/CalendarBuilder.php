@@ -50,10 +50,25 @@ class NS_Tour_Price_CalendarBuilder {
 
 		$calendar_days = $this->buildCalendarDays( $month_data, $args );
 		$heatmap_classes = array();
+		$legend = array();
 		
 		if ( $args['heatmap'] ) {
-			$prices = $this->extractPrices( $calendar_days );
-			$heatmap_classes = $this->heatmap->generateHeatmapClasses( $prices );
+			// 全期間の価格を取得
+			$all_prices = $this->repo->getAllPricesFor( $args['tour'], $args['duration'] );
+			
+			if ( ! empty( $all_prices ) ) {
+				$global_min = min( $all_prices );
+				$global_max = max( $all_prices );
+				
+				// 当月の価格を抽出
+				$monthly_prices = $this->extractPrices( $calendar_days );
+				
+				// 全期間スケールでヒートマップクラスを生成
+				$heatmap_classes = $this->heatmap->generateHeatmapClasses( $monthly_prices, $global_min, $global_max );
+				
+				// 全期間価格を基準とした凡例を生成
+				$legend = $this->buildGlobalLegend( $all_prices, $global_min, $global_max );
+			}
 		}
 
 		return array(
@@ -61,7 +76,7 @@ class NS_Tour_Price_CalendarBuilder {
 			'days' => $calendar_days,
 			'heatmap_classes' => $heatmap_classes,
 			'args' => $args,
-			'legend' => $this->buildLegend( $calendar_days, $heatmap_classes ),
+			'legend' => $legend,
 			'invalid_season_codes' => $invalid_season_codes,
 		);
 	}
@@ -194,6 +209,38 @@ class NS_Tour_Price_CalendarBuilder {
 				$class_num = $heatmap_classes[ $day['price'] ] ?? 0;
 				$prices_with_classes[ $class_num ][] = $day['price'];
 			}
+		}
+
+		$legend = array();
+		for ( $i = 0; $i <= 9; $i++ ) {
+			if ( isset( $prices_with_classes[ $i ] ) ) {
+				$prices = $prices_with_classes[ $i ];
+				$legend[] = array(
+					'class' => 'hp-' . $i,
+					'min_price' => min( $prices ),
+					'max_price' => max( $prices ),
+					'formatted_min' => $this->formatPrice( min( $prices ) ),
+					'formatted_max' => $this->formatPrice( max( $prices ) ),
+				);
+			}
+		}
+
+		return $legend;
+	}
+
+	private function buildGlobalLegend( $all_prices, $global_min, $global_max ) {
+		if ( empty( $all_prices ) ) {
+			return array();
+		}
+
+		// 全期間価格でヒートマップクラスを生成
+		$global_classes = $this->heatmap->generateHeatmapClasses( $all_prices, $global_min, $global_max );
+		
+		// 価格とクラスレベルのマッピングを作成
+		$prices_with_classes = array();
+		foreach ( $all_prices as $price ) {
+			$class_num = $global_classes[ $price ] ?? 0;
+			$prices_with_classes[ $class_num ][] = $price;
 		}
 
 		$legend = array();

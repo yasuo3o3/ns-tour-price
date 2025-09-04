@@ -213,6 +213,45 @@ A2,6,26000</pre>
 
 			<hr>
 
+			<h2><?php esc_html_e( 'CSV データ書式', 'ns-tour_price' ); ?></h2>
+
+			<div class="card">
+				<h3><?php esc_html_e( 'seasons.csv の日付書式', 'ns-tour_price' ); ?></h3>
+				<p><?php esc_html_e( 'date_start、date_end 列で使用できる日付書式は以下の通りです。', 'ns-tour_price' ); ?></p>
+				
+				<p><strong><?php esc_html_e( '推奨書式:', 'ns-tour_price' ); ?></strong></p>
+				<ul>
+					<li><code>YYYY-MM-DD</code> <?php esc_html_e( '（例: 2025-04-15）', 'ns-tour_price' ); ?></li>
+				</ul>
+
+				<p><strong><?php esc_html_e( '受入可能書式:', 'ns-tour_price' ); ?></strong></p>
+				<ul>
+					<li><code>YYYY/M/D</code> <?php esc_html_e( '（例: 2025/4/15）', 'ns-tour_price' ); ?></li>
+					<li><code>YYYY/MM/DD</code> <?php esc_html_e( '（例: 2025/04/15）', 'ns-tour_price' ); ?></li>
+					<li><code>YYYY-M-D</code> <?php esc_html_e( '（例: 2025-4-15）', 'ns-tour_price' ); ?></li>
+					<li><code>YYYY.M.D</code> <?php esc_html_e( '（例: 2025.4.15）', 'ns-tour_price' ); ?></li>
+				</ul>
+
+				<p><strong><?php esc_html_e( '自動正規化機能:', 'ns-tour_price' ); ?></strong></p>
+				<ul>
+					<li><?php esc_html_e( '全角数字・記号も半角に変換（２０２５－０４－１５ → 2025-04-15）', 'ns-tour_price' ); ?></li>
+					<li><?php esc_html_e( 'すべて内部では YYYY-MM-DD 形式で処理される', 'ns-tour_price' ); ?></li>
+					<li><?php esc_html_e( 'パース失敗時は error_log に詳細な統計情報を出力', 'ns-tour_price' ); ?></li>
+				</ul>
+			</div>
+
+			<div class="card">
+				<h3><?php esc_html_e( 'ヒートマップ・凡例の価格範囲', 'ns-tour_price' ); ?></h3>
+				<p><?php esc_html_e( 'カレンダーのヒートマップと凡例は「全期間（全シーズン）」を基準に計算されます。', 'ns-tour_price' ); ?></p>
+				<ul>
+					<li><?php esc_html_e( '同一 tour_id × duration_days の全ての base_prices から価格範囲を決定', 'ns-tour_price' ); ?></li>
+					<li><?php esc_html_e( '月を跨いでも色基準と凡例が一貫して表示', 'ns-tour_price' ); ?></li>
+					<li><?php esc_html_e( '当月に出ていない価格も凡例に表示される', 'ns-tour_price' ); ?></li>
+				</ul>
+			</div>
+
+			<hr>
+
 			<h2><?php esc_html_e( 'Season Code エイリアス', 'ns-tour_price' ); ?></h2>
 
 			<div class="card">

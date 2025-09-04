@@ -512,6 +512,76 @@ class NS_Tour_Price_Repo {
 		return $invalid_codes;
 	}
 
+	/**
+	 * 指定ツアー・日数の全期間価格を取得（ヒートマップ・凡例用）
+	 * 
+	 * @param string $tour_id ツアーID
+	 * @param int $duration 日数
+	 * @return array 価格の数値配列（重複排除済み）
+	 */
+	public function getAllPricesFor( $tour_id, $duration ) {
+		// transientキャッシュを確認
+		$cache_key = sprintf( 'ns_tour_price_all_prices_%s_%d', $tour_id, $duration );
+		$cached = get_transient( $cache_key );
+		
+		if ( false !== $cached ) {
+			return $cached;
+		}
+
+		// データ取得
+		$seasons = $this->getSeasons( $tour_id );
+		$prices = $this->getBasePrices( $tour_id );
+		
+		if ( empty( $seasons ) || empty( $prices ) ) {
+			$result = array();
+			set_transient( $cache_key, $result, 3600 );
+			return $result;
+		}
+
+		// エイリアス読み込み
+		$aliases = $this->loadSeasonAliases( $tour_id );
+
+		// solo fee取得
+		$solo_fee = $this->getSoloFee( $tour_id, $duration );
+
+		// 指定日数の価格を収集
+		$collected_prices = array();
+		foreach ( $prices as $price ) {
+			if ( intval( $duration ) !== $price['duration_days'] ) {
+				continue;
+			}
+
+			// base_pricesのseason_codeを正規化・エイリアス解決
+			$normalized_price_code = NS_Tour_Price_Helpers::normalize_season_code( $price['season_code'] );
+			$resolved_price_code = $this->resolveSeasonCodeAlias( $normalized_price_code, $aliases );
+
+			// 対応するシーズンを検索
+			$season_matched = false;
+			foreach ( $seasons as $season ) {
+				$normalized_season_code = NS_Tour_Price_Helpers::normalize_season_code( $season['season_code'] );
+				
+				if ( $resolved_price_code === $normalized_season_code ) {
+					// ベース価格とソロ料金を加算
+					$total_price = $price['price'] + $solo_fee;
+					if ( $total_price > 0 ) {
+						$collected_prices[] = $total_price;
+					}
+					$season_matched = true;
+					break;
+				}
+			}
+		}
+
+		// ユニークな価格のみを昇順で返す
+		$result = array_values( array_unique( $collected_prices ) );
+		sort( $result, SORT_NUMERIC );
+
+		// キャッシュに保存（1時間）
+		set_transient( $cache_key, $result, 3600 );
+
+		return $result;
+	}
+
 	public function clearCache() {
 		// CSV データソースのキャッシュをクリア
 		$csv_source = new NS_Tour_Price_DataSourceCsv();
@@ -554,6 +624,20 @@ class NS_Tour_Price_Repo {
 
 		// 他のキャッシュもクリア
 		delete_transient( 'ns_tour_price_calendar_cache' );
+		
+		// getAllPricesFor のキャッシュもクリア
+		$wpdb->query(
+			$wpdb->prepare(
+				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
+				$wpdb->esc_like( '_transient_ns_tour_price_all_prices_' ) . '%'
+			)
+		);
+		$wpdb->query(
+			$wpdb->prepare(
+				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
+				$wpdb->esc_like( '_transient_timeout_ns_tour_price_all_prices_' ) . '%'
+			)
+		);
 		
 		// キャッシュクリア実行をログ出力
 		$this->log( 'NS Tour Price: All caches cleared, next CSV access will trigger fresh logs', 'info' );

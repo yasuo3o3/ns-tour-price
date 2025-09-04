@@ -13,24 +13,35 @@ class NS_Tour_Price_Heatmap {
 
 	private $levels = 10;
 
-	public function generateHeatmapClasses( $prices ) {
+	public function generateHeatmapClasses( $prices, $global_min = null, $global_max = null ) {
 		if ( empty( $prices ) ) {
 			return array();
 		}
 
 		$unique_prices = array_unique( $prices );
-		if ( count( $unique_prices ) === 1 ) {
-			// 全て同じ価格の場合は中間色
-			$single_price = $unique_prices[0];
-			return array( $single_price => 5 );
+		
+		// 外部から指定されたmin/maxを使用、なければ渡された価格から計算
+		if ( null !== $global_min && null !== $global_max ) {
+			$min_price = $global_min;
+			$max_price = $global_max;
+		} else {
+			if ( count( $unique_prices ) === 1 ) {
+				// 全て同じ価格の場合は中間色
+				$single_price = $unique_prices[0];
+				return array( $single_price => 5 );
+			}
+			$min_price = min( $prices );
+			$max_price = max( $prices );
 		}
 
-		$min_price = min( $prices );
-		$max_price = max( $prices );
 		$range = $max_price - $min_price;
-
 		if ( 0 === $range ) {
-			return array( $min_price => 5 );
+			// 全て同じ価格または単一価格の場合は中間色
+			$classes = array();
+			foreach ( $unique_prices as $price ) {
+				$classes[ $price ] = 5;
+			}
+			return $classes;
 		}
 
 		$classes = array();
