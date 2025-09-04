@@ -51,8 +51,8 @@ class NS_Tour_Price_AnnualBuilder {
 		}
 
 		// 年間データを生成
-		$annual_data = $this->generateAnnualData( $tour, $duration, $year );
-		$season_summary = $this->generateSeasonSummary( $tour, $duration, $year );
+		$annual_data = $this->generateAnnualData( $tour, $duration, $year, $opts );
+		$season_summary = $this->summarizeSeasonPrices( $tour, $duration, $year );
 
 		$html = $this->renderAnnualView( $annual_data, $season_summary, $tour, $duration, $year, $opts );
 
@@ -75,45 +75,70 @@ class NS_Tour_Price_AnnualBuilder {
 	}
 
 	/**
-	 * 年間データ生成（1-12月の全日付をシーズン判定）
+	 * 年間データ生成（価格ベースのヒートマップ色適用）
 	 */
-	private function generateAnnualData( $tour, $duration, $year ) {
+	private function generateAnnualData( $tour, $duration, $year, $opts = array() ) {
+		$show_empty_months = $opts['show_empty_months'] ?? false;
+		
+		// 年間価格データを取得
+		$yearly_prices = $this->repo->getYearlyPrices( $tour, $duration, $year );
+		
+		// ヒートマップ用の色分け計算
+		$prices_array = array_values( $yearly_prices );
+		$heatmap_data = $this->calculateHeatmapBins( $prices_array );
+
 		$months_data = array();
 		$total_days = 0;
 		$covered_days = 0;
+		$months_rendered = 0;
 
 		for ( $month = 1; $month <= 12; $month++ ) {
-			$month_str = sprintf( '%04d-%02d', $year, $month );
 			$days_in_month = cal_days_in_month( CAL_GREGORIAN, $month, $year );
 			$month_days = array();
+			$priced_days_in_month = 0;
 
 			for ( $day = 1; $day <= $days_in_month; $day++ ) {
 				$date_str = sprintf( '%04d-%02d-%02d', $year, $month, $day );
 				$total_days++;
 
-				// この日付のシーズンを判定
-				$season_info = $this->getDateSeasonInfo( $tour, $date_str, $duration );
+				$price = $yearly_prices[ $date_str ] ?? 0;
+				$has_price = $price > 0;
 				
+				if ( $has_price ) {
+					$covered_days++;
+					$priced_days_in_month++;
+				}
+
+				// ヒートマップクラス決定
+				$heatmap_class = '';
+				if ( $has_price ) {
+					$bin_index = $this->getPriceBinIndex( $price, $heatmap_data['bins'] );
+					$heatmap_class = 'hp-' . $bin_index;
+				}
+
 				$month_days[] = array(
 					'day' => $day,
 					'date' => $date_str,
 					'weekday' => intval( gmdate( 'w', strtotime( $date_str ) ) ),
-					'season_code' => $season_info['season_code'],
-					'season_color' => $season_info['color'],
-					'has_season' => ! empty( $season_info['season_code'] ),
+					'price' => $price,
+					'has_price' => $has_price,
+					'heatmap_class' => $heatmap_class,
 					'is_today' => $date_str === gmdate( 'Y-m-d' ),
 				);
-
-				if ( ! empty( $season_info['season_code'] ) ) {
-					$covered_days++;
-				}
 			}
 
+			// 空月除外（価格がある日が0の場合）
+			if ( ! $show_empty_months && $priced_days_in_month === 0 ) {
+				continue;
+			}
+
+			$months_rendered++;
 			$months_data[ $month ] = array(
 				'month' => $month,
 				'month_name' => $this->getMonthName( $month ),
 				'year' => $year,
 				'days_in_month' => $days_in_month,
+				'priced_days' => $priced_days_in_month,
 				'days' => $month_days,
 			);
 		}
@@ -122,6 +147,98 @@ class NS_Tour_Price_AnnualBuilder {
 			'months' => $months_data,
 			'total_days' => $total_days,
 			'covered_days' => $covered_days,
+			'months_rendered' => $months_rendered,
+			'heatmap' => $heatmap_data,
+		);
+	}
+
+	/**
+	 * ヒートマップのビン計算
+	 */
+	private function calculateHeatmapBins( $prices ) {
+		if ( empty( $prices ) ) {
+			return array(
+				'bins' => array(),
+				'colors' => array(),
+				'min' => 0,
+				'max' => 0,
+			);
+		}
+
+		$min_price = min( $prices );
+		$max_price = max( $prices );
+		
+		// 管理画面設定から色パレットとビン数を取得
+		$options = get_option( 'ns_tour_price_options', array() );
+		$bins_count = intval( $options['heatmap_bins'] ?? 5 );
+		$colors = $this->getHeatmapColors();
+
+		if ( $min_price === $max_price ) {
+			return array(
+				'bins' => array( $min_price ),
+				'colors' => array( $colors[0] ?? '#e0e0e0' ),
+				'min' => $min_price,
+				'max' => $max_price,
+			);
+		}
+
+		$bins = array();
+		$bin_colors = array();
+		$range = $max_price - $min_price;
+
+		for ( $i = 0; $i < $bins_count; $i++ ) {
+			$bin_min = $min_price + ( $range * $i / $bins_count );
+			$bin_max = ( $i === $bins_count - 1 ) ? $max_price : $min_price + ( $range * ( $i + 1 ) / $bins_count );
+			
+			$bins[] = array(
+				'min' => $bin_min,
+				'max' => $bin_max,
+			);
+			
+			$color_index = min( $i, count( $colors ) - 1 );
+			$bin_colors[] = $colors[ $color_index ];
+		}
+
+		return array(
+			'bins' => $bins,
+			'colors' => $bin_colors,
+			'min' => $min_price,
+			'max' => $max_price,
+		);
+	}
+
+	/**
+	 * 価格に対応するビンインデックスを取得
+	 */
+	private function getPriceBinIndex( $price, $bins ) {
+		foreach ( $bins as $index => $bin ) {
+			if ( $price >= $bin['min'] && $price <= $bin['max'] ) {
+				return $index;
+			}
+		}
+		return 0;
+	}
+
+	/**
+	 * ヒートマップカラーパレットを取得
+	 */
+	private function getHeatmapColors() {
+		$options = get_option( 'ns_tour_price_options', array() );
+		$colors_string = $options['heatmap_colors'] ?? '';
+		
+		if ( ! empty( $colors_string ) ) {
+			$colors = array_map( 'trim', explode( ',', $colors_string ) );
+			return array_filter( $colors );
+		}
+
+		// デフォルト色
+		return array(
+			'#e0f2fe',
+			'#b3e5fc', 
+			'#81d4fa',
+			'#4fc3f7',
+			'#29b6f6',
+			'#03a9f4',
 		);
 	}
 
@@ -149,41 +266,135 @@ class NS_Tour_Price_AnnualBuilder {
 	}
 
 	/**
-	 * シーズン料金まとめ表を生成
+	 * シーズン料金要約を生成（結合・並び・価格修正版）
 	 */
-	private function generateSeasonSummary( $tour, $duration, $year ) {
-		$seasons_data = $this->repo->getAllSeasonsData( $tour );
-		$summary = array();
+	private function summarizeSeasonPrices( $tour, $duration, $year ) {
+		$seasons_data = $this->repo->getSeasons( $tour );
+		$prices_data = $this->repo->getBasePrices( $tour );
+		$groups = array();
 
+		// season_code 単位でグループ化
 		foreach ( $seasons_data as $season ) {
 			$season_code = $season['season_code'];
-			$price = $this->repo->getPriceForSeason( $tour, $season_code, $duration );
 			
-			// 当年に該当する期間のみを抽出
-			$periods = $this->getSeasonPeriodsForYear( $season, $year );
-			
+			// 当年に該当する期間チェック
+			$periods = $this->getSeasonRangesForYear( $season, $year );
 			if ( empty( $periods ) ) {
-				continue; // 当年に該当しない
+				continue;
 			}
 
-			$color = $this->getSeasonColor( $season_code );
+			if ( ! isset( $groups[ $season_code ] ) ) {
+				$groups[ $season_code ] = array(
+					'label' => $season['label'] ?? $season_code,
+					'ranges' => array(),
+					'price' => null,
+					'color' => '#6c757d',
+				);
+			}
 
-			$summary[] = array(
-				'season_code' => $season_code,
-				'season_label' => $season['season_label'] ?? $season_code,
-				'periods' => $periods,
-				'price' => $price,
-				'formatted_price' => $this->formatPrice( $price ),
-				'color' => $color,
+			// 期間を追加
+			$groups[ $season_code ]['ranges'] = array_merge( $groups[ $season_code ]['ranges'], $periods );
+		}
+
+		// A→Z順で並び替え
+		uksort( $groups, 'strnatcmp' );
+
+		// 価格と色を設定
+		foreach ( $groups as $season_code => &$group ) {
+			// 価格検索
+			$group['price'] = $this->findSeasonPrice( $tour, $season_code, $duration, $prices_data );
+			
+			// シーズン色取得
+			$group['color'] = $this->getSeasonColorFromMap( $season_code );
+			
+			// 期間をテキスト化（「、」で結合）
+			$group['ranges_text'] = implode( '、', array_map( function( $range ) {
+				return sprintf( '%d/%d–%d/%d', 
+					$range['start_month'], $range['start_day'],
+					$range['end_month'], $range['end_day']
+				);
+			}, $group['ranges'] ) );
+		}
+
+		return $groups;
+	}
+
+	/**
+	 * 指定年に該当するシーズン期間を抽出（日付正規化対応）
+	 */
+	private function getSeasonRangesForYear( $season, $year ) {
+		$ranges = array();
+		
+		// 日付正規化（/ → -）
+		$date_start = strtr( trim( $season['date_start'] ?? '' ), array( '/' => '-' ) );
+		$date_end = strtr( trim( $season['date_end'] ?? '' ), array( '/' => '-' ) );
+
+		// DateTime作成
+		$start_date = date_create( $date_start );
+		if ( ! $start_date ) {
+			$start_date = date_create_from_format( 'Y-m-d', $date_start );
+		}
+
+		$end_date = date_create( $date_end );
+		if ( ! $end_date ) {
+			$end_date = date_create_from_format( 'Y-m-d', $date_end );
+		}
+
+		if ( ! $start_date || ! $end_date ) {
+			return $ranges;
+		}
+
+		$start_year = intval( $start_date->format( 'Y' ) );
+		$end_year = intval( $end_date->format( 'Y' ) );
+
+		// 年跨ぎの場合、当年分のみをトリム
+		if ( $start_year <= $year && $end_year >= $year ) {
+			$actual_start = ( $start_year === $year ) ? $start_date : date_create( sprintf( '%04d-01-01', $year ) );
+			$actual_end = ( $end_year === $year ) ? $end_date : date_create( sprintf( '%04d-12-31', $year ) );
+
+			$ranges[] = array(
+				'start_month' => intval( $actual_start->format( 'n' ) ),
+				'start_day' => intval( $actual_start->format( 'j' ) ),
+				'end_month' => intval( $actual_end->format( 'n' ) ),
+				'end_day' => intval( $actual_end->format( 'j' ) ),
 			);
 		}
 
-		// 価格順でソート
-		usort( $summary, function( $a, $b ) {
-			return ( $a['price'] ?? 0 ) - ( $b['price'] ?? 0 );
-		} );
+		return $ranges;
+	}
 
-		return $summary;
+	/**
+	 * シーズン価格検索
+	 */
+	private function findSeasonPrice( $tour, $season_code, $duration, $prices_data ) {
+		foreach ( $prices_data as $price ) {
+			if ( $price['tour_id'] === $tour &&
+				 $price['season_code'] === $season_code &&
+				 intval( $price['duration_days'] ) === intval( $duration ) ) {
+				return intval( $price['price'] );
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * シーズン色マップから色取得
+	 */
+	private function getSeasonColorFromMap( $season_code ) {
+		$season_colors = get_option( 'ns_tour_price_season_colors', array() );
+		
+		if ( isset( $season_colors[ $season_code ] ) ) {
+			return $season_colors[ $season_code ];
+		}
+
+		// デフォルト色
+		$default_colors = array(
+			'A' => '#4CAF50', 'B' => '#E91E63', 'C' => '#FF9800', 'D' => '#2196F3',
+			'E' => '#9C27B0', 'F' => '#795548', 'G' => '#607D8B', 'H' => '#FFC107',
+			'I' => '#8BC34A', 'J' => '#00BCD4', 'K' => '#FF5722', 'L' => '#3F51B5',
+		);
+
+		return $default_colors[ $season_code ] ?? '#6c757d';
 	}
 
 	/**

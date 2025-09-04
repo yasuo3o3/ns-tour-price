@@ -148,6 +148,89 @@ class NS_Tour_Price_Repo {
 		return $source->getTourOptions( $tour_id );
 	}
 
+	/**
+	 * 年内の各日→価格（int）を返す。soloは含めない。
+	 *
+	 * @param string $tour_id
+	 * @param int $duration
+	 * @param int $year
+	 * @return array ['Y-m-d' => price_int, ...]
+	 */
+	public function getYearlyPrices( $tour_id, $duration, $year ) {
+		if ( ! $this->loader->isDataAvailable() ) {
+			return array();
+		}
+
+		$seasons_data = $this->getSeasons( $tour_id );
+		$prices_data = $this->getBasePrices( $tour_id );
+		$yearly_prices = array();
+
+		// 年の範囲
+		$year_start = sprintf( '%04d-01-01', $year );
+		$year_end = sprintf( '%04d-12-31', $year );
+
+		foreach ( $seasons_data as $season ) {
+			// 日付正規化（/ → -）
+			$date_start = strtr( trim( $season['date_start'] ?? '' ), array( '/' => '-' ) );
+			$date_end = strtr( trim( $season['date_end'] ?? '' ), array( '/' => '-' ) );
+
+			// DateTime作成（フォールバック付き）
+			$start_date = date_create( $date_start );
+			if ( ! $start_date ) {
+				$start_date = date_create_from_format( 'Y-m-d', $date_start );
+			}
+
+			$end_date = date_create( $date_end );
+			if ( ! $end_date ) {
+				$end_date = date_create_from_format( 'Y-m-d', $date_end );
+			}
+
+			if ( ! $start_date || ! $end_date ) {
+				continue;
+			}
+
+			// 年範囲での交差チェック
+			$season_start = max( $start_date->format( 'Y-m-d' ), $year_start );
+			$season_end = min( $end_date->format( 'Y-m-d' ), $year_end );
+
+			if ( $season_start > $season_end ) {
+				continue; // 年範囲外
+			}
+
+			// 該当期間の価格を取得
+			$season_code = $season['season_code'];
+			$price = $this->findPriceForSeason( $tour_id, $season_code, $duration, $prices_data );
+
+			if ( $price > 0 ) {
+				// 期間内の全日に価格を設定
+				$current = date_create( $season_start );
+				$end = date_create( $season_end );
+
+				while ( $current <= $end ) {
+					$date_key = $current->format( 'Y-m-d' );
+					$yearly_prices[ $date_key ] = $price;
+					$current->add( new DateInterval( 'P1D' ) );
+				}
+			}
+		}
+
+		return $yearly_prices;
+	}
+
+	/**
+	 * season_code と duration に対応する価格を検索
+	 */
+	private function findPriceForSeason( $tour_id, $season_code, $duration, $prices_data ) {
+		foreach ( $prices_data as $price ) {
+			if ( $price['tour_id'] === $tour_id &&
+				 $price['season_code'] === $season_code &&
+				 intval( $price['duration_days'] ) === intval( $duration ) ) {
+				return intval( $price['price'] );
+			}
+		}
+		return 0;
+	}
+
 	public function getPriceForDate( $tour_id, $date, $duration ) {
 		// 統計ログを出力（初回のみ）
 		$this->logNormalizationStatistics( $tour_id );
