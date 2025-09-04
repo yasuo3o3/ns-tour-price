@@ -282,6 +282,8 @@ class NS_Tour_Price_Renderer {
 				</div>
 			<?php endif; ?>
 		</div>
+
+		<?php echo $this->renderBookingPanel( $args ); ?>
 		<?php
 		
 		return ob_get_clean();
@@ -449,5 +451,82 @@ class NS_Tour_Price_Renderer {
 
 		$brightness = ( ( $r * 299 ) + ( $g * 587 ) + ( $b * 114 ) ) / 1000;
 		return ( $brightness > 128 ) ? '#000000' : '#ffffff';
+	}
+
+	/**
+	 * 予約パネルを描画
+	 */
+	private function renderBookingPanel( $args ) {
+		$repo = NS_Tour_Price_Repo::getInstance();
+		$available_durations = $repo->getAvailableDurations( $args['tour'] );
+		
+		ob_start();
+		?>
+		<aside class="tpc-booking-panel" aria-label="<?php esc_attr_e( '予約内容の選択', 'ns-tour_price' ); ?>">
+			<div class="tpc-booking-date">
+				<div class="tpc-booking-date__label"><?php esc_html_e( '出発日', 'ns-tour_price' ); ?></div>
+				<div class="tpc-booking-date__value" data-tpc-date><?php esc_html_e( '未選択', 'ns-tour_price' ); ?></div>
+				<div class="tpc-booking-date__season" data-tpc-season></div>
+			</div>
+
+			<div class="tpc-duration-tabs" data-tpc-duration-tabs>
+				<?php foreach ( $available_durations as $duration ) : ?>
+					<button type="button" 
+							role="tab" 
+							class="tpc-duration-tab<?php echo $duration === $args['duration'] ? ' is-active' : ''; ?>" 
+							data-duration="<?php echo esc_attr( $duration ); ?>"
+							<?php if ( $duration === $args['duration'] ) echo 'aria-current="page"'; ?>>
+						<?php printf( esc_html__( '%d日間', 'ns-tour_price' ), $duration ); ?>
+					</button>
+				<?php endforeach; ?>
+			</div>
+
+			<div class="tpc-booking-group">
+				<label for="tpc-pax"><?php esc_html_e( '参加人数', 'ns-tour_price' ); ?></label>
+				<select id="tpc-pax" data-tpc-pax>
+					<option value="1"><?php esc_html_e( '1名', 'ns-tour_price' ); ?></option>
+					<option value="2"><?php esc_html_e( '2名', 'ns-tour_price' ); ?></option>
+					<option value="3"><?php esc_html_e( '3名', 'ns-tour_price' ); ?></option>
+					<option value="4"><?php esc_html_e( '4名', 'ns-tour_price' ); ?></option>
+					<option value="5"><?php esc_html_e( '5名', 'ns-tour_price' ); ?></option>
+					<option value="6"><?php esc_html_e( '6名', 'ns-tour_price' ); ?></option>
+				</select>
+			</div>
+
+			<div class="tpc-booking-options">
+				<div class="tpc-booking-options__label"><?php esc_html_e( 'オプション（任意）', 'ns-tour_price' ); ?></div>
+				<label class="tpc-option">
+					<input type="checkbox" data-tpc-opt-rental />
+					<?php esc_html_e( 'レンタル品（見積には反映しません）', 'ns-tour_price' ); ?>
+				</label>
+			</div>
+
+			<div class="tpc-quote">
+				<div class="tpc-quote__row">
+					<span><?php esc_html_e( '基本料金', 'ns-tour_price' ); ?></span>
+					<strong data-tpc-base>—</strong>
+				</div>
+				<div class="tpc-quote__row">
+					<span><?php esc_html_e( 'ソロフィー', 'ns-tour_price' ); ?></span>
+					<strong data-tpc-solo>—</strong>
+				</div>
+				<div class="tpc-quote__row">
+					<span><?php esc_html_e( '参加人数', 'ns-tour_price' ); ?></span>
+					<strong data-tpc-pax-view>—</strong>
+				</div>
+				<div class="tpc-quote__total">
+					<span><?php esc_html_e( '合計概算金額', 'ns-tour_price' ); ?></span>
+					<strong data-tpc-total>—</strong>
+				</div>
+				<small class="tpc-quote__note"><?php esc_html_e( '※運賃変動等により金額は変更になる場合があります。', 'ns-tour_price' ); ?></small>
+			</div>
+
+			<button class="tpc-submit" data-tpc-submit disabled>
+				<?php esc_html_e( '申込フォームへ', 'ns-tour_price' ); ?>
+			</button>
+		</aside>
+		<?php
+		
+		return ob_get_clean();
 	}
 }

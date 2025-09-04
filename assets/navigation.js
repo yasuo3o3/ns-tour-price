@@ -635,6 +635,217 @@
     // DOMContentLoaded で年間ビューを初期化
     document.addEventListener('DOMContentLoaded', function() {
         AnnualView.init();
+        TPC.init();
     });
+
+    // TPC 予約パネル機能
+    const TPC = {
+        state: {
+            tour: null,
+            date: null,
+            duration: 4,
+            pax: 1,
+        },
+        
+        els: {},
+        
+        init: function() {
+            this.findElements();
+            this.bindEvents();
+            this.initState();
+        },
+        
+        findElements: function() {
+            this.els = {
+                date: document.querySelector('[data-tpc-date]'),
+                season: document.querySelector('[data-tpc-season]'),
+                base: document.querySelector('[data-tpc-base]'),
+                solo: document.querySelector('[data-tpc-solo]'),
+                paxView: document.querySelector('[data-tpc-pax-view]'),
+                total: document.querySelector('[data-tpc-total]'),
+                submit: document.querySelector('[data-tpc-submit]'),
+                paxSelect: document.querySelector('[data-tpc-pax]'),
+                durationTabs: document.querySelectorAll('[data-tpc-duration-tabs] button'),
+                calendar: document.querySelector('.ns-tour-price-calendar')
+            };
+        },
+        
+        bindEvents: function() {
+            // 大カレンダーの日付クリック
+            if (this.els.calendar) {
+                this.els.calendar.addEventListener('click', this.handleDateClick.bind(this));
+            }
+            
+            // 期間タブクリック
+            this.els.durationTabs.forEach(function(tab) {
+                tab.addEventListener('click', TPC.handleDurationClick.bind(TPC));
+            });
+            
+            // 人数セレクト変更
+            if (this.els.paxSelect) {
+                this.els.paxSelect.addEventListener('change', this.handlePaxChange.bind(this));
+            }
+        },
+        
+        initState: function() {
+            const calendar = this.els.calendar;
+            if (calendar) {
+                this.state.tour = calendar.dataset.tour || 'A1';
+                this.state.duration = parseInt(calendar.dataset.duration) || 4;
+            }
+            
+            this.renderEmpty();
+        },
+        
+        handleDateClick: function(e) {
+            // 年カレンダーは無視
+            if (e.target.closest('[data-static-annual="1"]')) {
+                return;
+            }
+            
+            const dayCell = e.target.closest('.calendar-day.has-price');
+            if (dayCell) {
+                const date = dayCell.dataset.date;
+                if (date) {
+                    this.state.date = date;
+                    this.refreshQuote();
+                }
+            }
+        },
+        
+        handleDurationClick: function(e) {
+            e.preventDefault();
+            const tab = e.currentTarget;
+            const duration = parseInt(tab.dataset.duration);
+            
+            if (duration && duration !== this.state.duration) {
+                // タブの見た目を更新
+                this.els.durationTabs.forEach(function(t) {
+                    t.classList.remove('is-active');
+                    t.removeAttribute('aria-current');
+                });
+                tab.classList.add('is-active');
+                tab.setAttribute('aria-current', 'page');
+                
+                this.state.duration = duration;
+                this.refreshQuote();
+            }
+        },
+        
+        handlePaxChange: function(e) {
+            this.state.pax = parseInt(e.target.value) || 1;
+            this.refreshQuote();
+        },
+        
+        async refreshQuote() {
+            if (!this.state.date) {
+                this.renderEmpty();
+                return;
+            }
+            
+            try {
+                const payload = {
+                    tour: this.state.tour,
+                    date: this.state.date,
+                    duration: this.state.duration,
+                    pax: this.state.pax
+                };
+                
+                const response = await fetch('/wp-json/ns-tour-price/v1/quote', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                const json = await response.json();
+                
+                if (json.success) {
+                    this.renderQuote(json);
+                } else {
+                    this.renderError(json.message || 'エラーが発生しました');
+                }
+                
+            } catch (error) {
+                console.error('Quote API error:', error);
+                this.renderError('通信エラーが発生しました');
+            }
+        },
+        
+        renderQuote: function(data) {
+            if (this.els.date) {
+                this.els.date.textContent = this.formatDateJP(this.state.date);
+            }
+            if (this.els.season) {
+                this.els.season.textContent = data.season_code ? 'シーズン: ' + data.season_code : '';
+            }
+            if (this.els.base) {
+                this.els.base.textContent = this.formatYen(data.base_price);
+            }
+            if (this.els.solo) {
+                this.els.solo.textContent = data.solo_fee ? this.formatYen(data.solo_fee) : '—';
+            }
+            if (this.els.paxView) {
+                this.els.paxView.textContent = data.pax + '名';
+            }
+            if (this.els.total) {
+                this.els.total.textContent = this.formatYen(data.total);
+            }
+            if (this.els.submit) {
+                this.els.submit.disabled = false;
+            }
+        },
+        
+        renderEmpty: function() {
+            if (this.els.date) {
+                this.els.date.textContent = '未選択';
+            }
+            if (this.els.season) {
+                this.els.season.textContent = '';
+            }
+            if (this.els.base) {
+                this.els.base.textContent = '—';
+            }
+            if (this.els.solo) {
+                this.els.solo.textContent = '—';
+            }
+            if (this.els.paxView) {
+                this.els.paxView.textContent = '—';
+            }
+            if (this.els.total) {
+                this.els.total.textContent = '—';
+            }
+            if (this.els.submit) {
+                this.els.submit.disabled = true;
+            }
+        },
+        
+        renderError: function(message) {
+            if (this.els.total) {
+                this.els.total.textContent = 'エラー';
+            }
+            console.error('TPC Quote Error:', message);
+        },
+        
+        formatDateJP: function(dateStr) {
+            try {
+                const date = new Date(dateStr);
+                const month = date.getMonth() + 1;
+                const day = date.getDate();
+                return month + '月' + day + '日';
+            } catch (e) {
+                return dateStr;
+            }
+        },
+        
+        formatYen: function(amount) {
+            try {
+                return '¥' + Number(amount).toLocaleString();
+            } catch (e) {
+                return '¥' + amount;
+            }
+        }
+    };
 
 })();

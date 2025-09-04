@@ -23,7 +23,8 @@ $year = $year ?? gmdate( 'Y' );
 <div class="tpc-annual-view" 
      data-tour="<?php echo esc_attr( $tour ); ?>" 
      data-duration="<?php echo esc_attr( $duration ); ?>" 
-     data-year="<?php echo esc_attr( $year ); ?>">
+     data-year="<?php echo esc_attr( $year ); ?>"
+     data-static-annual="1">
 	
 	<div class="tpc-annual-header">
 		<h3 class="tpc-annual-title">
