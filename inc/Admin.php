@@ -76,6 +76,22 @@ class NS_Tour_Price_Admin {
 			'ns_tour_price_settings',
 			'ns_tour_price_general'
 		);
+
+		add_settings_field(
+			'heatmap_bins',
+			__( 'Heatmap Bins', 'ns-tour_price' ),
+			array( $this, 'heatmapBinsFieldCallback' ),
+			'ns_tour_price_settings',
+			'ns_tour_price_general'
+		);
+
+		add_settings_field(
+			'heatmap_mode',
+			__( 'Heatmap Mode', 'ns-tour_price' ),
+			array( $this, 'heatmapModeFieldCallback' ),
+			'ns_tour_price_settings',
+			'ns_tour_price_general'
+		);
 	}
 
 	public function adminPage() {
@@ -402,6 +418,33 @@ A1,WINTER,WINTER</pre>
 		<?php
 	}
 
+	public function heatmapBinsFieldCallback() {
+		$options = get_option( 'ns_tour_price_options', array() );
+		$current = intval( $options['heatmap_bins'] ?? 7 );
+		?>
+		<select name="ns_tour_price_options[heatmap_bins]">
+			<option value="5" <?php selected( $current, 5 ); ?>>5 <?php esc_html_e( 'bins', 'ns-tour_price' ); ?></option>
+			<option value="7" <?php selected( $current, 7 ); ?>>7 <?php esc_html_e( 'bins', 'ns-tour_price' ); ?></option>
+			<option value="10" <?php selected( $current, 10 ); ?>>10 <?php esc_html_e( 'bins', 'ns-tour_price' ); ?></option>
+		</select>
+		<span><?php esc_html_e( 'Number of heatmap color levels', 'ns-tour_price' ); ?></span>
+		<?php
+	}
+
+	public function heatmapModeFieldCallback() {
+		$options = get_option( 'ns_tour_price_options', array() );
+		$current = sanitize_text_field( $options['heatmap_mode'] ?? 'quantile' );
+		?>
+		<select name="ns_tour_price_options[heatmap_mode]">
+			<option value="quantile" <?php selected( $current, 'quantile' ); ?>><?php esc_html_e( 'Quantile (Recommended)', 'ns-tour_price' ); ?></option>
+			<option value="linear" <?php selected( $current, 'linear' ); ?>><?php esc_html_e( 'Linear', 'ns-tour_price' ); ?></option>
+		</select>
+		<p class="description">
+			<?php esc_html_e( 'Quantile mode distributes colors more evenly across price ranges, avoiding blue bias.', 'ns-tour_price' ); ?>
+		</p>
+		<?php
+	}
+
 	public function sanitizeOptions( $input ) {
 		$sanitized = array();
 		
@@ -419,6 +462,16 @@ A1,WINTER,WINTER</pre>
 		if ( isset( $input['cache_expiry'] ) ) {
 			$cache_expiry = intval( $input['cache_expiry'] );
 			$sanitized['cache_expiry'] = max( 300, min( 86400, $cache_expiry ) );
+		}
+
+		if ( isset( $input['heatmap_bins'] ) ) {
+			$bins = intval( $input['heatmap_bins'] );
+			$sanitized['heatmap_bins'] = in_array( $bins, array( 5, 7, 10 ), true ) ? $bins : 7;
+		}
+
+		if ( isset( $input['heatmap_mode'] ) ) {
+			$mode = sanitize_text_field( $input['heatmap_mode'] );
+			$sanitized['heatmap_mode'] = in_array( $mode, array( 'quantile', 'linear' ), true ) ? $mode : 'quantile';
 		}
 
 		return $sanitized;

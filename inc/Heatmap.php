@@ -13,6 +13,90 @@ class NS_Tour_Price_Heatmap {
 
 	private $levels = 10;
 
+	/**
+	 * 分位（quantile）ベースのビンを構築
+	 *
+	 * @param array $prices 価格配列
+	 * @param int $bins ビン数（5/7/10）
+	 * @param string $mode 'quantile' | 'linear'
+	 * @return array ビン境界の配列
+	 */
+	public function buildBuckets( $prices, $bins = 7, $mode = 'quantile' ) {
+		if ( empty( $prices ) ) {
+			return array();
+		}
+
+		$unique_prices = array_values( array_unique( $prices ) );
+		sort( $unique_prices );
+
+		if ( 'linear' === $mode ) {
+			// 従来の線形ビン
+			$min_price = min( $unique_prices );
+			$max_price = max( $unique_prices );
+			$step = ( $max_price - $min_price ) / $bins;
+			
+			$buckets = array();
+			for ( $i = 0; $i < $bins; $i++ ) {
+				$buckets[] = $min_price + ( $step * ( $i + 1 ) );
+			}
+			return $buckets;
+		}
+
+		// quantileベースのビン
+		$count = count( $unique_prices );
+		$buckets = array();
+		
+		for ( $i = 1; $i <= $bins; $i++ ) {
+			$percentile = $i / $bins;
+			$index = max( 0, min( $count - 1, floor( $percentile * $count ) ) );
+			$buckets[] = $unique_prices[ $index ];
+		}
+
+		// 重複除去して昇順ソート
+		$buckets = array_values( array_unique( $buckets ) );
+		sort( $buckets );
+
+		return $buckets;
+	}
+
+	/**
+	 * ビン境界を使用したヒートマップクラス生成
+	 *
+	 * @param array $prices 価格配列
+	 * @param array $buckets ビン境界配列
+	 * @param int $max_levels 最大レベル数（既定10）
+	 * @return array 価格=>レベルのマッピング
+	 */
+	public function generateHeatmapClassesWithBuckets( $prices, $buckets, $max_levels = 10 ) {
+		if ( empty( $prices ) || empty( $buckets ) ) {
+			return array();
+		}
+
+		$classes = array();
+		$bucket_count = count( $buckets );
+		
+		foreach ( $prices as $price ) {
+			$level = 0;
+			
+			// 価格がどのビンに属するか判定
+			for ( $i = 0; $i < $bucket_count; $i++ ) {
+				if ( $price <= $buckets[ $i ] ) {
+					$level = $i;
+					break;
+				}
+			}
+			
+			// max_levelsに正規化
+			if ( $bucket_count > 0 ) {
+				$level = min( $max_levels - 1, floor( $level * $max_levels / $bucket_count ) );
+			}
+			
+			$classes[ $price ] = $level;
+		}
+
+		return $classes;
+	}
+
 	public function generateHeatmapClasses( $prices, $global_min = null, $global_max = null ) {
 		if ( empty( $prices ) ) {
 			return array();

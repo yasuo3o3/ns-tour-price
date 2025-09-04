@@ -625,6 +625,20 @@ class NS_Tour_Price_Repo {
 		// 他のキャッシュもクリア
 		delete_transient( 'ns_tour_price_calendar_cache' );
 		
+		// HTMLキャッシュもクリア
+		$wpdb->query(
+			$wpdb->prepare(
+				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
+				$wpdb->esc_like( '_transient_tpc_html_' ) . '%'
+			)
+		);
+		$wpdb->query(
+			$wpdb->prepare(
+				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
+				$wpdb->esc_like( '_transient_timeout_tpc_html_' ) . '%'
+			)
+		);
+		
 		// getAllPricesFor のキャッシュもクリア
 		$wpdb->query(
 			$wpdb->prepare(

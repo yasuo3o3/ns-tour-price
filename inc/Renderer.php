@@ -20,17 +20,107 @@ class NS_Tour_Price_Renderer {
 	public function render( $args ) {
 		do_action( 'ns_tour_price_before_calendar', $args );
 
+		// HTMLキャッシュを試行
+		$cached_html = $this->getCachedHtml( $args );
+		if ( false !== $cached_html ) {
+			do_action( 'ns_tour_price_after_calendar', $args );
+			return $cached_html;
+		}
+
 		$calendar_data = $this->builder->buildCalendar( $args );
 		
 		if ( isset( $calendar_data['error'] ) ) {
 			$output = $this->renderError( $calendar_data['message'] );
 		} else {
 			$output = $this->renderCalendar( $calendar_data );
+			// 正常なカレンダーのみキャッシュ
+			$this->setCachedHtml( $args, $output );
 		}
 
 		do_action( 'ns_tour_price_after_calendar', $args );
 
 		return $output;
+	}
+
+	/**
+	 * HTMLキャッシュを取得
+	 *
+	 * @param array $args カレンダー引数
+	 * @return string|false キャッシュされたHTML、またはfalse
+	 */
+	private function getCachedHtml( $args ) {
+		$cache_key = $this->buildCacheKey( $args );
+		return get_transient( $cache_key );
+	}
+
+	/**
+	 * HTMLキャッシュを保存
+	 *
+	 * @param array $args カレンダー引数
+	 * @param string $html HTML文字列
+	 */
+	private function setCachedHtml( $args, $html ) {
+		$cache_key = $this->buildCacheKey( $args );
+		$options = get_option( 'ns_tour_price_options', array() );
+		$expiry = intval( $options['cache_expiry'] ?? 3600 );
+		
+		set_transient( $cache_key, $html, $expiry );
+	}
+
+	/**
+	 * キャッシュキーを構築
+	 *
+	 * @param array $args カレンダー引数
+	 * @return string キャッシュキー
+	 */
+	private function buildCacheKey( $args ) {
+		$options = get_option( 'ns_tour_price_options', array() );
+		
+		$key_components = array(
+			'tpc_html',
+			sanitize_text_field( $args['tour'] ?? 'A1' ),
+			sanitize_text_field( $args['month'] ?? gmdate( 'Y-m' ) ),
+			intval( $args['duration'] ?? 4 ),
+			intval( $options['heatmap_bins'] ?? 7 ),
+			sanitize_text_field( $options['heatmap_mode'] ?? 'quantile' ),
+			$args['heatmap'] ? '1' : '0',
+			$args['confirmed_only'] ? '1' : '0',
+			$args['show_legend'] ? '1' : '0',
+		);
+
+		// CSVファイルのmtimeハッシュも含める（データ変更検知）
+		$csv_hash = $this->getCsvMtimeHash();
+		if ( $csv_hash ) {
+			$key_components[] = $csv_hash;
+		}
+
+		return implode( '_', $key_components );
+	}
+
+	/**
+	 * CSVファイルのmtimeハッシュを取得（データ変更検知用）
+	 *
+	 * @return string|null ハッシュまたはnull
+	 */
+	private function getCsvMtimeHash() {
+		$csv_files = array( 'seasons.csv', 'base_prices.csv', 'solo_fees.csv', 'daily_flags.csv' );
+		$data_paths = array(
+			NS_TOUR_PRICE_PLUGIN_DIR . 'data/',
+			wp_upload_dir()['basedir'] . '/ns-tour_price/',
+		);
+
+		$mtimes = array();
+		foreach ( $csv_files as $filename ) {
+			foreach ( $data_paths as $path ) {
+				$full_path = $path . $filename;
+				if ( file_exists( $full_path ) ) {
+					$mtimes[ $filename ] = filemtime( $full_path );
+					break;
+				}
+			}
+		}
+
+		return empty( $mtimes ) ? null : md5( serialize( $mtimes ) );
 	}
 
 	private function renderCalendar( $calendar_data ) {

@@ -57,17 +57,22 @@ class NS_Tour_Price_CalendarBuilder {
 			$all_prices = $this->repo->getAllPricesFor( $args['tour'], $args['duration'] );
 			
 			if ( ! empty( $all_prices ) ) {
-				$global_min = min( $all_prices );
-				$global_max = max( $all_prices );
+				// 設定からビン数とモードを取得
+				$options = get_option( 'ns_tour_price_options', array() );
+				$bins = intval( $options['heatmap_bins'] ?? 7 );
+				$mode = sanitize_text_field( $options['heatmap_mode'] ?? 'quantile' );
+				
+				// quantileベースのビン境界を構築
+				$buckets = $this->heatmap->buildBuckets( $all_prices, $bins, $mode );
 				
 				// 当月の価格を抽出
 				$monthly_prices = $this->extractPrices( $calendar_days );
 				
-				// 全期間スケールでヒートマップクラスを生成
-				$heatmap_classes = $this->heatmap->generateHeatmapClasses( $monthly_prices, $global_min, $global_max );
+				// ビン境界を使用してヒートマップクラスを生成
+				$heatmap_classes = $this->heatmap->generateHeatmapClassesWithBuckets( $monthly_prices, $buckets );
 				
 				// 全期間価格を基準とした凡例を生成
-				$legend = $this->buildGlobalLegend( $all_prices, $global_min, $global_max );
+				$legend = $this->buildGlobalLegendWithBuckets( $all_prices, $buckets );
 			}
 		}
 
@@ -235,6 +240,38 @@ class NS_Tour_Price_CalendarBuilder {
 
 		// 全期間価格でヒートマップクラスを生成
 		$global_classes = $this->heatmap->generateHeatmapClasses( $all_prices, $global_min, $global_max );
+		
+		// 価格とクラスレベルのマッピングを作成
+		$prices_with_classes = array();
+		foreach ( $all_prices as $price ) {
+			$class_num = $global_classes[ $price ] ?? 0;
+			$prices_with_classes[ $class_num ][] = $price;
+		}
+
+		$legend = array();
+		for ( $i = 0; $i <= 9; $i++ ) {
+			if ( isset( $prices_with_classes[ $i ] ) ) {
+				$prices = $prices_with_classes[ $i ];
+				$legend[] = array(
+					'class' => 'hp-' . $i,
+					'min_price' => min( $prices ),
+					'max_price' => max( $prices ),
+					'formatted_min' => $this->formatPrice( min( $prices ) ),
+					'formatted_max' => $this->formatPrice( max( $prices ) ),
+				);
+			}
+		}
+
+		return $legend;
+	}
+
+	private function buildGlobalLegendWithBuckets( $all_prices, $buckets ) {
+		if ( empty( $all_prices ) || empty( $buckets ) ) {
+			return array();
+		}
+
+		// 全期間価格でビン境界ベースのクラスを生成
+		$global_classes = $this->heatmap->generateHeatmapClassesWithBuckets( $all_prices, $buckets );
 		
 		// 価格とクラスレベルのマッピングを作成
 		$prices_with_classes = array();

@@ -59,6 +59,7 @@ class NS_Tour_Price {
 	private function hooks() {
 		add_action( 'init', array( $this, 'register_blocks' ) );
 		add_action( 'init', array( $this, 'register_shortcodes' ) );
+		add_action( 'init', array( $this, 'register_rest_routes' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_frontend_assets' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_assets' ) );
 
@@ -73,6 +74,74 @@ class NS_Tour_Price {
 
 	public function register_shortcodes() {
 		add_shortcode( 'tour_price', array( $this, 'shortcode_callback' ) );
+	}
+
+	public function register_rest_routes() {
+		register_rest_route( 'ns-tour-price/v1', '/calendar', array(
+			'methods' => 'GET',
+			'callback' => array( $this, 'rest_calendar_callback' ),
+			'permission_callback' => '__return_true',
+			'args' => array(
+				'tour' => array(
+					'required' => false,
+					'type' => 'string',
+					'sanitize_callback' => 'sanitize_text_field',
+					'default' => 'A1',
+				),
+				'month' => array(
+					'required' => false,
+					'type' => 'string',
+					'sanitize_callback' => 'sanitize_text_field',
+					'default' => gmdate( 'Y-m' ),
+				),
+				'duration' => array(
+					'required' => false,
+					'type' => 'integer',
+					'sanitize_callback' => 'absint',
+					'default' => 4,
+				),
+				'heatmap' => array(
+					'required' => false,
+					'type' => 'boolean',
+					'default' => true,
+				),
+				'confirmed_only' => array(
+					'required' => false,
+					'type' => 'boolean',
+					'default' => false,
+				),
+				'show_legend' => array(
+					'required' => false,
+					'type' => 'boolean',
+					'default' => true,
+				),
+			),
+		) );
+	}
+
+	public function rest_calendar_callback( $request ) {
+		$args = array(
+			'tour' => $request->get_param( 'tour' ),
+			'month' => $request->get_param( 'month' ),
+			'duration' => $request->get_param( 'duration' ),
+			'heatmap' => $request->get_param( 'heatmap' ),
+			'confirmed_only' => $request->get_param( 'confirmed_only' ),
+			'show_legend' => $request->get_param( 'show_legend' ),
+		);
+
+		$renderer = new NS_Tour_Price_Renderer();
+		$html = $renderer->render( $args );
+
+		// 前後月のナビゲーション情報も返す
+		$prev_next = NS_Tour_Price_Helpers::month_prev_next( $args['month'] );
+
+		return new WP_REST_Response( array(
+			'success' => true,
+			'html' => $html,
+			'current_month' => $args['month'],
+			'prev_month' => $prev_next['prev'],
+			'next_month' => $prev_next['next'],
+		), 200 );
 	}
 
 	public function shortcode_callback( $atts ) {
@@ -105,6 +174,14 @@ class NS_Tour_Price {
 			array(),
 			NS_TOUR_PRICE_VERSION
 		);
+
+		wp_enqueue_script(
+			'ns-tour-price-navigation',
+			NS_TOUR_PRICE_PLUGIN_URL . 'assets/navigation.js',
+			array(),
+			NS_TOUR_PRICE_VERSION,
+			true
+		);
 	}
 
 	public function enqueue_admin_assets( $hook ) {
@@ -126,6 +203,8 @@ class NS_Tour_Price {
 			'week_start' => 'sunday',
 			'confirmed_badge_enabled' => false,
 			'cache_expiry' => 3600,
+			'heatmap_bins' => 7,
+			'heatmap_mode' => 'quantile',
 		);
 
 		add_option( 'ns_tour_price_options', $default_options );

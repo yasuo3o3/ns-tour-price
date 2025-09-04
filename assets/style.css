@@ -205,54 +205,67 @@
     z-index: 10;
 }
 
-/* ==== ヒートマップ色 (10段階) ==== */
+/* ==== ヒートマップ色 (知覚均等Turboパレット) ==== */
+:root {
+    --hp-0: #2d4f8e;
+    --hp-1: #336dbd;
+    --hp-2: #3a89d1;
+    --hp-3: #49a5d1;
+    --hp-4: #64c0bf;
+    --hp-5: #8bd18f;
+    --hp-6: #c4dd5e;
+    --hp-7: #f2c03f;
+    --hp-8: #f28f32;
+    --hp-9: #e34a33;
+}
+
 .ns-tour-price-calendar .hp-0 {
-    background-color: #1a73e8;
+    background-color: var(--hp-0);
     color: #ffffff;
 }
 
 .ns-tour-price-calendar .hp-1 {
-    background-color: #2d87f0;
+    background-color: var(--hp-1);
     color: #ffffff;
 }
 
 .ns-tour-price-calendar .hp-2 {
-    background-color: #4095f7;
+    background-color: var(--hp-2);
     color: #ffffff;
 }
 
 .ns-tour-price-calendar .hp-3 {
-    background-color: #54a3ff;
+    background-color: var(--hp-3);
     color: #ffffff;
 }
 
 .ns-tour-price-calendar .hp-4 {
-    background-color: #67b1ff;
+    background-color: var(--hp-4);
     color: #ffffff;
 }
 
 .ns-tour-price-calendar .hp-5 {
-    background-color: #7bbfff;
+    background-color: var(--hp-5);
     color: #000000;
 }
 
 .ns-tour-price-calendar .hp-6 {
-    background-color: #8ecd00;
+    background-color: var(--hp-6);
     color: #000000;
 }
 
 .ns-tour-price-calendar .hp-7 {
-    background-color: #ff9f00;
+    background-color: var(--hp-7);
     color: #000000;
 }
 
 .ns-tour-price-calendar .hp-8 {
-    background-color: #ff6d01;
+    background-color: var(--hp-8);
     color: #ffffff;
 }
 
 .ns-tour-price-calendar .hp-9 {
-    background-color: #d73027;
+    background-color: var(--hp-9);
     color: #ffffff;
 }
 
