@@ -55,8 +55,15 @@
     text-align: center;
 }
 
+.calendar-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
 .calendar-title {
-    margin: 0 0 8px 0;
+    margin: 0;
     font-size: 24px;
     font-weight: 700;
     letter-spacing: -0.025em;
@@ -308,8 +315,21 @@
         padding: 16px 20px;
     }
     
+    .calendar-title-row {
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+    
     .calendar-title {
         font-size: 20px;
+        text-align: center;
+    }
+    
+    .tpc-nav__btn {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
     }
     
     .calendar-day {
@@ -344,6 +364,11 @@
     .legend-color {
         width: 16px;
         height: 16px;
+    }
+    
+    .tpc-alert {
+        padding: 10px 16px;
+        font-size: 13px;
     }
 }
 
@@ -426,6 +451,60 @@
     outline-offset: -2px;
 }
 
+/* ==== 月送りナビゲーション ==== */
+.tpc-nav {
+    display: flex;
+    gap: 8px;
+}
+
+.tpc-nav__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 6px;
+    color: white;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    font-size: 16px;
+    line-height: 1;
+}
+
+.tpc-nav__btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+    color: white;
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+.tpc-nav__btn:active {
+    transform: translateY(0);
+}
+
+.tpc-nav__arrow {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* ==== 警告表示 ==== */
+.tpc-alert {
+    padding: 12px 20px;
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    border-left: 4px solid;
+}
+
+.tpc-alert--warn {
+    background: #fffbf0;
+    border-color: #f6ad55;
+    color: #744210;
+}
+
 /* 印刷用スタイル */
 @media print {
     .ns-tour-price-calendar {
@@ -441,5 +520,9 @@
     .calendar-day.has-price:hover {
         transform: none;
         box-shadow: none;
+    }
+    
+    .tpc-nav {
+        display: none;
     }
 }

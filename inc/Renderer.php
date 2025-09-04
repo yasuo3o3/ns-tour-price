@@ -47,18 +47,52 @@ class NS_Tour_Price_Renderer {
 			 data-duration="<?php echo esc_attr( $args['duration'] ); ?>">
 			
 			<div class="calendar-header">
-				<h3 class="calendar-title">
-					<?php printf( 
-						esc_html__( '%1$s年%2$s （%3$d日間）', 'ns-tour_price' ),
-						$month_data['year'],
-						$month_data['month_name'],
-						$args['duration']
-					); ?>
-				</h3>
+				<div class="calendar-title-row">
+					<h3 class="calendar-title">
+						<?php printf( 
+							esc_html__( '%1$s年%2$s （%3$d日間）', 'ns-tour_price' ),
+							$month_data['year'],
+							$month_data['month_name'],
+							$args['duration']
+						); ?>
+					</h3>
+					
+					<?php 
+					$month_nav = NS_Tour_Price_Helpers::month_prev_next( $args['month'] );
+					$current_url = remove_query_arg( 'tpc_month' );
+					
+					$prev_url = add_query_arg( array(
+						'tpc_month' => $month_nav['prev'],
+					), $current_url );
+					
+					$next_url = add_query_arg( array(
+						'tpc_month' => $month_nav['next'],
+					), $current_url );
+					?>
+					
+					<nav class="tpc-nav">
+						<a href="<?php echo esc_url( $prev_url ); ?>" class="tpc-nav__btn tpc-nav__btn--prev" aria-label="<?php esc_attr_e( '前月', 'ns-tour_price' ); ?>">
+							<span class="tpc-nav__arrow">◀</span>
+						</a>
+						<a href="<?php echo esc_url( $next_url ); ?>" class="tpc-nav__btn tpc-nav__btn--next" aria-label="<?php esc_attr_e( '翌月', 'ns-tour_price' ); ?>">
+							<span class="tpc-nav__arrow">▶</span>
+						</a>
+					</nav>
+				</div>
+				
 				<div class="calendar-meta">
 					<span class="tour-id"><?php printf( esc_html__( 'ツアー: %s', 'ns-tour_price' ), esc_html( $args['tour'] ) ); ?></span>
 				</div>
 			</div>
+
+			<?php if ( ! empty( $calendar_data['invalid_season_codes'] ) ) : ?>
+				<div class="tpc-alert tpc-alert--warn">
+					<?php printf(
+						esc_html__( '一部の season_code（%s）が seasons.csv に存在しません。価格表示が不完全になる可能性があります。', 'ns-tour_price' ),
+						esc_html( implode( ', ', $calendar_data['invalid_season_codes'] ) )
+					); ?>
+				</div>
+			<?php endif; ?>
 
 			<div class="calendar-grid">
 				<div class="calendar-weekdays">

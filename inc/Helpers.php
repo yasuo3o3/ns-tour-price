@@ -260,4 +260,59 @@ class NS_Tour_Price_Helpers {
 		$options = get_option( 'ns_tour_price_options', array() );
 		return ! empty( $options['confirmed_badge_enabled'] );
 	}
+
+	/**
+	 * 月を解決する（QueryString > 属性 > 現在月の優先順位）
+	 *
+	 * @param string $attr_month ブロック/ショートコード属性の月
+	 * @return string YYYY-MM形式の月文字列
+	 */
+	public static function resolve_month( $attr_month ) {
+		// ① $_GET['tpc_month'] が最優先
+		if ( ! empty( $_GET['tpc_month'] ) ) {
+			$get_month = sanitize_text_field( wp_unslash( $_GET['tpc_month'] ) );
+			if ( self::validateMonth( $get_month ) ) {
+				return $get_month;
+			}
+		}
+
+		// ② 属性の month
+		if ( ! empty( $attr_month ) ) {
+			$attr_month = sanitize_text_field( $attr_month );
+			if ( self::validateMonth( $attr_month ) ) {
+				return $attr_month;
+			}
+		}
+
+		// ③ 今日を含む月（フォールバック）
+		return gmdate( 'Y-m' );
+	}
+
+	/**
+	 * 指定月の前月・翌月を取得
+	 *
+	 * @param string $yyyymm YYYY-MM形式の月
+	 * @return array ['prev' => 'YYYY-MM', 'next' => 'YYYY-MM']
+	 */
+	public static function month_prev_next( $yyyymm ) {
+		if ( ! self::validateMonth( $yyyymm ) ) {
+			$yyyymm = gmdate( 'Y-m' );
+		}
+
+		$date = DateTime::createFromFormat( 'Y-m', $yyyymm );
+		if ( false === $date ) {
+			$date = new DateTime();
+		}
+
+		$prev_date = clone $date;
+		$prev_date->modify( '-1 month' );
+
+		$next_date = clone $date;
+		$next_date->modify( '+1 month' );
+
+		return array(
+			'prev' => $prev_date->format( 'Y-m' ),
+			'next' => $next_date->format( 'Y-m' ),
+		);
+	}
 }

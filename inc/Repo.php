@@ -143,10 +143,85 @@ class NS_Tour_Price_Repo {
 		return $this->loader->switchDataSource( $source_key );
 	}
 
+	/**
+	 * season_code の整合性をチェック
+	 * base_prices にあって seasons に無いコードの配列を返す
+	 *
+	 * @param string $tour_id ツアーID
+	 * @return array 不整合な season_code の配列
+	 */
+	public function validateSeasonCodes( $tour_id ) {
+		// キャッシュキーを生成
+		$cache_key = 'ns_tour_price_season_validation_' . $tour_id;
+		$cached = get_transient( $cache_key );
+		
+		if ( false !== $cached ) {
+			return $cached;
+		}
+
+		if ( ! $this->loader->isDataAvailable() ) {
+			return array();
+		}
+
+		$seasons = $this->getSeasons( $tour_id );
+		$prices = $this->getBasePrices( $tour_id );
+
+		if ( empty( $seasons ) || empty( $prices ) ) {
+			return array();
+		}
+
+		// seasons.csv から有効な season_code を取得
+		$valid_season_codes = array();
+		foreach ( $seasons as $season ) {
+			$valid_season_codes[] = $season['season_code'];
+		}
+		$valid_season_codes = array_unique( $valid_season_codes );
+
+		// base_prices.csv で使用されている season_code を取得
+		$used_season_codes = array();
+		foreach ( $prices as $price ) {
+			$used_season_codes[] = $price['season_code'];
+		}
+		$used_season_codes = array_unique( $used_season_codes );
+
+		// base_prices にあって seasons に無いコードを検出
+		$invalid_codes = array_diff( $used_season_codes, $valid_season_codes );
+
+		// 結果をキャッシュ（1時間）
+		set_transient( $cache_key, $invalid_codes, 3600 );
+
+		// 不整合があればログに記録
+		if ( ! empty( $invalid_codes ) ) {
+			error_log( sprintf(
+				'NS Tour Price: season_code mismatch for tour %s: %s',
+				$tour_id,
+				implode( ', ', $invalid_codes )
+			) );
+		}
+
+		return $invalid_codes;
+	}
+
 	public function clearCache() {
 		// CSV データソースのキャッシュをクリア
 		$csv_source = new NS_Tour_Price_DataSourceCsv();
 		$csv_source->clearCache();
+
+		// season_code 整合性チェックのキャッシュもクリア
+		global $wpdb;
+		$wpdb->query(
+			$wpdb->prepare(
+				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
+				$wpdb->esc_like( '_transient_ns_tour_price_season_validation_' ) . '%'
+			)
+		);
+
+		$wpdb->query(
+			$wpdb->prepare(
+				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
+				$wpdb->esc_like( '_transient_timeout_ns_tour_price_season_validation_' ) . '%'
+			)
+		);
 
 		// 他のキャッシュもクリア
 		delete_transient( 'ns_tour_price_calendar_cache' );

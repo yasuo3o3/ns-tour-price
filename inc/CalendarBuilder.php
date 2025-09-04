@@ -30,11 +30,18 @@ class NS_Tour_Price_CalendarBuilder {
 		);
 
 		$args = wp_parse_args( $args, $defaults );
+		
+		// 月を解決（QueryString > 属性 > 現在月の優先順位）
+		$args['month'] = NS_Tour_Price_Helpers::resolve_month( $args['month'] );
+		
 		$args = apply_filters( 'ns_tour_price_calendar_args', $args );
 
 		if ( ! $this->repo->isDataAvailable() ) {
 			return $this->buildErrorCalendar( __( 'データが見つかりません', 'ns-tour_price' ) );
 		}
+
+		// season_code の整合性をチェック
+		$invalid_season_codes = $this->repo->validateSeasonCodes( $args['tour'] );
 
 		$month_data = $this->generateMonthData( $args['month'] );
 		if ( ! $month_data ) {
@@ -55,6 +62,7 @@ class NS_Tour_Price_CalendarBuilder {
 			'heatmap_classes' => $heatmap_classes,
 			'args' => $args,
 			'legend' => $this->buildLegend( $calendar_days, $heatmap_classes ),
+			'invalid_season_codes' => $invalid_season_codes,
 		);
 	}
 

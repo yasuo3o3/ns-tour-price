@@ -90,9 +90,9 @@ class NS_Tour_Price {
 		$args['heatmap'] = filter_var( $args['heatmap'], FILTER_VALIDATE_BOOLEAN );
 		$args['duration'] = intval( $args['duration'] );
 
-		if ( empty( $args['month'] ) ) {
-			$args['month'] = gmdate( 'Y-m' );
-		}
+		// 月を解決（QueryString > 属性 > 現在月の優先順位）
+		// 注意: CalendarBuilder でも実行されるが、統一性のためここでも適用
+		$args['month'] = NS_Tour_Price_Helpers::resolve_month( $args['month'] );
 
 		$renderer = new NS_Tour_Price_Renderer();
 		return $renderer->render( $args );
