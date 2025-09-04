@@ -293,14 +293,14 @@ class NS_Tour_Price {
 			'ns-tour-price-frontend',
 			NS_TOUR_PRICE_PLUGIN_URL . 'assets/style.css',
 			array(),
-			NS_TOUR_PRICE_VERSION
+			filemtime( NS_TOUR_PRICE_PLUGIN_DIR . 'assets/style.css' )
 		);
 
 		wp_enqueue_script(
 			'ns-tour-price-navigation',
 			NS_TOUR_PRICE_PLUGIN_URL . 'assets/navigation.js',
 			array(),
-			NS_TOUR_PRICE_VERSION,
+			filemtime( NS_TOUR_PRICE_PLUGIN_DIR . 'assets/navigation.js' ),
 			true
 		);
 
@@ -308,7 +308,7 @@ class NS_Tour_Price {
 			'ns-tour-price-booking-preview',
 			NS_TOUR_PRICE_PLUGIN_URL . 'assets/booking-preview.js',
 			array(),
-			NS_TOUR_PRICE_VERSION,
+			filemtime( NS_TOUR_PRICE_PLUGIN_DIR . 'assets/booking-preview.js' ),
 			true
 		);
 	}
