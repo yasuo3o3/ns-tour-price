@@ -179,6 +179,38 @@ class NS_Tour_Price_Admin {
 				<h3><?php esc_html_e( 'Block', 'ns-tour_price' ); ?></h3>
 				<p><?php esc_html_e( 'Search for "ツアー価格カレンダー" in the block editor.', 'ns-tour_price' ); ?></p>
 			</div>
+
+			<hr>
+
+			<h2><?php esc_html_e( 'Season Code エイリアス', 'ns-tour_price' ); ?></h2>
+
+			<div class="card">
+				<h3><?php esc_html_e( 'season_aliases.csv について', 'ns-tour_price' ); ?></h3>
+				<p><?php esc_html_e( 'seasons.csv と base_prices.csv で異なる season_code 表記（A/B/C と LOW/MID/HIGH など）を使用している場合、season_aliases.csv を配置することで表記差を自動吸収できます。', 'ns-tour_price' ); ?></p>
+				
+				<p><strong><?php esc_html_e( '配置場所:', 'ns-tour_price' ); ?></strong></p>
+				<ol>
+					<li><code><?php echo esc_html( NS_TOUR_PRICE_PLUGIN_DIR . 'data/season_aliases.csv' ); ?></code> (<?php esc_html_e( '優先', 'ns-tour_price' ); ?>)</li>
+					<li><code><?php echo esc_html( wp_upload_dir()['basedir'] . '/ns-tour_price/season_aliases.csv' ); ?></code> (<?php esc_html_e( 'フォールバック', 'ns-tour_price' ); ?>)</li>
+				</ol>
+
+				<p><strong><?php esc_html_e( 'CSVスキーマ:', 'ns-tour_price' ); ?></strong></p>
+				<pre style="background: #f1f1f1; padding: 10px; border-radius: 4px;">tour_id,alias,season_code
+A1,A,LOW
+A1,B,HIGH
+A1,C,MID
+A1,GREEN,LOW
+A1,ハイ,HIGH
+A1,WINTER,WINTER</pre>
+
+				<p><strong><?php esc_html_e( '機能:', 'ns-tour_price' ); ?></strong></p>
+				<ul>
+					<li><?php esc_html_e( 'base_prices.csv で "A" → seasons.csv の "LOW" にマッピング', 'ns-tour_price' ); ?></li>
+					<li><?php esc_html_e( '大文字・小文字、全角・半角、前後空白の差も自動正規化', 'ns-tour_price' ); ?></li>
+					<li><?php esc_html_e( 'エイリアスファイルがない環境でも、正規化のみで基本的な差は吸収', 'ns-tour_price' ); ?></li>
+					<li><?php esc_html_e( '不整合がある場合は error_log に詳細、フロントエンドには警告表示', 'ns-tour_price' ); ?></li>
+				</ul>
+			</div>
 		</div>
 
 		<script type="text/javascript">

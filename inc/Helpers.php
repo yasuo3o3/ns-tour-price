@@ -315,4 +315,32 @@ class NS_Tour_Price_Helpers {
 			'next' => $next_date->format( 'Y-m' ),
 		);
 	}
+
+	/**
+	 * season_code を正規化する
+	 * 1. 前後空白除去
+	 * 2. 全角英数→半角（NFKC正規化）
+	 * 3. 大文字化
+	 *
+	 * @param string $code season_code
+	 * @return string 正規化後の season_code
+	 */
+	public static function normalize_season_code( $code ) {
+		if ( ! is_string( $code ) ) {
+			return '';
+		}
+
+		// 1. 前後空白除去
+		$normalized = trim( $code );
+
+		// 2. 全角英数→半角（NFKC正規化）
+		if ( class_exists( 'Normalizer' ) ) {
+			$normalized = Normalizer::normalize( $normalized, Normalizer::FORM_KC );
+		}
+
+		// 3. 大文字化
+		$normalized = mb_strtoupper( $normalized, 'UTF-8' );
+
+		return $normalized;
+	}
 }
