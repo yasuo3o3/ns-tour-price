@@ -37,11 +37,19 @@ class NS_Tour_Price_Admin {
 
 	public function adminInit() {
 		register_setting( 'ns_tour_price_settings', 'ns_tour_price_options', array( $this, 'sanitizeOptions' ) );
+		register_setting( 'ns_tour_price_settings', 'ns_tour_price_season_colors', array( $this, 'sanitizeSeasonColors' ) );
 
 		add_settings_section(
 			'ns_tour_price_general',
 			__( 'General Settings', 'ns-tour_price' ),
 			array( $this, 'generalSectionCallback' ),
+			'ns_tour_price_settings'
+		);
+
+		add_settings_section(
+			'ns_tour_price_annual',
+			__( 'Annual View Settings', 'ns-tour_price' ),
+			array( $this, 'annualSectionCallback' ),
 			'ns_tour_price_settings'
 		);
 
@@ -91,6 +99,14 @@ class NS_Tour_Price_Admin {
 			array( $this, 'heatmapModeFieldCallback' ),
 			'ns_tour_price_settings',
 			'ns_tour_price_general'
+		);
+
+		add_settings_field(
+			'season_colors',
+			__( 'Season Colors', 'ns-tour_price' ),
+			array( $this, 'seasonColorsFieldCallback' ),
+			'ns_tour_price_settings',
+			'ns_tour_price_annual'
 		);
 
 		add_settings_field(
@@ -676,5 +692,86 @@ A1,WINTER,WINTER</pre>
 			</div>
 		</div>
 		<?php
+	}
+
+	/**
+	 * 年間ビューセクションコールバック
+	 */
+	public function annualSectionCallback() {
+		echo '<p>' . esc_html__( '年間価格概要機能の設定', 'ns-tour_price' ) . '</p>';
+	}
+
+	/**
+	 * シーズン色設定フィールド
+	 */
+	public function seasonColorsFieldCallback() {
+		$season_colors = get_option( 'ns_tour_price_season_colors', array() );
+		$seasons_data = $this->repo->getSeasons();
+		$season_codes = array();
+		
+		// 既存のシーズンコードを取得
+		foreach ( $seasons_data as $season ) {
+			if ( ! empty( $season['season_code'] ) && ! in_array( $season['season_code'], $season_codes ) ) {
+				$season_codes[] = $season['season_code'];
+			}
+		}
+		
+		if ( empty( $season_codes ) ) {
+			$season_codes = array( 'A', 'B', 'C', 'D', 'E', 'F' ); // デフォルト
+		}
+
+		echo '<table class="widefat">';
+		echo '<thead><tr><th>' . esc_html__( 'Season Code', 'ns-tour_price' ) . '</th><th>' . esc_html__( 'Color', 'ns-tour_price' ) . '</th></tr></thead>';
+		echo '<tbody>';
+		
+		foreach ( $season_codes as $code ) {
+			$color = isset( $season_colors[ $code ] ) ? $season_colors[ $code ] : $this->getDefaultSeasonColor( $code );
+			echo '<tr>';
+			echo '<td><strong>' . esc_html( $code ) . '</strong></td>';
+			echo '<td>';
+			echo '<input type="color" name="ns_tour_price_season_colors[' . esc_attr( $code ) . ']" value="' . esc_attr( $color ) . '" />';
+			echo ' <code>' . esc_html( $color ) . '</code>';
+			echo '</td>';
+			echo '</tr>';
+		}
+		
+		echo '</tbody></table>';
+		echo '<p class="description">' . esc_html__( '年間ビューでのシーズン表示色を設定します。未設定の場合はデフォルト色が使用されます。', 'ns-tour_price' ) . '</p>';
+	}
+
+	/**
+	 * デフォルトシーズン色を取得
+	 */
+	private function getDefaultSeasonColor( $season_code ) {
+		$default_colors = array(
+			'A' => '#4CAF50', // 緑
+			'B' => '#E91E63', // ピンク
+			'C' => '#FF9800', // オレンジ
+			'D' => '#2196F3', // 青
+			'E' => '#9C27B0', // 紫
+			'F' => '#795548'  // 茶
+		);
+
+		return $default_colors[ $season_code ] ?? '#9E9E9E';
+	}
+
+	/**
+	 * シーズン色設定のサニタイズ
+	 */
+	public function sanitizeSeasonColors( $input ) {
+		$sanitized = array();
+		
+		if ( is_array( $input ) ) {
+			foreach ( $input as $code => $color ) {
+				$sanitized_code = sanitize_text_field( $code );
+				$sanitized_color = sanitize_hex_color( $color );
+				
+				if ( $sanitized_color ) {
+					$sanitized[ $sanitized_code ] = $sanitized_color;
+				}
+			}
+		}
+		
+		return $sanitized;
 	}
 }

@@ -23,6 +23,8 @@
             navButton: '.tpc-nav__btn',
             navLink: '.tpc-nav-link', // durationタブも含む汎用セレクター
             loading: '.tpc-loading',
+            annualCheckbox: '.tpc-annual-checkbox',
+            annualRoot: '.tpc-annual-root',
         },
         CLASSES: {
             loading: 'tpc-loading',
@@ -30,9 +32,13 @@
         },
         API: {
             endpoint: '/wp-json/ns-tour-price/v1/calendar',
+            annualEndpoint: '/wp-json/ns-tour-price/v1/annual',
             timeout: 10000,
         }
     };
+
+    // 年間ビューキャッシュ
+    const annualCache = new Map();
 
     // 初期化
     document.addEventListener('DOMContentLoaded', function() {
@@ -47,6 +53,7 @@
         
         calendars.forEach(function(calendar) {
             setupCalendarNavigation(calendar);
+            setupAnnualView(calendar);
         });
     }
 
@@ -75,6 +82,133 @@
                 }
             });
         });
+    }
+
+    /**
+     * 年間ビュー機能をセットアップ
+     */
+    function setupAnnualView(calendar) {
+        const checkbox = calendar.querySelector(CONFIG.SELECTORS.annualCheckbox);
+        if (!checkbox) return;
+
+        checkbox.addEventListener('change', function() {
+            if (this.checked) {
+                loadAnnualView(calendar);
+            } else {
+                hideAnnualView(calendar);
+            }
+        });
+    }
+
+    /**
+     * 年間ビューを読み込み
+     */
+    function loadAnnualView(calendar) {
+        const tour = calendar.dataset.tour || 'A1';
+        const duration = parseInt(calendar.dataset.duration) || 4;
+        const month = calendar.dataset.month || getCurrentMonth();
+        const year = parseInt(month.substring(0, 4));
+
+        const cacheKey = `${tour}-${duration}-${year}`;
+        
+        // キャッシュチェック
+        if (annualCache.has(cacheKey)) {
+            displayAnnualView(calendar, annualCache.get(cacheKey));
+            return;
+        }
+
+        // API呼び出し
+        const params = new URLSearchParams({
+            tour: tour,
+            duration: duration,
+            year: year,
+            show: true
+        });
+
+        fetch(CONFIG.API.annualEndpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: params,
+            signal: AbortSignal.timeout(CONFIG.API.timeout)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('HTTP ' + response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success && data.html) {
+                annualCache.set(cacheKey, data.html);
+                displayAnnualView(calendar, data.html);
+            } else {
+                throw new Error('Invalid annual view data');
+            }
+        })
+        .catch(error => {
+            console.error('Annual view load failed:', error);
+            showAnnualError(calendar, '年間ビューの読み込みに失敗しました');
+        });
+    }
+
+    /**
+     * 年間ビューを表示
+     */
+    function displayAnnualView(calendar, html) {
+        let annualRoot = calendar.querySelector(CONFIG.SELECTORS.annualRoot);
+        if (!annualRoot) {
+            annualRoot = document.createElement('div');
+            annualRoot.className = 'tpc-annual-root';
+            calendar.appendChild(annualRoot);
+        }
+        
+        annualRoot.innerHTML = html;
+        annualRoot.style.display = 'block';
+    }
+
+    /**
+     * 年間ビューを非表示
+     */
+    function hideAnnualView(calendar) {
+        const annualRoot = calendar.querySelector(CONFIG.SELECTORS.annualRoot);
+        if (annualRoot) {
+            annualRoot.style.display = 'none';
+        }
+    }
+
+    /**
+     * 年間ビューエラー表示
+     */
+    function showAnnualError(calendar, message) {
+        let annualRoot = calendar.querySelector(CONFIG.SELECTORS.annualRoot);
+        if (!annualRoot) {
+            annualRoot = document.createElement('div');
+            annualRoot.className = 'tpc-annual-root';
+            calendar.appendChild(annualRoot);
+        }
+        
+        annualRoot.innerHTML = `<div class="tpc-annual-error">${message}</div>`;
+        annualRoot.style.display = 'block';
+    }
+
+    /**
+     * ナビゲーション更新時の年間ビュー更新
+     */
+    function updateAnnualViewIfNeeded(calendar) {
+        const checkbox = calendar.querySelector(CONFIG.SELECTORS.annualCheckbox);
+        if (checkbox && checkbox.checked) {
+            loadAnnualView(calendar);
+        }
+    }
+
+    /**
+     * 現在月取得
+     */
+    function getCurrentMonth() {
+        const now = new Date();
+        return now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
     }
 
     /**
@@ -108,6 +242,8 @@
                 updateCalendarContent(calendar, data.html);
                 updateBrowserUrl(url);
                 setupCalendarNavigation(calendar); // 新しいナビボタンにイベント再設定
+                setupAnnualView(calendar); // 年間ビューも再設定
+                updateAnnualViewIfNeeded(calendar);
             } else {
                 throw new Error('Invalid response data');
             }
