@@ -272,54 +272,8 @@ class NS_Tour_Price_Annual_Builder {
 	 * シーズン料金要約を生成（結合・並び・価格修正版）
 	 */
 	private function summarizeSeasonPrices( $tour, $duration, $year ) {
-		$seasons_data = $this->repo->getSeasons( $tour );
-		$prices_data = $this->repo->getBasePrices( $tour );
-		$groups = array();
-
-		// season_code 単位でグループ化
-		foreach ( $seasons_data as $season ) {
-			$season_code = $season['season_code'];
-			
-			// 当年に該当する期間チェック
-			$periods = $this->getSeasonRangesForYear( $season, $year );
-			if ( empty( $periods ) ) {
-				continue;
-			}
-
-			if ( ! isset( $groups[ $season_code ] ) ) {
-				$groups[ $season_code ] = array(
-					'label' => $season['label'] ?? $season_code,
-					'ranges' => array(),
-					'price' => null,
-					'color' => '#6c757d',
-				);
-			}
-
-			// 期間を追加
-			$groups[ $season_code ]['ranges'] = array_merge( $groups[ $season_code ]['ranges'], $periods );
-		}
-
-		// A→Z順で並び替え
-		uksort( $groups, 'strnatcmp' );
-
-		// 価格と色を設定
-		foreach ( $groups as $season_code => &$group ) {
-			// 価格検索
-			$group['price'] = $this->findSeasonPrice( $tour, $season_code, $duration, $prices_data );
-			
-			// シーズン色取得
-			$group['color'] = $this->getSeasonColorFromMap( $season_code );
-			
-			// 期間をテキスト化（「、」で結合）
-			$group['ranges_text'] = implode( '、', array_map( function( $range ) {
-				return sprintf( '%d/%d–%d/%d', 
-					$range['start_month'], $range['start_day'],
-					$range['end_month'], $range['end_day']
-				);
-			}, $group['ranges'] ) );
-		}
-
-		return $groups;
+		// 新しいRepo関数を使用して安全なデータを取得
+		return $this->repo->getSeasonSummaryForYear( $tour, $year, $duration );
 	}
 
 	/**
@@ -538,18 +492,18 @@ class NS_Tour_Price_Annual_Builder {
 							</tr>
 						</thead>
 						<tbody>
-							<?php foreach ( $season_summary as $season ) : ?>
+							<?php foreach ( $season_summary as $code => $season ) : 
+								$label = $season['label'] ?? $code;
+								$periods = ( isset( $season['periods'] ) && is_array( $season['periods'] ) ) ? $season['periods'] : array();
+								$price = $season['price'] ?? null;
+								
+								$period_text = $periods ? implode( '、', $periods ) : '—';
+								$price_text = ( $price !== null && $price > 0 ) ? '¥' . number_format( $price ) : '—';
+							?>
 							<tr>
-								<td>
-									<span class="tpc-season-chip" style="background-color: <?php echo esc_attr( $season['color'] ); ?>"></span>
-									<span class="tpc-season-label"><?php echo esc_html( $season['season_label'] ); ?></span>
-								</td>
-								<td class="tpc-season-periods">
-									<?php echo esc_html( implode( ', ', $season['periods'] ) ); ?>
-								</td>
-								<td class="tpc-season-price">
-									<?php echo esc_html( $season['formatted_price'] ); ?>
-								</td>
+								<td class="season-code"><?php echo esc_html( $label ); ?></td>
+								<td class="season-periods"><?php echo esc_html( $period_text ); ?></td>
+								<td class="season-price"><?php echo esc_html( $price_text ); ?></td>
 							</tr>
 							<?php endforeach; ?>
 						</tbody>

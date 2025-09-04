@@ -901,4 +901,107 @@ class NS_Tour_Price_Repo {
 
 		return null;
 	}
+
+	/**
+	 * 指定 tour/year のシーズンを season_code ごとに結合して返す。
+	 * 戻り値: [
+	 *   'A' => ['label' => 'A 区分', 'periods' => ['4/15–4/28'], 'price' => 138000],
+	 *   'B' => ['label' => 'B 区分', 'periods' => ['4/29–5/6'],  'price' => 148000],
+	 *   ...
+	 * ]
+	 */
+	public function getSeasonSummaryForYear( $tour_id, $year, $duration ) {
+		$seasons = $this->getSeasons( $tour_id );
+		$prices = $this->getBasePrices( $tour_id );
+		$out = array();
+
+		if ( empty( $seasons ) ) {
+			return $out;
+		}
+
+		foreach ( $seasons as $season ) {
+			// 正規化
+			$code = isset( $season['season_code'] ) ? NS_Tour_Price_Helpers::normalize_season_code( $season['season_code'] ) : '';
+			if ( $code === '' ) {
+				continue;
+			}
+
+			$label = isset( $season['season_label'] ) && $season['season_label'] !== '' ? $season['season_label'] : $code;
+
+			// 日付正規化（YYYY/MM/DD or YYYY-MM-DD を許容）
+			$s = $this->normalizeDateFlexible( $season['date_start'] ?? '' );
+			$e = $this->normalizeDateFlexible( $season['date_end'] ?? '' );
+			if ( ! $s || ! $e ) {
+				continue;
+			}
+
+			// 年でフィルタ（区間が year と交差するものを残す）
+			$sy = (int) substr( $s, 0, 4 );
+			$ey = (int) substr( $e, 0, 4 );
+			if ( $ey < $year || $sy > $year ) {
+				continue; // 当該年にかすりもしない
+			}
+
+			// 当該年に切り詰めて "M/D–M/D" 文字列を作成
+			$ss = ( $sy < $year ) ? "$year-01-01" : $s;
+			$ee = ( $ey > $year ) ? "$year-12-31" : $e;
+			$period = $this->formatMonthDayRange( $ss, $ee ); // 例: 4/15–4/28
+
+			if ( ! isset( $out[ $code ] ) ) {
+				// 価格は duration で引き当て（なければ null）
+				$price = $this->findPrice( $prices, $code, $duration );
+				$out[ $code ] = array(
+					'label'   => $label,
+					'periods' => array(),
+					'price'   => $price,
+				);
+			}
+			$out[ $code ]['periods'][] = $period;
+		}
+
+		// 自然順でキーソート（A,B,C...,Z,AA...）
+		uksort( $out, 'strnatcmp' );
+
+		// periods 重複除去＆安定ソート
+		foreach ( $out as &$v ) {
+			$v['periods'] = array_values( array_unique( $v['periods'] ) );
+			sort( $v['periods'] );
+		}
+		return $out;
+	}
+
+	/** 'YYYY/MM/DD' or 'YYYY-MM-DD' → 'Y-m-d' | false */
+	private function normalizeDateFlexible( $s ) {
+		$s = trim( $s );
+		if ( $s === '' ) {
+			return false;
+		}
+		$s = str_replace( '/', '-', $s );
+		$t = strtotime( $s );
+		return $t ? date( 'Y-m-d', $t ) : false;
+	}
+
+	/** 'Y-m-d' 2つ → 'n/j–n/j' */
+	private function formatMonthDayRange( $start, $end ) {
+		$ss = date( 'n/j', strtotime( $start ) );
+		$ee = date( 'n/j', strtotime( $end ) );
+		return $ss . '–' . $ee;
+	}
+
+	/** base_prices から season_code+duration の価格を取得 */
+	private function findPrice( $prices, $code, $duration ) {
+		if ( empty( $prices ) ) {
+			return null;
+		}
+
+		foreach ( $prices as $price_row ) {
+			$row_season = NS_Tour_Price_Helpers::normalize_season_code( $price_row['season_code'] ?? '' );
+			$row_duration = intval( $price_row['duration_days'] ?? 0 );
+
+			if ( $row_season === $code && $row_duration === $duration ) {
+				return intval( $price_row['base_price'] ?? 0 );
+			}
+		}
+		return null;
+	}
 }
