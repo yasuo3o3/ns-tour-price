@@ -91,12 +91,18 @@ class NS_Tour_Price_Repo {
 		return self::$instance;
 	}
 
-	public function getSeasons( $tour_id ) {
+	public function getSeasons( $tour_id = null ) {
 		if ( ! $this->loader->isDataAvailable() ) {
 			return array();
 		}
 
 		$source = $this->loader->getActiveSource();
+		
+		// $tour_id が null の場合は全ツアー横断でseasons取得
+		if ( $tour_id === null ) {
+			return $source->getAllSeasons();
+		}
+		
 		return $source->getSeasons( $tour_id );
 	}
 
@@ -1003,5 +1009,24 @@ class NS_Tour_Price_Repo {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * 全ツアー横断で season_code をユニーク収集して返す（正規化&自然順）
+	 */
+	public function getDistinctSeasonCodes() {
+		$rows = $this->getSeasons( null ); // 全シーズン取得
+		$codes = array();
+		
+		foreach ( $rows as $r ) {
+			$code = isset( $r['season_code'] ) ? NS_Tour_Price_Helpers::normalize_season_code( $r['season_code'] ) : '';
+			if ( $code !== '' ) {
+				$codes[ $code ] = true;
+			}
+		}
+		
+		$list = array_keys( $codes );
+		natsort( $list );
+		return array_values( $list );
 	}
 }

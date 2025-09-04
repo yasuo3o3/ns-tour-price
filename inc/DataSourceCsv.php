@@ -201,6 +201,42 @@ class NS_Tour_Price_DataSourceCsv implements NS_Tour_Price_DataSourceInterface {
 		return $result;
 	}
 
+	public function getAllSeasons() {
+		$cache_key = $this->cache_prefix . 'all_seasons';
+		$cached = get_transient( $cache_key );
+		
+		if ( false !== $cached ) {
+			return $cached;
+		}
+
+		$data = $this->readCsvFile( 'seasons.csv' );
+		$result = array();
+
+		foreach ( $data as $row ) {
+			if ( ! isset( $row['tour_id'] ) ) {
+				continue;
+			}
+
+			$raw_start = $row['date_start'] ?? '';
+			$raw_end = $row['date_end'] ?? '';
+
+			$season = array(
+				'tour_id' => sanitize_text_field( $row['tour_id'] ),
+				'season_code' => sanitize_text_field( $row['season_code'] ),
+				'season_label' => isset( $row['season_label'] ) ? sanitize_text_field( $row['season_label'] ) : '',
+				'date_start' => $raw_start,
+				'date_end' => $raw_end,
+			);
+
+			if ( $this->validateSeasonData( $season ) ) {
+				$result[] = $season;
+			}
+		}
+
+		set_transient( $cache_key, $result, $this->cache_expiry );
+		return $result;
+	}
+
 	public function getBasePrices( $tour_id ) {
 		$cache_key = $this->cache_prefix . 'prices_' . $tour_id;
 		$cached = get_transient( $cache_key );

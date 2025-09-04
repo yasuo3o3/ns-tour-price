@@ -706,18 +706,11 @@ A1,WINTER,WINTER</pre>
 	 */
 	public function seasonColorsFieldCallback() {
 		$season_colors = get_option( 'ns_tour_price_season_colors', array() );
-		$seasons_data = $this->repo->getSeasons();
-		$season_codes = array();
-		
-		// 既存のシーズンコードを取得
-		foreach ( $seasons_data as $season ) {
-			if ( ! empty( $season['season_code'] ) && ! in_array( $season['season_code'], $season_codes ) ) {
-				$season_codes[] = $season['season_code'];
-			}
-		}
+		$season_codes = $this->repo->getDistinctSeasonCodes();
 		
 		if ( empty( $season_codes ) ) {
-			$season_codes = array( 'A', 'B', 'C', 'D', 'E', 'F' ); // デフォルト
+			echo '<p>' . esc_html__( '現在、seasons.csv にシーズンレコードがありません。CSVファイルをアップロードしてください。', 'ns-tour_price' ) . '</p>';
+			return;
 		}
 
 		echo '<table class="widefat">';
@@ -725,7 +718,8 @@ A1,WINTER,WINTER</pre>
 		echo '<tbody>';
 		
 		foreach ( $season_codes as $code ) {
-			$color = isset( $season_colors[ $code ] ) ? $season_colors[ $code ] : $this->getDefaultSeasonColor( $code );
+			$current = $season_colors[ $code ] ?? '';
+			$color = $current !== '' ? $current : $this->getDefaultSeasonColor( $code );
 			echo '<tr>';
 			echo '<td><strong>' . esc_html( $code ) . '</strong></td>';
 			echo '<td>';

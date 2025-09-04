@@ -20,6 +20,13 @@ interface NS_Tour_Price_DataSourceInterface {
 	public function getSeasons( $tour_id );
 
 	/**
+	 * 全ツアーのシーズン情報を取得
+	 *
+	 * @return array 全シーズン情報の配列
+	 */
+	public function getAllSeasons();
+
+	/**
 	 * ベース価格情報を取得
 	 *
 	 * @param string $tour_id ツアーID
