@@ -729,6 +729,7 @@
                 
                 this.state.duration = duration;
                 this.refreshQuote();
+                this.refreshCalendar();
             }
         },
         
@@ -795,6 +796,35 @@
             if (this.els.submit) {
                 this.els.submit.disabled = false;
             }
+        },
+        
+        refreshCalendar: function() {
+            const calendar = this.els.calendar;
+            if (!calendar) return;
+            
+            // カレンダーのdata-durationを更新
+            calendar.dataset.duration = this.state.duration;
+            
+            // カレンダーを再読み込み
+            const tour = this.state.tour;
+            const currentMonth = calendar.dataset.currentMonth || new Date().toISOString().slice(0, 7);
+            const url = '/wp-json/ns-tour-price/v1/calendar?' + 
+                       new URLSearchParams({
+                           tour: tour,
+                           duration: this.state.duration,
+                           month: currentMonth
+                       }).toString();
+            
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.html) {
+                        updateCalendarContent(calendar, data.html);
+                    }
+                })
+                .catch(error => {
+                    console.error('Calendar refresh failed:', error);
+                });
         },
         
         renderEmpty: function() {
