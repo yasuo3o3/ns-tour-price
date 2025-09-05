@@ -567,7 +567,7 @@
     flex-wrap: wrap;
 }
 
-.tpc-duration-tab {
+.tpc-duration-tab-radio {
     display: flex;
     align-items: center;
     cursor: pointer;
@@ -578,22 +578,22 @@
     transition: all 0.2s ease;
 }
 
-.tpc-duration-tab input[type="radio"] {
+.tpc-duration-tab-radio input[type="radio"] {
     display: none;
 }
 
-.tpc-duration-tab.active {
+.tpc-duration-tab-radio.active {
     background: #4299e1;
     border-color: #4299e1;
     color: white;
 }
 
-.tpc-duration-tab:hover {
+.tpc-duration-tab-radio:hover {
     border-color: #4299e1;
     background: #f7fafc;
 }
 
-.tpc-duration-tab.active:hover {
+.tpc-duration-tab-radio.active:hover {
     background: #3182ce;
 }
 
@@ -1436,7 +1436,7 @@
     align-items: center;
     justify-content: center;
     padding: 6px 12px;
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(0, 0, 0, 0.8);
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 20px;
     color: white;
@@ -1462,14 +1462,14 @@
 }
 
 .tpc-duration-tab.is-active {
-    background: rgba(255, 255, 255, 0.9);
+    background: #ffffff;
     color: #2d3748;
-    border-color: rgba(255, 255, 255, 0.9);
+    border-color: #ffffff;
     font-weight: 600;
 }
 
 .tpc-duration-tab.is-active:hover {
-    background: rgba(255, 255, 255, 0.95);
+    background: #f7fafc;
     color: #2d3748;
     transform: none;
 }
