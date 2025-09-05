@@ -58,6 +58,11 @@ if ( ! $calendar_data || isset( $calendar_data['error'] ) ) {
 				); ?>
 			</span>
 		</div>
+		<div class="tpc-annual-toggle">
+			<label>
+				<input type="checkbox" id="tpc-annual-checkbox"> <?php esc_html_e( '年間価格概要を表示', 'ns-tour_price' ); ?>
+			</label>
+		</div>
 	</div>
 
 	<?php do_action( 'ns_tour_price_before_calendar_grid', $calendar_data ); ?>
