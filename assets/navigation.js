@@ -473,7 +473,19 @@
             const calendars = document.querySelectorAll(CONFIG.SELECTORS.calendar);
             
             calendars.forEach(function(calendar) {
-                // 年間ビュー切替チェックボックスは既にテンプレート側で生成済み
+                // 年間ビュー切替チェックボックスを確認・追加
+                const header = calendar.querySelector('.calendar-header');
+                if (header && !header.querySelector('.tpc-annual-toggle')) {
+                    const toggleContainer = document.createElement('div');
+                    toggleContainer.className = 'tpc-annual-toggle';
+                    toggleContainer.innerHTML = `
+                        <label>
+                            <input type="checkbox" id="tpc-annual-checkbox"> 年間価格概要を表示
+                        </label>
+                    `;
+                    
+                    header.appendChild(toggleContainer);
+                }
                 
                 // 年間ビュー表示エリアを追加
                 if (!calendar.querySelector('#tpc-annual-root')) {
