@@ -1836,13 +1836,43 @@
       display: flex;
       gap: 20px;
       align-items: flex-start;
+      max-width: 1400px;
+      margin: 0 auto;
   }
 
   .ns-tour-price-calendar {
       flex: 1;
+      min-width: 800px;
   }
 
   .tpc-booking-panel {
       flex-shrink: 0;
       width: 320px;
+  }
+
+  @media (max-width: 1200px) {
+      .tpc-booking-container {
+          max-width: 1200px;
+      }
+      
+      .ns-tour-price-calendar {
+          min-width: 600px;
+      }
+  }
+
+  @media (max-width: 768px) {
+      .tpc-booking-container {
+          flex-direction: column;
+          gap: 15px;
+          margin: 10px;
+      }
+      
+      .ns-tour-price-calendar {
+          min-width: unset;
+      }
+      
+      .tpc-booking-panel {
+          width: 100%;
+          max-width: none;
+      }
   }
