@@ -169,6 +169,16 @@ class NS_Tour_Price_Admin {
 				</details>
 			</div>
 
+			<!-- 開発用クイックキャッシュクリア -->
+			<div class="card" style="background: #f0f8ff; border-left: 4px solid #0073aa; margin: 10px 0;">
+				<h3 style="margin-top: 10px;"><?php esc_html_e( 'Quick Cache Clear', 'ns-tour_price' ); ?></h3>
+				<p style="margin: 5px 0;"><?php esc_html_e( 'Development shortcut - Clear all cached data quickly.', 'ns-tour_price' ); ?></p>
+				<button type="button" class="button button-primary" id="quick-clear-cache-btn">
+					<?php esc_html_e( 'Clear Cache', 'ns-tour_price' ); ?>
+				</button>
+				<span id="quick-cache-status" style="margin-left: 10px;"></span>
+			</div>
+
 			<div class="notice notice-warning">
 				<p><strong><?php esc_html_e( 'CSV File Locations:', 'ns-tour_price' ); ?></strong></p>
 				<ol>
@@ -327,6 +337,8 @@ A1,WINTER,WINTER</pre>
 		document.addEventListener('DOMContentLoaded', function() {
 			const clearCacheBtn = document.getElementById('clear-cache-btn');
 			const cacheStatus = document.getElementById('cache-status');
+			const quickClearCacheBtn = document.getElementById('quick-clear-cache-btn');
+			const quickCacheStatus = document.getElementById('quick-cache-status');
 			const testDataBtn = document.getElementById('test-data-btn');
 			const testResults = document.getElementById('test-results');
 
@@ -353,6 +365,33 @@ A1,WINTER,WINTER</pre>
 					cacheStatus.innerHTML = '<span style="color: red;">❌ Error occurred</span>';
 					clearCacheBtn.disabled = false;
 					setTimeout(() => { cacheStatus.innerHTML = ''; }, 3000);
+				});
+			});
+
+			// 上部のQuick Clear Cacheボタン用のイベントハンドラー（同じ機能）
+			quickClearCacheBtn.addEventListener('click', function() {
+				quickClearCacheBtn.disabled = true;
+				quickCacheStatus.innerHTML = '⏳ Clearing...';
+
+				fetch(ajaxurl, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+					body: 'action=ns_tour_price_clear_cache&nonce=' + encodeURIComponent('<?php echo wp_create_nonce( "ns_tour_price_clear_cache" ); ?>')
+				})
+				.then(response => response.json())
+				.then(data => {
+					if (data.success) {
+						quickCacheStatus.innerHTML = '<span style="color: green;">✅ Cache cleared successfully!</span>';
+					} else {
+						quickCacheStatus.innerHTML = '<span style="color: red;">❌ Failed to clear cache</span>';
+					}
+					quickClearCacheBtn.disabled = false;
+					setTimeout(() => { quickCacheStatus.innerHTML = ''; }, 3000);
+				})
+				.catch(error => {
+					quickCacheStatus.innerHTML = '<span style="color: red;">❌ Error occurred</span>';
+					quickClearCacheBtn.disabled = false;
+					setTimeout(() => { quickCacheStatus.innerHTML = ''; }, 3000);
 				});
 			});
 
