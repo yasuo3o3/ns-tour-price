@@ -334,7 +334,7 @@ class NS_Tour_Price_DataSourceCsv implements NS_Tour_Price_DataSourceInterface {
 
 	public function isAvailable() {
 		// CSV存在チェックとログ出力
-		$csv_files = array( 'seasons.csv', 'base_prices.csv', 'solo_fees.csv', 'daily_flags.csv' );
+		$csv_files = array( 'seasons.csv', 'base_prices.csv', 'solo_fees.csv', 'daily_flags.csv', 'tour_options.csv' );
 		$found_files = array();
 		$missing_files = array();
 		$active_source_path = '';
@@ -534,12 +534,20 @@ class NS_Tour_Price_DataSourceCsv implements NS_Tour_Price_DataSourceInterface {
 	}
 
 	private function findCsvFile( $filename ) {
+		error_log("findCsvFile called with filename: '$filename'");
+		if (strpos($filename, '/') !== false) {
+			error_log("findCsvFile: WARNING - filename contains path separators, this may be incorrect");
+			error_log("findCsvFile: Stack trace: " . wp_debug_backtrace_summary());
+		}
 		foreach ( $this->data_paths as $path ) {
 			$full_path = $path . $filename;
+			error_log("Checking CSV path: {$full_path} - exists: " . (file_exists( $full_path ) ? 'yes' : 'no'));
 			if ( file_exists( $full_path ) && is_readable( $full_path ) ) {
+				error_log("findCsvFile: Found file at $full_path");
 				return $full_path;
 			}
 		}
+		error_log("NS Tour Price: CSV file not found: {$filename} in paths: " . implode(', ', $this->data_paths));
 		return false;
 	}
 
@@ -594,27 +602,31 @@ class NS_Tour_Price_DataSourceCsv implements NS_Tour_Price_DataSourceInterface {
 	}
 
 	public function getTourOptions( $tour_id = null ) {
+		error_log("getTourOptions called with tour_id: " . ($tour_id ?? 'null'));
+		error_log("Data paths: " . print_r($this->data_paths, true));
+		
 		$cache_key = $this->cache_prefix . 'tour_options_' . ( $tour_id ? $tour_id : 'all' );
+		// キャッシュをクリア（デバッグ用）
+		delete_transient( $cache_key );
 		$cached = get_transient( $cache_key );
 		
 		if ( false !== $cached ) {
+			error_log("Returning cached tour_options");
 			return $cached;
 		}
 
-		$file_path = $this->data_dir . 'tour_options.csv';
-		if ( ! file_exists( $file_path ) ) {
-			return array();
-		}
-
-		$data = $this->readCsvFile( $file_path );
+		$data = $this->readCsvFile( 'tour_options.csv' );
+		error_log("TourOptions CSV data: " . print_r($data, true));
 		if ( empty( $data ) ) {
 			return array();
 		}
 
 		$result = array();
 		foreach ( $data as $row ) {
+			error_log("Processing tour option row: " . print_r($row, true));
 			// ツアーIDでフィルタ（指定されている場合）
 			if ( $tour_id && ( ! isset( $row['tour_id'] ) || $row['tour_id'] !== $tour_id ) ) {
+				error_log("Skipping row for tour_id: {$tour_id}, row tour_id: " . ($row['tour_id'] ?? 'null'));
 				continue;
 			}
 

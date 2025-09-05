@@ -51,6 +51,14 @@ interface NS_Tour_Price_DataSourceInterface {
 	public function getSoloFees( $tour_id );
 
 	/**
+	 * ツアーオプション情報を取得
+	 *
+	 * @param string|null $tour_id ツアーID（nullの場合は全件）
+	 * @return array オプション情報の配列
+	 */
+	public function getTourOptions( $tour_id = null );
+
+	/**
 	 * データソースが利用可能かチェック
 	 *
 	 * @return bool 利用可能な場合はtrue

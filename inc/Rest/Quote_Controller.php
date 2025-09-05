@@ -89,6 +89,7 @@ class NS_Tour_Price_Quote_Controller extends WP_REST_Controller {
 
 			// 基本料金取得
 			$base_price = $this->repo->getPriceForSeason( $tour, $season_code, $duration );
+			error_log("Quote API Debug - Tour: $tour, Season: $season_code, Duration: $duration, Price: " . ($base_price ?? 'NULL')); // デバッグ用
 			if ( $base_price === null ) {
 				return new WP_REST_Response( array(
 					'success' => false,

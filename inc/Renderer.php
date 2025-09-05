@@ -12,9 +12,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 class NS_Tour_Price_Renderer {
 
 	private $builder;
+	private $repo;
+	private $booking_preview;
 
 	public function __construct() {
 		$this->builder = new NS_Tour_Price_CalendarBuilder();
+		$this->repo = NS_Tour_Price_Repo::getInstance();
+		$this->booking_preview = new NS_Tour_Price_BookingPreview();
 	}
 
 	public function render( $args ) {
@@ -284,7 +288,7 @@ class NS_Tour_Price_Renderer {
 			<?php endif; ?>
 		</div>
 
-		<?php echo $this->renderBookingPanel( $args ); ?>
+		<?php echo $this->renderBookingPanel( $args, $calendar_data ); ?>
 		</div>
 		
 		<?php
@@ -459,9 +463,10 @@ class NS_Tour_Price_Renderer {
 	/**
 	 * 予約パネルを描画
 	 */
-	private function renderBookingPanel( $args ) {
-		$repo = NS_Tour_Price_Repo::getInstance();
-		$available_durations = $repo->getAvailableDurations( $args['tour'] );
+	private function renderBookingPanel( $args, $calendar_data ) {
+		error_log("renderBookingPanel called with tour: " . $args['tour']); // デバッグ用
+		$available_durations = $this->repo->getAvailableDurations( $args['tour'] );
+		error_log("renderBookingPanel: got available_durations");
 		
 		ob_start();
 		?>
@@ -495,14 +500,45 @@ class NS_Tour_Price_Renderer {
 					<option value="6"><?php esc_html_e( '6名', 'ns-tour_price' ); ?></option>
 				</select>
 			</div>
+			
+			<?php error_log("Renderer.php:502 - Before tour options section"); ?>
 
+			<?php 
+			error_log("Renderer.php:503 - About to get tour options for tour: {$args['tour']}");
+			$tour_options = $this->booking_preview->getTourOptions( $args['tour'] );
+			error_log("Renderer.php:505 - Got tour options for {$args['tour']}: " . print_r($tour_options, true));
+			if ( ! empty( $tour_options ) ) : 
+				error_log("Renderer.php:507 - Tour options not empty, showing options section");
+			else:
+				error_log("Renderer.php:509 - Tour options empty, hiding options section");
+			endif;
+			if ( ! empty( $tour_options ) ) : ?>
 			<div class="tpc-booking-options">
 				<div class="tpc-booking-options__label"><?php esc_html_e( 'オプション（任意）', 'ns-tour_price' ); ?></div>
-				<label class="tpc-option">
-					<input type="checkbox" data-tpc-opt-rental />
-					<?php esc_html_e( 'レンタル品（見積には反映しません）', 'ns-tour_price' ); ?>
-				</label>
+				<?php foreach ( $tour_options as $option ) : ?>
+					<label class="tpc-option">
+						<input type="checkbox" 
+							   data-tpc-option-id="<?php echo esc_attr( $option['option_id'] ); ?>"
+							   data-price-min="<?php echo esc_attr( $option['price_min'] ?? 0 ); ?>"
+							   data-price-max="<?php echo esc_attr( $option['price_max'] ?? 0 ); ?>"
+							   data-affects-total="<?php echo esc_attr( $option['affects_total'] ?? 'false' ); ?>" />
+						<span class="option-label">
+							<?php echo esc_html( $option['option_label'] ); ?>
+							<?php if ( ! empty( $option['show_price'] ) && $option['show_price'] === 'true' ) : ?>
+								<?php if ( $option['price_min'] == $option['price_max'] ) : ?>
+									（¥<?php echo number_format( $option['price_min'] ); ?>）
+								<?php else : ?>
+									（¥<?php echo number_format( $option['price_min'] ); ?>～¥<?php echo number_format( $option['price_max'] ); ?>）
+								<?php endif; ?>
+							<?php endif; ?>
+						</span>
+						<?php if ( ! empty( $option['description'] ) ) : ?>
+							<div class="option-description"><?php echo esc_html( $option['description'] ); ?></div>
+						<?php endif; ?>
+					</label>
+				<?php endforeach; ?>
 			</div>
+			<?php endif; ?>
 
 			<div class="tpc-quote">
 				<div class="tpc-quote__row">
@@ -510,7 +546,7 @@ class NS_Tour_Price_Renderer {
 					<strong data-tpc-base>—</strong>
 				</div>
 				<div class="tpc-quote__row">
-					<span><?php esc_html_e( 'ソロフィー', 'ns-tour_price' ); ?></span>
+					<span><?php esc_html_e( 'お一人様参加料金', 'ns-tour_price' ); ?></span>
 					<strong data-tpc-solo>—</strong>
 				</div>
 				<div class="tpc-quote__row">

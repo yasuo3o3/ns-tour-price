@@ -40,6 +40,7 @@ class NS_Tour_Price_BookingPreview {
 		$available_durations = $this->getAvailableDurations( $args['tour'] );
 		$departure_options = $this->getDepartureOptions();
 		$tour_options = $this->getTourOptions( $args['tour'] );
+		error_log("BookingPreview tour_options for {$args['tour']}: " . print_r($tour_options, true));
 		$price_calculation = $this->calculatePrices( $args );
 
 		$template = $this->loadTemplate( 'booking-preview.php', array(
@@ -127,21 +128,21 @@ class NS_Tour_Price_BookingPreview {
 	/**
 	 * ツアーオプション取得
 	 */
-	private function getTourOptions( $tour ) {
-		$options_data = $this->repo->getTourOptions();
+	public function getTourOptions( $tour ) {
+		error_log("BookingPreview::getTourOptions called for tour: $tour");
+		$options_data = $this->repo->getTourOptions( $tour );
+		error_log("BookingPreview got options_data: " . print_r($options_data, true));
 		$tour_options = array();
 
 		foreach ( $options_data as $option ) {
-			if ( $option['tour_id'] === $tour ) {
-				$tour_options[] = array(
-					'option_id' => $option['option_id'],
-					'option_label' => $option['option_label'],
-					'price_min' => intval( $option['price_min'] ),
-					'price_max' => intval( $option['price_max'] ),
-					'description' => $option['description'] ?? '',
-					'affects_total' => filter_var( $option['affects_total'] ?? true, FILTER_VALIDATE_BOOLEAN ),
-				);
-			}
+			$tour_options[] = array(
+				'option_id' => $option['option_id'],
+				'option_label' => $option['option_label'],
+				'price_min' => intval( $option['price_min'] ),
+				'price_max' => intval( $option['price_max'] ),
+				'description' => $option['description'] ?? '',
+				'affects_total' => filter_var( $option['affects_total'] ?? true, FILTER_VALIDATE_BOOLEAN ),
+			);
 		}
 
 		return $tour_options;
