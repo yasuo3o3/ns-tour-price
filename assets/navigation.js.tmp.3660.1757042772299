@@ -53,12 +53,6 @@
         
         calendars.forEach(function(calendar) {
             setupCalendarNavigation(calendar);
-        });
-        
-        // 年間ビュー機能の初期化（チェックボックス生成含む）
-        AnnualView.init();
-        
-        calendars.forEach(function(calendar) {
             setupAnnualView(calendar);
         });
     }
@@ -641,8 +635,9 @@
         AnnualView.updateForNavigation(tour, duration, month);
     };
 
-    // DOMContentLoaded でTPC予約パネルを初期化
+    // DOMContentLoaded で年間ビューを初期化
     document.addEventListener('DOMContentLoaded', function() {
+        AnnualView.init();
         TPC.init();
     });
 
