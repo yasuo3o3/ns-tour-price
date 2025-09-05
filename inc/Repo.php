@@ -955,7 +955,7 @@ class NS_Tour_Price_Repo {
 
 			if ( ! isset( $out[ $code ] ) ) {
 				// 価格は duration で引き当て（なければ null）
-				$price = $this->findPrice( $prices, $code, $duration );
+				$price = $this->findPrice( $prices, $tour_id, $code, $duration );
 				$out[ $code ] = array(
 					'label'   => $label,
 					'periods' => array(),
@@ -994,18 +994,19 @@ class NS_Tour_Price_Repo {
 		return $ss . '–' . $ee;
 	}
 
-	/** base_prices から season_code+duration の価格を取得 */
-	private function findPrice( $prices, $code, $duration ) {
+	/** base_prices から tour_id+season_code+duration の価格を取得 */
+	private function findPrice( $prices, $tour_id, $code, $duration ) {
 		if ( empty( $prices ) ) {
 			return null;
 		}
 
 		foreach ( $prices as $price_row ) {
+			$row_tour = trim( $price_row['tour_id'] ?? '' );
 			$row_season = NS_Tour_Price_Helpers::normalize_season_code( $price_row['season_code'] ?? '' );
 			$row_duration = intval( $price_row['duration_days'] ?? 0 );
 
-			if ( $row_season === $code && $row_duration === $duration ) {
-				return intval( $price_row['base_price'] ?? 0 );
+			if ( $row_tour === $tour_id && $row_season === $code && $row_duration === $duration ) {
+				return intval( $price_row['price'] ?? 0 );
 			}
 		}
 		return null;
