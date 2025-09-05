@@ -51,6 +51,9 @@
     function initializeNavigation() {
         const calendars = document.querySelectorAll(CONFIG.SELECTORS.calendar);
         
+        // TPC機能を最初に初期化（高優先度のイベントハンドラー）
+        TPC.init();
+        
         calendars.forEach(function(calendar) {
             setupCalendarNavigation(calendar);
         });
@@ -80,6 +83,14 @@
 
             // クリックイベント
             button.addEventListener('click', function(e) {
+                console.log('setupCalendarNavigation click handler called for:', button); // デバッグ用
+                
+                // 日数タブの場合はTPC側で処理するため無視
+                if (button.closest('[data-tpc-duration-tabs]') || button.classList.contains('tpc-duration-tab')) {
+                    console.log('Duration tab detected, skipping navigation handler'); // デバッグ用
+                    return;
+                }
+                
                 e.preventDefault();
                 
                 const url = button.getAttribute('href');
@@ -250,6 +261,7 @@
                 setupCalendarNavigation(calendar); // 新しいナビボタンにイベント再設定
                 AnnualView.setupToggleButton(); // 年間ビュートグルボタンを再設定
                 setupAnnualView(calendar); // 年間ビューも再設定
+                TPC.bindEvents(); // TPC日付クリックイベントも再設定
                 updateAnnualViewIfNeeded(calendar);
             } else {
                 throw new Error('Invalid response data');
@@ -641,10 +653,7 @@
         AnnualView.updateForNavigation(tour, duration, month);
     };
 
-    // DOMContentLoaded でTPC予約パネルを初期化
-    document.addEventListener('DOMContentLoaded', function() {
-        TPC.init();
-    });
+    // TPC予約パネル初期化は initializeNavigation() で実行済み
 
     // TPC 予約パネル機能
     const TPC = {
@@ -656,6 +665,7 @@
         },
         
         els: {},
+        eventsInitialized: false,
         
         init: function() {
             this.findElements();
@@ -679,20 +689,27 @@
         },
         
         bindEvents: function() {
-            // 大カレンダーの日付クリック
-            if (this.els.calendar) {
-                this.els.calendar.addEventListener('click', this.handleDateClick.bind(this));
+            // すでにイベントが設定済みの場合は何もしない
+            if (this.eventsInitialized) {
+                console.log('TPC events already initialized, skipping'); // デバッグ用
+                return;
             }
             
-            // 期間タブクリック
-            this.els.durationTabs.forEach(function(tab) {
-                tab.addEventListener('click', TPC.handleDurationClick.bind(TPC));
-            });
+            console.log('Initializing TPC event handlers'); // デバッグ用
+            
+            // 大カレンダーの日付クリック（イベント委譲）
+            document.addEventListener('click', this.handleDateClick.bind(this));
+            
+            // 期間タブクリック（イベント委譲、キャプチャフェーズで高優先度）
+            document.addEventListener('click', this.handleDurationClick.bind(this), true);
             
             // 人数セレクト変更
             if (this.els.paxSelect) {
                 this.els.paxSelect.addEventListener('change', this.handlePaxChange.bind(this));
             }
+            
+            this.eventsInitialized = true;
+            console.log('TPC event handlers initialized'); // デバッグ用
         },
         
         initState: function() {
@@ -706,14 +723,26 @@
         },
         
         handleDateClick: function(e) {
+            // カレンダー内のクリックのみ処理
+            if (!e.target.closest('.ns-tour-price-calendar')) {
+                return;
+            }
+            
+            console.log('Date click event fired', e.target); // デバッグ用
+            
             // 年カレンダーは無視
             if (e.target.closest('[data-static-annual="1"]')) {
+                console.log('Annual calendar ignored');
                 return;
             }
             
             const dayCell = e.target.closest('.calendar-day.has-price');
+            console.log('Day cell found:', dayCell); // デバッグ用
+            
             if (dayCell) {
                 const date = dayCell.dataset.date;
+                console.log('Date selected:', date, 'Previous date:', this.state.date); // デバッグ用
+                
                 if (date) {
                     this.state.date = date;
                     this.refreshQuote();
@@ -722,18 +751,39 @@
         },
         
         handleDurationClick: function(e) {
+            console.log('TPC handleDurationClick called for:', e.target); // デバッグ用
+            
+            // 日数タブのクリックのみ処理（button または a要素）
+            const tab = e.target.closest('[data-tpc-duration-tabs] button') || 
+                       e.target.closest('.tpc-duration-tab[data-duration]');
+            if (!tab) {
+                console.log('Not a duration tab, ignoring'); // デバッグ用
+                return;
+            }
+            
+            console.log('Duration tab detected, stopping all other handlers...'); // デバッグ用
             e.preventDefault();
-            const tab = e.currentTarget;
+            e.stopPropagation(); 
+            e.stopImmediatePropagation(); // 同じフェーズの他のハンドラーも停止
             const duration = parseInt(tab.dataset.duration);
+            const tabLocation = tab.closest('.tpc-booking-panel') ? 'aside' : 'main';
+            console.log('Duration tab clicked:', duration, 'Location:', tabLocation); // デバッグ用
             
             if (duration && duration !== this.state.duration) {
-                // タブの見た目を更新
-                this.els.durationTabs.forEach(function(t) {
+                // 全ての日数タブの見た目を更新（メインとaside両方）
+                const allDurationTabs = document.querySelectorAll('[data-tpc-duration-tabs] button, .tpc-duration-tab[data-duration]');
+                allDurationTabs.forEach(function(t) {
                     t.classList.remove('is-active');
                     t.removeAttribute('aria-current');
                 });
-                tab.classList.add('is-active');
-                tab.setAttribute('aria-current', 'page');
+                
+                // 同じduration値のタブを全てアクティブにする
+                allDurationTabs.forEach(function(t) {
+                    if (parseInt(t.dataset.duration) === duration) {
+                        t.classList.add('is-active');
+                        t.setAttribute('aria-current', 'page');
+                    }
+                });
                 
                 this.state.duration = duration;
                 this.refreshQuote();
@@ -747,6 +797,8 @@
         },
         
         async refreshQuote() {
+            console.log('refreshQuote called with state:', this.state); // デバッグ用
+            
             if (!this.state.date) {
                 this.renderEmpty();
                 return;
@@ -783,6 +835,8 @@
         },
         
         renderQuote: function(data) {
+            console.log('Quote data received:', data); // デバッグ用
+            
             if (this.els.date) {
                 this.els.date.textContent = this.formatDateJP(this.state.date);
             }
@@ -790,7 +844,7 @@
                 this.els.season.textContent = data.season_code ? 'シーズン: ' + data.season_code : '';
             }
             if (this.els.base) {
-                this.els.base.textContent = this.formatYen(data.base_price);
+                this.els.base.textContent = this.formatYen(data.base_price || 0);
             }
             if (this.els.solo) {
                 this.els.solo.textContent = data.solo_fee ? this.formatYen(data.solo_fee) : '—';
@@ -815,7 +869,8 @@
             
             // カレンダーを再読み込み
             const tour = this.state.tour;
-            const currentMonth = calendar.dataset.currentMonth || new Date().toISOString().slice(0, 7);
+            const currentMonth = calendar.dataset.month || new Date().toISOString().slice(0, 7);
+            console.log('refreshCalendar - month:', currentMonth, 'duration:', this.state.duration); // デバッグ用
             const url = '/wp-json/ns-tour-price/v1/calendar?' + 
                        new URLSearchParams({
                            tour: tour,
@@ -830,6 +885,7 @@
                         updateCalendarContent(calendar, data.html);
                         AnnualView.setupToggleButton(); // 年間ビュートグルボタンを再設定
                         setupAnnualView(calendar); // 年間ビューも再設定
+                        TPC.bindEvents(); // TPC日付クリックイベントも再設定
                     }
                 })
                 .catch(error => {

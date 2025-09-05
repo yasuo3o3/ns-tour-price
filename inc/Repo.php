@@ -901,7 +901,7 @@ class NS_Tour_Price_Repo {
 			$row_duration = intval( $price_row['duration_days'] );
 
 			if ( $row_season === $normalized_season && $row_duration === $duration ) {
-				return intval( $price_row['base_price'] ?? 0 );
+				return intval( $price_row['price'] ?? 0 );
 			}
 		}
 
