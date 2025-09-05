@@ -227,10 +227,16 @@ class NS_Tour_Price_Annual_Builder {
 	 */
 	private function getHeatmapColors() {
 		$options = get_option( 'ns_tour_price_options', array() );
-		$colors_string = $options['heatmap_colors'] ?? '';
+		$colors_data = $options['heatmap_colors'] ?? '';
 		
-		if ( ! empty( $colors_string ) ) {
-			$colors = array_map( 'trim', explode( ',', $colors_string ) );
+		// 型チェック: 既に配列の場合はそのまま使用
+		if ( is_array( $colors_data ) ) {
+			return array_filter( array_map( 'trim', $colors_data ) );
+		}
+		
+		// 文字列の場合は explode で分割
+		if ( ! empty( $colors_data ) && is_string( $colors_data ) ) {
+			$colors = array_map( 'trim', explode( ',', $colors_data ) );
 			return array_filter( $colors );
 		}
 
