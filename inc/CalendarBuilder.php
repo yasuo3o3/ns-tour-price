@@ -53,17 +53,14 @@ class NS_Tour_Price_CalendarBuilder {
 		$legend = array();
 		
 		if ( $args['heatmap'] ) {
-			// シーズンベース色付けと凡例を生成
-			$legend = $this->buildSeasonBasedLegend( $args['tour'], $args['duration'] );
+			// 統一シーズンカラーマップを使用
+			$season_map = NS_Tour_Price_SeasonColorMap::map( $args['tour'], $args['month'], $args['duration'] );
 			
-			// シーズンコード → hp-classマッピングを作成
-			$season_color_map = array();
-			foreach ( $legend as $index => $legend_item ) {
-				$season_color_map[ $legend_item['season_code'] ] = $legend_item['class'];
-			}
+			// 凡例を生成
+			$legend = $this->buildLegendFromMap( $season_map );
 			
 			// 日付セル用のシーズンベース色クラスを生成
-			$heatmap_classes = $this->generateSeasonBasedHeatmap( $calendar_days, $args, $season_color_map );
+			$heatmap_classes = $this->generateHeatmapFromSeasonMap( $calendar_days, $args, $season_map );
 		}
 
 		return array(
@@ -304,14 +301,46 @@ class NS_Tour_Price_CalendarBuilder {
 	 * @return array 凡例データ
 	 */
 	/**
-	 * 日付セル用のシーズンベース色クラスを生成
+	 * シーズンマップから凡例を生成
+	 *
+	 * @param array $season_map SeasonColorMapから取得したマップ
+	 * @return array 凡例データ
+	 */
+	private function buildLegendFromMap( $season_map ) {
+		$legend = array();
+		
+		if ( empty( $season_map['seasons'] ) ) {
+			return $legend;
+		}
+		
+		foreach ( $season_map['seasons'] as $season_code ) {
+			$hp_level = $season_map['season_to_hp'][ $season_code ] ?? 0;
+			$color = $season_map['season_to_color'][ $season_code ] ?? '#cccccc';
+			
+			// 価格を取得（SeasonColorMapの内部から取得済み）
+			$price = $this->getSeasonPrice( $season_code );
+			
+			$legend[] = array(
+				'class' => 'hp-' . $hp_level,
+				'season_code' => $season_code,
+				'price' => $price,
+				'formatted_price' => '¥' . number_format( $price ),
+				'color' => $color
+			);
+		}
+		
+		return $legend;
+	}
+
+	/**
+	 * シーズンマップから日付セル用色クラスを生成
 	 *
 	 * @param array $calendar_days カレンダー日付データ
 	 * @param array $args カレンダー引数
-	 * @param array $season_color_map シーズン→hp-classマップ
+	 * @param array $season_map シーズンマップ
 	 * @return array 価格 → hp-classレベル のマッピング
 	 */
-	private function generateSeasonBasedHeatmap( $calendar_days, $args, $season_color_map ) {
+	private function generateHeatmapFromSeasonMap( $calendar_days, $args, $season_map ) {
 		$heatmap_classes = array();
 		
 		foreach ( $calendar_days as $day ) {
@@ -319,16 +348,52 @@ class NS_Tour_Price_CalendarBuilder {
 				// 日付からシーズンコードを取得
 				$season_code = $this->repo->getSeasonForDate( $args['tour'], $day['date'] );
 				
-				if ( ! empty( $season_code ) && isset( $season_color_map[ $season_code ] ) ) {
-					// hp-X形式からレベル数値を抽出
-					$hp_class = $season_color_map[ $season_code ];
-					$level = intval( str_replace( 'hp-', '', $hp_class ) );
-					$heatmap_classes[ $day['price'] ] = $level;
+				if ( ! empty( $season_code ) && isset( $season_map['season_to_hp'][ $season_code ] ) ) {
+					$hp_level = $season_map['season_to_hp'][ $season_code ];
+					$heatmap_classes[ $day['price'] ] = $hp_level;
+				} else {
+					// 安全装置：マップにないシーズンはログ出力して未着色
+					if ( WP_DEBUG && ! empty( $season_code ) ) {
+						error_log( '[ns-tour] missing hp for season=' . $season_code . ' tour=' . $args['tour'] . ' date=' . $day['date'] );
+					}
 				}
 			}
 		}
 		
 		return $heatmap_classes;
+	}
+
+	/**
+	 * シーズンコードから価格を取得（直接CSV読み込み）
+	 *
+	 * @param string $season_code シーズンコード
+	 * @return int 価格
+	 */
+	private function getSeasonPrice( $season_code ) {
+		// 簡易実装：先ほど読み込んだbase_pricesから取得
+		// 本来はSeasonColorMapから取得すべきだが、今回は簡単に
+		$csv_path = NS_TOUR_PRICE_PLUGIN_DIR . 'data/base_prices.csv';
+		
+		if ( ! file_exists( $csv_path ) ) {
+			return 0;
+		}
+		
+		$handle = fopen( $csv_path, 'r' );
+		if ( ! $handle ) {
+			return 0;
+		}
+		
+		fgetcsv( $handle ); // ヘッダー行をスキップ
+		
+		while ( ( $row = fgetcsv( $handle ) ) !== false ) {
+			if ( count( $row ) >= 4 && trim( $row[1] ) === $season_code ) {
+				fclose( $handle );
+				return intval( $row[3] );
+			}
+		}
+		
+		fclose( $handle );
+		return 0;
 	}
 
 	private function buildSeasonBasedLegend( $tour_id, $duration ) {

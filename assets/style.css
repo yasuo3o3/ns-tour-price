@@ -1235,6 +1235,24 @@
     color: #ffffff;
 }
 
+.ns-tour-price-calendar .hp-10 {
+    background-color: var(--hp-10);
+    color: #ffffff;
+}
+
+/* 汎用 hp-* クラス（凡例・表等で使用） */
+.hp-0 { background-color: var(--hp-0); color: #ffffff; }
+.hp-1 { background-color: var(--hp-1); color: #ffffff; }
+.hp-2 { background-color: var(--hp-2); color: #ffffff; }
+.hp-3 { background-color: var(--hp-3); color: #ffffff; }
+.hp-4 { background-color: var(--hp-4); color: #ffffff; }
+.hp-5 { background-color: var(--hp-5); color: #000000; }
+.hp-6 { background-color: var(--hp-6); color: #000000; }
+.hp-7 { background-color: var(--hp-7); color: #000000; }
+.hp-8 { background-color: var(--hp-8); color: #ffffff; }
+.hp-9 { background-color: var(--hp-9); color: #ffffff; }
+.hp-10 { background-color: var(--hp-10); color: #ffffff; }
+
 /* ヒートマップセルのホバー効果 */
 .calendar-day.has-price:hover {
     /*transform: translateY(-2px);

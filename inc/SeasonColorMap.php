@@ -1,0 +1,164 @@
+<?php
+/**
+ * Season Color Map - シーズン色マップ統一管理
+ *
+ * @package NS_Tour_Price
+ * @version 1.0.0
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
+class NS_Tour_Price_SeasonColorMap {
+
+    private $repo;
+
+    public function __construct() {
+        $this->repo = NS_Tour_Price_Repo::getInstance();
+    }
+
+    /**
+     * シーズンカラーマップを生成
+     *
+     * @param string $tour_id ツアーID
+     * @param int $year 年（未使用だが将来拡張のため）
+     * @param int $duration 日数
+     * @return array {
+     *     'season_to_hp' => array,    // ['A'=>0, 'B'=>1, ..., 'K'=>10]
+     *     'season_to_color' => array, // ['A'=>'#2d4f8e', 'B'=>'#336dbd', ...]
+     *     'seasons' => array          // シーズンコード配列
+     * }
+     */
+    public static function map( $tour_id, $year, $duration ) {
+        $instance = new self();
+        return $instance->generateMap( $tour_id, $duration );
+    }
+
+    /**
+     * シーズンマップを生成（内部実装）
+     *
+     * @param string $tour_id ツアーID
+     * @param int $duration 日数
+     * @return array マップデータ
+     */
+    private function generateMap( $tour_id, $duration ) {
+        // 直接CSVから価格データを読み込み
+        $base_prices = $this->loadBasePricesDirectly( $tour_id, $duration );
+        
+        if ( empty( $base_prices ) ) {
+            if ( WP_DEBUG ) {
+                error_log( '[ns-tour] SeasonColorMap: No base prices found for ' . $tour_id . '/' . $duration );
+            }
+            return array(
+                'season_to_hp' => array(),
+                'season_to_color' => array(),
+                'seasons' => array()
+            );
+        }
+
+        // シーズンコードを昇順でソート
+        uksort( $base_prices, 'strnatcmp' );
+        
+        $colors = $this->getColorPalette();
+        $season_to_hp = array();
+        $season_to_color = array();
+        $seasons = array_keys( $base_prices );
+        
+        $index = 0;
+        foreach ( $seasons as $season_code ) {
+            $season_to_hp[ $season_code ] = $index;
+            $season_to_color[ $season_code ] = $colors[ $index ] ?? '#cccccc';
+            $index++;
+        }
+
+        return array(
+            'season_to_hp' => $season_to_hp,
+            'season_to_color' => $season_to_color,
+            'seasons' => $seasons
+        );
+    }
+
+    /**
+     * 直接CSVからbase_pricesを読み込み
+     *
+     * @param string $tour_id ツアーID
+     * @param int $duration 日数
+     * @return array season_code => price のマップ
+     */
+    private function loadBasePricesDirectly( $tour_id, $duration ) {
+        $prices = array();
+        $csv_path = NS_TOUR_PRICE_PLUGIN_DIR . 'data/base_prices.csv';
+        
+        if ( ! file_exists( $csv_path ) ) {
+            return $prices;
+        }
+        
+        $handle = fopen( $csv_path, 'r' );
+        if ( ! $handle ) {
+            return $prices;
+        }
+        
+        fgetcsv( $handle ); // ヘッダー行をスキップ
+        
+        while ( ( $row = fgetcsv( $handle ) ) !== false ) {
+            if ( count( $row ) >= 4 && 
+                 trim( $row[0] ) === $tour_id && 
+                 intval( $row[2] ) === intval( $duration ) ) {
+                $season_code = trim( $row[1] );
+                $price = intval( $row[3] );
+                $prices[ $season_code ] = $price;
+            }
+        }
+        
+        fclose( $handle );
+        return $prices;
+    }
+
+    /**
+     * カラーパレットを取得
+     *
+     * @return array 色の配列
+     */
+    private function getColorPalette() {
+        return array(
+            '#2d4f8e', // hp-0
+            '#336dbd', // hp-1
+            '#3a89d1', // hp-2
+            '#49a5d1', // hp-3
+            '#64c0bf', // hp-4
+            '#8bd18f', // hp-5
+            '#c4dd5e', // hp-6
+            '#f2c03f', // hp-7
+            '#f28f32', // hp-8
+            '#e34a33', // hp-9
+            '#d32f2f'  // hp-10
+        );
+    }
+
+    /**
+     * シーズンコードからhp-classレベルを取得
+     *
+     * @param string $season_code シーズンコード
+     * @param string $tour_id ツアーID
+     * @param int $duration 日数
+     * @return int|null hp-classレベル（0-10）またはnull
+     */
+    public static function getHpLevel( $season_code, $tour_id, $duration ) {
+        $map = self::map( $tour_id, date('Y'), $duration );
+        return $map['season_to_hp'][ $season_code ] ?? null;
+    }
+
+    /**
+     * シーズンコードから色を取得
+     *
+     * @param string $season_code シーズンコード
+     * @param string $tour_id ツアーID
+     * @param int $duration 日数
+     * @return string|null 色コードまたはnull
+     */
+    public static function getColor( $season_code, $tour_id, $duration ) {
+        $map = self::map( $tour_id, date('Y'), $duration );
+        return $map['season_to_color'][ $season_code ] ?? null;
+    }
+}

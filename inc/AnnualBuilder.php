@@ -93,12 +93,14 @@ class NS_Tour_Price_Annual_Builder {
 		// 年間価格データを取得（直接CSV読み込み）
 		$yearly_prices = $this->getYearlyPricesDirectly( $tour, $duration, $year );
 		
-		// シーズン色マップを生成
-		$season_color_map = $this->generateSeasonColorMap( $tour, $duration );
+		// 統一シーズン色マップを使用
+		$season_map_data = NS_Tour_Price_SeasonColorMap::map( $tour, $year, $duration );
+		$season_color_map = array();
+		foreach ( $season_map_data['season_to_hp'] as $season => $hp_level ) {
+			$season_color_map[ $season ] = 'hp-' . $hp_level;
+		}
 		
-		// ヒートマップ用の色分け計算
-		$prices_array = array_values( $yearly_prices );
-		$heatmap_data = $this->calculateHeatmapBins( $prices_array );
+		// シーズンベース色付けのため、旧ビン分割ロジックは不要
 
 		$months_data = array();
 		$total_days = 0;
@@ -171,111 +173,39 @@ class NS_Tour_Price_Annual_Builder {
 	/**
 	 * シーズン色マップを生成（凡例と同一の色を使用）
 	 */
+	// 旧generateSeasonColorMap - SeasonColorMapクラスを使用するため無効化
+	/*
 	private function generateSeasonColorMap( $tour, $duration ) {
+		// 統一SeasonColorMapクラスを使用
+		$map = NS_Tour_Price_SeasonColorMap::map( $tour, date('Y'), $duration );
 		$season_colors = array();
-		
-		// 直接CSV読み込みでシーズン一覧を取得
-		$seasons_path = NS_TOUR_PRICE_PLUGIN_DIR . 'data/seasons.csv';
-		$prices_path = NS_TOUR_PRICE_PLUGIN_DIR . 'data/base_prices.csv';
-		
-		if ( ! file_exists( $seasons_path ) || ! file_exists( $prices_path ) ) {
-			return $season_colors;
+		foreach ( $map['season_to_hp'] as $season => $hp_level ) {
+			$season_colors[ $season ] = 'hp-' . $hp_level;
 		}
-		
-		// シーズンコードを収集
-		$season_codes = array();
-		$handle = fopen( $seasons_path, 'r' );
-		if ( $handle ) {
-			$headers = fgetcsv( $handle );
-			while ( ( $row = fgetcsv( $handle ) ) !== false ) {
-				if ( count( $row ) >= 2 && trim( $row[0] ) === $tour ) {
-					$season_code = trim( $row[1] );
-					if ( $season_code && ! in_array( $season_code, $season_codes ) ) {
-						$season_codes[] = $season_code;
-					}
-				}
-			}
-			fclose( $handle );
-		}
-		
-		// A-K順でソート
-		natsort( $season_codes );
-		$season_codes = array_values( $season_codes );
-		
-		// 各シーズンにhp-indexクラスを割り当て（凡例と同じ仕組み）
-		foreach ( $season_codes as $index => $season_code ) {
-			$season_colors[ $season_code ] = 'hp-' . $index;
-		}
-		
 		return $season_colors;
 	}
+	*/
 
-	/**
-	 * ヒートマップのビン計算
-	 */
+	// 旧calculateHeatmapBins - シーズンベース色付けのため無効化
+	/*
 	private function calculateHeatmapBins( $prices ) {
-		if ( empty( $prices ) ) {
-			return array(
-				'bins' => array(),
-				'colors' => array(),
-				'min' => 0,
-				'max' => 0,
-			);
-		}
-
-		$min_price = min( $prices );
-		$max_price = max( $prices );
-		
-		// 管理画面設定から色パレットとビン数を取得
-		$options = get_option( 'ns_tour_price_options', array() );
-		$bins_count = intval( $options['heatmap_bins'] ?? 5 );
-		$colors = $this->getHeatmapColors();
-
-		if ( $min_price === $max_price ) {
-			return array(
-				'bins' => array( $min_price ),
-				'colors' => array( $colors[0] ?? '#e0e0e0' ),
-				'min' => $min_price,
-				'max' => $max_price,
-			);
-		}
-
-		$bins = array();
-		$bin_colors = array();
-		$range = $max_price - $min_price;
-
-		for ( $i = 0; $i < $bins_count; $i++ ) {
-			$bin_min = $min_price + ( $range * $i / $bins_count );
-			$bin_max = ( $i === $bins_count - 1 ) ? $max_price : $min_price + ( $range * ( $i + 1 ) / $bins_count );
-			
-			$bins[] = array(
-				'min' => $bin_min,
-				'max' => $bin_max,
-			);
-			
-			$color_index = min( $i, count( $colors ) - 1 );
-			$bin_colors[] = $colors[ $color_index ];
-		}
-
+		// SeasonColorMapを使用するため、価格ビン分割は不要
 		return array(
-			'bins' => $bins,
-			'colors' => $bin_colors,
-			'min' => $min_price,
-			'max' => $max_price,
+			'bins' => array(),
+			'colors' => array(),
+			'min' => 0,
+			'max' => 0,
 		);
 	}
+	*/
 
-	/**
-	 * 価格に対応するビンインデックスを取得
-	 */
+	// 旧getPriceBinIndex - シーズンベース色付けのため無効化
+	/*
 	private function getPriceBinIndex( $price, $bins ) {
-		foreach ( $bins as $index => $bin ) {
-			if ( $price >= $bin['min'] && $price <= $bin['max'] ) {
-				return $index;
-			}
-		}
+		// SeasonColorMapを使用するため不要
 		return 0;
 	}
+	*/
 
 	/**
 	 * ヒートマップカラーパレットを取得
