@@ -14,6 +14,8 @@ class NS_Tour_Price_Annual_Builder {
 
 	private $repo;
 	private $heatmap;
+	/** @var NS_Tour_Price_Season_Color_Service|null */
+	private $season_color_service = null;
 
 	public function __construct() {
 		$this->repo = NS_Tour_Price_Repo::getInstance();
@@ -571,7 +573,15 @@ class NS_Tour_Price_Annual_Builder {
 										$day_classes[] = 'has-season';
 										$day_classes[] = $day_data['season_class'];
 										$day_style = 'background-color: ' . esc_attr( $day_data['season_color'] ) . ';';
-										$day_style .= ' color: ' . esc_attr( $this->season_color_service->getTextColor( $day_data['season_color'] ) ) . ';';
+										$fg = '#111111';
+										if ( isset( $day_data['season_color'] ) && $day_data['season_color'] ) {
+											if ( isset( $this->season_color_service ) && $this->season_color_service ) {
+												$fg = $this->season_color_service->getTextColor( $day_data['season_color'] );
+											} else {
+												$fg = $this->autoTextColor( $day_data['season_color'] );
+											}
+										}
+										$day_style .= ' color: ' . esc_attr( $fg ) . ';';
 									}
 									
 									if ( $day_data['is_today'] ?? false ) {
@@ -621,7 +631,14 @@ class NS_Tour_Price_Annual_Builder {
 								
 								// シーズン固定色を適用
 								$season_color = $season_color_map[ $code ] ?? '#f3f4f6';
-								$text_color = $this->season_color_service->getTextColor( $season_color );
+								$text_color = '#111111';
+								if ( isset( $season_color ) && $season_color ) {
+									if ( isset( $this->season_color_service ) && $this->season_color_service ) {
+										$text_color = $this->season_color_service->getTextColor( $season_color );
+									} else {
+										$text_color = $this->autoTextColor( $season_color );
+									}
+								}
 								$season_style = 'background-color: ' . esc_attr( $season_color ) . '; color: ' . esc_attr( $text_color ) . ';';
 							?>
 							<tr data-season="<?php echo esc_attr( $code ); ?>" data-price="<?php echo esc_attr( $price ?? 0 ); ?>" class="season-row season-<?php echo esc_attr( strtolower( $code ) ); ?>" style="<?php echo esc_attr( $season_style ); ?>">
@@ -768,6 +785,25 @@ class NS_Tour_Price_Annual_Builder {
 		
 		error_log( "getYearlyPricesDirectly: 最終結果 yearly_prices count=" . count( $yearly_prices ) );
 		return $yearly_prices;
+	}
+
+	/**
+	 * 背景色から黒/白のどちらを使うか決定するフォールバック
+	 */
+	private function autoTextColor( $hex ) {
+		if ( ! $hex ) {
+			return '#111111';
+		}
+		$hex = ltrim( $hex, '#' );
+		if ( strlen( $hex ) === 3 ) {
+			$hex = "{$hex[0]}{$hex[0]}{$hex[1]}{$hex[1]}{$hex[2]}{$hex[2]}";
+		}
+		$r = hexdec( substr( $hex, 0, 2 ) );
+		$g = hexdec( substr( $hex, 2, 2 ) );
+		$b = hexdec( substr( $hex, 4, 2 ) );
+		// YIQ 近似で判定（十分実用）
+		$yiq = ( ( $r * 299 ) + ( $g * 587 ) + ( $b * 114 ) ) / 1000;
+		return $yiq >= 128 ? '#111111' : '#FFFFFF';
 	}
 
 	/**
