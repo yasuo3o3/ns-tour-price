@@ -424,19 +424,20 @@ class NS_Tour_Price_Annual_Builder {
 				<h3 class="tpc-annual-title">
 					<?php printf( esc_html__( '%d年 年間価格概要 - %s（%d日間）', 'ns-tour_price' ), $year, esc_html( $tour ), $duration ); ?>
 				</h3>
-				<div class="tpc-annual-stats">
-					<?php printf( 
-						esc_html__( '対象期間: %d日 / 全%d日 (%.1f%%)', 'ns-tour_price' ),
-						$annual_data['covered_days'],
-						$annual_data['total_days'],
-						$annual_data['total_days'] > 0 ? ( $annual_data['covered_days'] / $annual_data['total_days'] * 100 ) : 0
-					); ?>
-				</div>
+				<?php
+				// 対象期間統計をコメントとして保存
+				$percentage = $annual_data['total_days'] > 0 ? ( $annual_data['covered_days'] / $annual_data['total_days'] * 100 ) : 0;
+				printf( 
+					'<!-- 対象期間: %d日 / 全%d日 (%.1f%%) -->',
+					$annual_data['covered_days'],
+					$annual_data['total_days'],
+					$percentage
+				);
+				?>
 			</div>
 
 			<?php if ( $opts['show_mini_calendars'] ) : ?>
 			<div class="tpc-annual-calendars">
-				<h4 class="tpc-section-title"><?php esc_html_e( '月別シーズン表示', 'ns-tour_price' ); ?></h4>
 				<div class="tpc-mini-calendars">
 					<?php foreach ( $annual_data['months'] as $month_data ) : ?>
 						<div class="tpc-mini-calendar">
@@ -487,7 +488,6 @@ class NS_Tour_Price_Annual_Builder {
 
 			<?php if ( $opts['show_season_table'] && ! empty( $season_summary ) ) : ?>
 			<div class="tpc-annual-seasons">
-				<h4 class="tpc-section-title"><?php esc_html_e( 'シーズン料金一覧', 'ns-tour_price' ); ?></h4>
 				<div class="tpc-season-table-container">
 					<table class="tpc-season-table">
 						<thead>
