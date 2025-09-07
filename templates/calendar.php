@@ -108,7 +108,7 @@ if ( ! $calendar_data || isset( $calendar_data['error'] ) ) {
 		<?php do_action( 'ns_tour_price_before_calendar_legend', $calendar_data ); ?>
 		
 		<div class="calendar-legend">
-			<h4><?php esc_html_e( '価格帯', 'ns-tour_price' ); ?></h4>
+			<h4><?php esc_html_e( '価格区分', 'ns-tour_price' ); ?></h4>
 			<div class="legend-items">
 				<?php foreach ( $calendar_data['legend'] as $legend_index => $legend_item ) : ?>
 					<?php do_action( 'ns_tour_price_before_legend_item', $legend_item, $legend_index, $calendar_data ); ?>
@@ -116,10 +116,7 @@ if ( ! $calendar_data || isset( $calendar_data['error'] ) ) {
 					<div class="legend-item">
 						<span class="legend-color <?php echo esc_attr( $legend_item['class'] ); ?>"></span>
 						<span class="legend-label">
-							<?php echo esc_html( $legend_item['formatted_min'] ); ?>
-							<?php if ( $legend_item['min_price'] !== $legend_item['max_price'] ) : ?>
-								- <?php echo esc_html( $legend_item['formatted_max'] ); ?>
-							<?php endif; ?>
+							<?php echo esc_html( $legend_item['season_code'] ); ?> <?php echo esc_html( $legend_item['formatted_price'] ); ?>
 						</span>
 					</div>
 					

@@ -71,8 +71,8 @@ class NS_Tour_Price_CalendarBuilder {
 				// ビン境界を使用してヒートマップクラスを生成
 				$heatmap_classes = $this->heatmap->generateHeatmapClassesWithBuckets( $monthly_prices, $buckets );
 				
-				// 全期間価格を基準とした凡例を生成
-				$legend = $this->buildGlobalLegendWithBuckets( $all_prices, $buckets, $bins );
+				// シーズン区分ベースの凡例を生成
+				$legend = $this->buildSeasonBasedLegend( $args['tour'], $args['duration'] );
 			}
 		}
 
@@ -300,6 +300,61 @@ class NS_Tour_Price_CalendarBuilder {
 					'formatted_max' => $this->formatPrice( max( $prices ) ),
 					'color' => $color,
 				);
+			}
+		}
+
+		return $legend;
+	}
+
+	/**
+	 * シーズン区分ベースの凡例を生成
+	 *
+	 * @param string $tour_id ツアーID
+	 * @param int $duration 日数
+	 * @return array 凡例データ
+	 */
+	private function buildSeasonBasedLegend( $tour_id, $duration ) {
+		$repo = NS_Tour_Price_Repo::getInstance();
+		$seasons = $repo->getSeasons( $tour_id );
+		$base_prices = $repo->getBasePrices( $tour_id );
+
+		if ( empty( $seasons ) || empty( $base_prices ) ) {
+			return array();
+		}
+
+		// シーズンコードでグループ化
+		$season_prices = array();
+		foreach ( $seasons as $season ) {
+			$season_code = $season['season_code'];
+			if ( ! isset( $season_prices[ $season_code ] ) ) {
+				$season_prices[ $season_code ] = null;
+			}
+		}
+
+		// 価格を取得
+		foreach ( $base_prices as $price ) {
+			if ( $price['tour_id'] === $tour_id && intval( $price['duration_days'] ) === intval( $duration ) ) {
+				$season_code = $price['season_code'];
+				if ( isset( $season_prices[ $season_code ] ) ) {
+					$season_prices[ $season_code ] = intval( $price['price'] );
+				}
+			}
+		}
+
+		// A-K の順でソート
+		uksort( $season_prices, 'strnatcmp' );
+
+		$legend = array();
+		$index = 0;
+		foreach ( $season_prices as $season_code => $price ) {
+			if ( $price !== null ) {
+				$legend[] = array(
+					'class' => 'hp-' . $index,
+					'season_code' => $season_code,
+					'price' => $price,
+					'formatted_price' => '¥' . number_format( $price ),
+				);
+				$index++;
 			}
 		}
 
