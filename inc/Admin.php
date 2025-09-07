@@ -116,6 +116,22 @@ class NS_Tour_Price_Admin {
 			'ns_tour_price_settings',
 			'ns_tour_price_general'
 		);
+
+		add_settings_field(
+			'pricetable_color_mode',
+			__( 'Price Table Color Mode', 'ns-tour_price' ),
+			array( $this, 'priceTableColorModeFieldCallback' ),
+			'ns_tour_price_settings',
+			'ns_tour_price_general'
+		);
+
+		add_settings_field(
+			'pricetable_color_bins',
+			__( 'Price Table Color Bins', 'ns-tour_price' ),
+			array( $this, 'priceTableColorBinsFieldCallback' ),
+			'ns_tour_price_settings',
+			'ns_tour_price_general'
+		);
 	}
 
 	public function adminPage() {
@@ -807,5 +823,36 @@ A1,WINTER,WINTER</pre>
 		}
 		
 		return $sanitized;
+	}
+
+	/**
+	 * 価格表の色分けモード設定フィールド
+	 */
+	public function priceTableColorModeFieldCallback() {
+		$options = get_option( 'ns_tour_price_options' );
+		$value = $options['pricetable_color_mode'] ?? 'linear';
+		?>
+		<select name="ns_tour_price_options[pricetable_color_mode]">
+			<option value="linear" <?php selected( $value, 'linear' ); ?>>Linear</option>
+			<option value="quantile" <?php selected( $value, 'quantile' ); ?>>Quantile</option>
+		</select>
+		<p class="description">
+			<?php esc_html_e( 'Color binning method for price table. Linear provides more even price distribution, useful for distinguishing close prices like I/J/K seasons.', 'ns-tour_price' ); ?>
+		</p>
+		<?php
+	}
+
+	/**
+	 * 価格表の色ビン数設定フィールド
+	 */
+	public function priceTableColorBinsFieldCallback() {
+		$options = get_option( 'ns_tour_price_options' );
+		$value = intval( $options['pricetable_color_bins'] ?? 10 );
+		?>
+		<input type="number" name="ns_tour_price_options[pricetable_color_bins]" value="<?php echo esc_attr( $value ); ?>" min="5" max="20" />
+		<p class="description">
+			<?php esc_html_e( 'Number of color bins for price table. Higher values show more fine price gradations. Default: 10', 'ns-tour_price' ); ?>
+		</p>
+		<?php
 	}
 }

@@ -417,6 +417,27 @@ class NS_Tour_Price_Annual_Builder {
 	 * 年間ビューのHTMLを生成
 	 */
 	private function renderAnnualView( $annual_data, $season_summary, $tour, $duration, $year, $opts ) {
+		// シーズン料金表用のヒートマップクラス生成
+		$price_table_heatmap_classes = array();
+		if ( ! empty( $season_summary ) ) {
+			$prices = array();
+			foreach ( $season_summary as $season ) {
+				if ( isset( $season['price'] ) && $season['price'] > 0 ) {
+					$prices[] = $season['price'];
+				}
+			}
+			
+			if ( ! empty( $prices ) ) {
+				$options = get_option( 'ns_tour_price_options', array() );
+				$pt_bins = intval( $options['pricetable_color_bins'] ?? 10 );
+				$pt_mode = sanitize_text_field( $options['pricetable_color_mode'] ?? 'linear' );
+				
+				$heatmap = new NS_Tour_Price_Heatmap();
+				$buckets = $heatmap->buildBuckets( $prices, $pt_bins, $pt_mode );
+				$price_table_heatmap_classes = $heatmap->generateHeatmapClassesWithBuckets( $prices, $buckets );
+			}
+		}
+
 		ob_start();
 		?>
 		<div class="tpc-annual-view" data-tour="<?php echo esc_attr( $tour ); ?>" data-duration="<?php echo esc_attr( $duration ); ?>" data-year="<?php echo esc_attr( $year ); ?>">
@@ -505,8 +526,14 @@ class NS_Tour_Price_Annual_Builder {
 								
 								$period_text = $periods ? implode( '、', $periods ) : '—';
 								$price_text = ( $price !== null && $price > 0 ) ? '¥' . number_format( $price ) : '—';
+								
+								// 価格ベースのヒートマップクラスを適用
+								$price_class = '';
+								if ( $price !== null && $price > 0 && isset( $price_table_heatmap_classes[ $price ] ) ) {
+									$price_class = 'hp-pricetable-' . $price_table_heatmap_classes[ $price ];
+								}
 							?>
-							<tr data-season="<?php echo esc_attr( $code ); ?>">
+							<tr data-season="<?php echo esc_attr( $code ); ?>" data-price="<?php echo esc_attr( $price ?? 0 ); ?>" class="<?php echo esc_attr( $price_class ); ?>">
 								<td class="season-code"><?php echo esc_html( $label ); ?></td>
 								<td class="season-periods"><?php echo esc_html( $period_text ); ?></td>
 								<td class="season-price"><?php echo esc_html( $price_text ); ?></td>

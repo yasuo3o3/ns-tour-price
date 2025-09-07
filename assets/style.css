@@ -187,39 +187,66 @@
     border-bottom: none;
 }
 
-/* シーズン別背景色（A～Kの各区分） */
-.tpc-season-table tr[data-season="A"] {
-    background: rgba(245, 129, 149, 0.1);
+/* 価格表用のCSSカスタムプロパティ（ブルー系グラデーション） */
+:root {
+    --ns-pricetable-color-0: #e3f2fd;
+    --ns-pricetable-color-1: #bbdefb;
+    --ns-pricetable-color-2: #90caf9;
+    --ns-pricetable-color-3: #64b5f6;
+    --ns-pricetable-color-4: #42a5f5;
+    --ns-pricetable-color-5: #2196f3;
+    --ns-pricetable-color-6: #1e88e5;
+    --ns-pricetable-color-7: #1976d2;
+    --ns-pricetable-color-8: #1565c0;
+    --ns-pricetable-color-9: #0d47a1;
 }
-.tpc-season-table tr[data-season="B"] {
-    background: rgba(44, 177, 177, 0.1);
+
+/* 価格ベースヒートマップクラス */
+.tpc-season-table tr.hp-pricetable-0 {
+    background: var(--ns-pricetable-color-0);
+    color: #333;
 }
-.tpc-season-table tr[data-season="C"] {
-    background: rgba(176, 146, 33, 0.1);
+.tpc-season-table tr.hp-pricetable-1 {
+    background: var(--ns-pricetable-color-1);
+    color: #333;
 }
-.tpc-season-table tr[data-season="D"] {
-    background: rgba(41, 170, 41, 0.1);
+.tpc-season-table tr.hp-pricetable-2 {
+    background: var(--ns-pricetable-color-2);
+    color: #333;
 }
-.tpc-season-table tr[data-season="E"] {
-    background: rgba(214, 42, 32, 0.1);
+.tpc-season-table tr.hp-pricetable-3 {
+    background: var(--ns-pricetable-color-3);
+    color: #fff;
 }
-.tpc-season-table tr[data-season="F"] {
-    background: rgba(156, 39, 176, 0.1);
+.tpc-season-table tr.hp-pricetable-4 {
+    background: var(--ns-pricetable-color-4);
+    color: #fff;
 }
-.tpc-season-table tr[data-season="G"] {
-    background: rgba(255, 152, 0, 0.1);
+.tpc-season-table tr.hp-pricetable-5 {
+    background: var(--ns-pricetable-color-5);
+    color: #fff;
 }
-.tpc-season-table tr[data-season="H"] {
-    background: rgba(63, 81, 181, 0.1);
+.tpc-season-table tr.hp-pricetable-6 {
+    background: var(--ns-pricetable-color-6);
+    color: #fff;
 }
-.tpc-season-table tr[data-season="I"] {
-    background: rgba(0, 150, 136, 0.1);
+.tpc-season-table tr.hp-pricetable-7 {
+    background: var(--ns-pricetable-color-7);
+    color: #fff;
 }
-.tpc-season-table tr[data-season="J"] {
-    background: rgba(121, 85, 72, 0.1);
+.tpc-season-table tr.hp-pricetable-8 {
+    background: var(--ns-pricetable-color-8);
+    color: #fff;
 }
-.tpc-season-table tr[data-season="K"] {
-    background: rgba(96, 125, 139, 0.1);
+.tpc-season-table tr.hp-pricetable-9 {
+    background: var(--ns-pricetable-color-9);
+    color: #fff;
+}
+
+/* フォールバック: 価格クラスなしまたは価格なしの行 */
+.tpc-season-table tr:not([class*="hp-pricetable-"]) {
+    background: #f8f9fa;
+    color: #6c757d;
 }
 
 .tpc-season-chip {
