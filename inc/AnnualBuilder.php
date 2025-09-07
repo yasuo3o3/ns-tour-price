@@ -93,6 +93,9 @@ class NS_Tour_Price_Annual_Builder {
 		// 年間価格データを取得（直接CSV読み込み）
 		$yearly_prices = $this->getYearlyPricesDirectly( $tour, $duration, $year );
 		
+		// シーズン色マップを生成
+		$season_color_map = $this->generateSeasonColorMap( $tour, $duration );
+		
 		// ヒートマップ用の色分け計算
 		$prices_array = array_values( $yearly_prices );
 		$heatmap_data = $this->calculateHeatmapBins( $prices_array );
@@ -122,7 +125,7 @@ class NS_Tour_Price_Annual_Builder {
 				// シーズン情報とカラー決定
 				$season_info = $this->getDateSeasonInfo( $tour, $date_str, $duration );
 				$season_code = $season_info['season_code'];
-				$season_color = $season_color_map[ $season_code ] ?? '#f3f4f6';
+				$hp_class = $season_color_map[ $season_code ] ?? '';
 				$season_class = $season_code ? 'season-' . strtolower( $season_code ) : '';
 
 				$month_days[] = array(
@@ -135,7 +138,7 @@ class NS_Tour_Price_Annual_Builder {
 					'is_today' => $date_str === gmdate( 'Y-m-d' ),
 					'has_season' => ! empty( $season_code ),
 					'season_code' => $season_code,
-					'season_color' => $season_color,
+					'hp_class' => $hp_class,
 				);
 			}
 
@@ -161,7 +164,50 @@ class NS_Tour_Price_Annual_Builder {
 			'covered_days' => $covered_days,
 			'months_rendered' => $months_rendered,
 			'heatmap' => $heatmap_data,
+			'season_colors' => $season_color_map,
 		);
+	}
+
+	/**
+	 * シーズン色マップを生成（凡例と同一の色を使用）
+	 */
+	private function generateSeasonColorMap( $tour, $duration ) {
+		$season_colors = array();
+		
+		// 直接CSV読み込みでシーズン一覧を取得
+		$seasons_path = NS_TOUR_PRICE_PLUGIN_DIR . 'data/seasons.csv';
+		$prices_path = NS_TOUR_PRICE_PLUGIN_DIR . 'data/base_prices.csv';
+		
+		if ( ! file_exists( $seasons_path ) || ! file_exists( $prices_path ) ) {
+			return $season_colors;
+		}
+		
+		// シーズンコードを収集
+		$season_codes = array();
+		$handle = fopen( $seasons_path, 'r' );
+		if ( $handle ) {
+			$headers = fgetcsv( $handle );
+			while ( ( $row = fgetcsv( $handle ) ) !== false ) {
+				if ( count( $row ) >= 2 && trim( $row[0] ) === $tour ) {
+					$season_code = trim( $row[1] );
+					if ( $season_code && ! in_array( $season_code, $season_codes ) ) {
+						$season_codes[] = $season_code;
+					}
+				}
+			}
+			fclose( $handle );
+		}
+		
+		// A-K順でソート
+		natsort( $season_codes );
+		$season_codes = array_values( $season_codes );
+		
+		// 各シーズンにhp-indexクラスを割り当て（凡例と同じ仕組み）
+		foreach ( $season_codes as $index => $season_code ) {
+			$season_colors[ $season_code ] = 'hp-' . $index;
+		}
+		
+		return $season_colors;
 	}
 
 	/**
@@ -572,16 +618,11 @@ class NS_Tour_Price_Annual_Builder {
 									if ( $day_data['has_season'] ) {
 										$day_classes[] = 'has-season';
 										$day_classes[] = $day_data['season_class'];
-										$day_style = 'background-color: ' . esc_attr( $day_data['season_color'] ) . ';';
-										$fg = '#111111';
-										if ( isset( $day_data['season_color'] ) && $day_data['season_color'] ) {
-											if ( isset( $this->season_color_service ) && $this->season_color_service ) {
-												$fg = $this->season_color_service->getTextColor( $day_data['season_color'] );
-											} else {
-												$fg = $this->autoTextColor( $day_data['season_color'] );
-											}
+										
+										// hp-クラスを適用（凡例と同じ色）
+										if ( ! empty( $day_data['hp_class'] ) ) {
+											$day_classes[] = $day_data['hp_class'];
 										}
-										$day_style .= ' color: ' . esc_attr( $fg ) . ';';
 									}
 									
 									if ( $day_data['is_today'] ?? false ) {
