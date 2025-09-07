@@ -506,7 +506,7 @@ class NS_Tour_Price_Annual_Builder {
 								$period_text = $periods ? implode( '、', $periods ) : '—';
 								$price_text = ( $price !== null && $price > 0 ) ? '¥' . number_format( $price ) : '—';
 							?>
-							<tr>
+							<tr data-season="<?php echo esc_attr( $code ); ?>">
 								<td class="season-code"><?php echo esc_html( $label ); ?></td>
 								<td class="season-periods"><?php echo esc_html( $period_text ); ?></td>
 								<td class="season-price"><?php echo esc_html( $price_text ); ?></td>
