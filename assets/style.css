@@ -284,7 +284,7 @@
 .tpc-annual-view .hp-7 { background-color: var(--hp-7); color: #000000; }
 .tpc-annual-view .hp-8 { background-color: var(--hp-8); color: #ffffff; }
 .tpc-annual-view .hp-9 { background-color: var(--hp-9); color: #ffffff; }
-.tpc-annual-view .hp-10 { background-color: #d32f2f; color: #ffffff; }
+.tpc-annual-view .hp-10 { background-color: var(--hp-10); color: #ffffff; }
 
 /* Season Table HP Classes */
 .tpc-season-table .hp-0 { background-color: var(--hp-0); color: #ffffff; }
@@ -297,7 +297,7 @@
 .tpc-season-table .hp-7 { background-color: var(--hp-7); color: #000000; }
 .tpc-season-table .hp-8 { background-color: var(--hp-8); color: #ffffff; }
 .tpc-season-table .hp-9 { background-color: var(--hp-9); color: #ffffff; }
-.tpc-season-table .hp-10 { background-color: #d32f2f; color: #ffffff; }
+.tpc-season-table .hp-10 { background-color: var(--hp-10); color: #ffffff; }
 
 /* 年間ビューの価格ある日は白テキスト */
 .tpc-annual-view .calendar-day.has-price .day-number { 
@@ -1182,6 +1182,7 @@
     --hp-7: #f2c03f;
     --hp-8: #f28f32;
     --hp-9: #e34a33;
+    --hp-10: #d32f2f;
 }
 
 .ns-tour-price-calendar .hp-0 {
