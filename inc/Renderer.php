@@ -234,7 +234,7 @@ class NS_Tour_Price_Renderer {
 							   data-confirmed-only="<?php echo esc_attr( $args['confirmed_only'] ? '1' : '0' ); ?>"
 							   <?php if ( $is_active ) : ?>aria-current="page"<?php endif; ?>
 							   aria-label="<?php printf( esc_attr__( '%d日間に切替', 'ns-tour_price' ), $duration ); ?>">
-								<?php printf( esc_html__( '%d日', 'ns-tour_price' ), $duration ); ?>
+								<?php printf( esc_html__( '%d日間', 'ns-tour_price' ), $duration ); ?>
 							</a>
 						<?php endforeach; ?>
 					</div>

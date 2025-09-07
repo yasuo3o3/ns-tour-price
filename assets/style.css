@@ -1436,7 +1436,6 @@
     align-items: center;
     justify-content: center;
     padding: 6px 12px;
-    background: rgba(0, 0, 0, 0.8);
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 20px;
     color: white;
@@ -1449,9 +1448,68 @@
     white-space: nowrap;
 }
 
-.tpc-duration-tab:hover {
-    background: rgba(255, 255, 255, 0.25);
-    border-color: rgba(255, 255, 255, 0.5);
+/* 期間別の背景色設定 */
+.tpc-duration-tab[data-duration="4"] {
+    background: #f58195;
+    border-color: #f58195;
+}
+
+.tpc-duration-tab[data-duration="5"] {
+    background: #2cb1b1;
+    border-color: #2cb1b1;
+}
+
+.tpc-duration-tab[data-duration="6"] {
+    background: #b09221;
+    border-color: #b09221;
+}
+
+.tpc-duration-tab[data-duration="7"] {
+    background: #29aa29;
+    border-color: #29aa29;
+}
+
+.tpc-duration-tab[data-duration="8"] {
+    background: #d62a20;
+    border-color: #d62a20;
+}
+
+/* ホバー時は20%薄い色 */
+.tpc-duration-tab[data-duration="4"]:hover {
+    background: #f7a1b1;
+    border-color: #f7a1b1;
+    color: white;
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+.tpc-duration-tab[data-duration="5"]:hover {
+    background: #4dbbbb;
+    border-color: #4dbbbb;
+    color: white;
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+.tpc-duration-tab[data-duration="6"]:hover {
+    background: #c4a644;
+    border-color: #c4a644;
+    color: white;
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+.tpc-duration-tab[data-duration="7"]:hover {
+    background: #4bb84b;
+    border-color: #4bb84b;
+    color: white;
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+.tpc-duration-tab[data-duration="8"]:hover {
+    background: #dd5246;
+    border-color: #dd5246;
     color: white;
     text-decoration: none;
     transform: translateY(-1px);
@@ -1462,15 +1520,11 @@
 }
 
 .tpc-duration-tab.is-active {
-    background: #ffffff;
-    color: #2d3748;
-    border-color: #ffffff;
     font-weight: 600;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .tpc-duration-tab.is-active:hover {
-    background: #f7fafc;
-    color: #2d3748;
     transform: none;
 }
 
