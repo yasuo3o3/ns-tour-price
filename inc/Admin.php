@@ -41,7 +41,7 @@ class NS_Tour_Price_Admin {
 
 		add_settings_section(
 			'ns_tour_price_general',
-			__( 'General Settings', 'ns-tour_price' ),
+			__( '色設定（シーズンパレット）', 'ns-tour_price' ),
 			array( $this, 'generalSectionCallback' ),
 			'ns_tour_price_settings'
 		);
@@ -109,6 +109,8 @@ class NS_Tour_Price_Admin {
 			'ns_tour_price_annual'
 		);
 
+		// 非推奨設定を非表示化（データは保持）
+		/*
 		add_settings_field(
 			'heatmap_colors',
 			__( 'Heatmap Color List', 'ns-tour_price' ),
@@ -124,6 +126,7 @@ class NS_Tour_Price_Admin {
 			'ns_tour_price_settings',
 			'ns_tour_price_general'
 		);
+		*/
 
 		add_settings_field(
 			'season_palette',
@@ -141,10 +144,21 @@ class NS_Tour_Price_Admin {
 			'ns_tour_price_general'
 		);
 
+		/*
 		add_settings_field(
 			'pricetable_color_bins',
 			__( 'Price Table Color Bins', 'ns-tour_price' ),
 			array( $this, 'priceTableColorBinsFieldCallback' ),
+			'ns_tour_price_settings',
+			'ns_tour_price_general'
+		);
+		*/
+
+		// 色設定統一の説明
+		add_settings_field(
+			'color_migration_notice',
+			'',
+			array( $this, 'colorMigrationNoticeCallback' ),
 			'ns_tour_price_settings',
 			'ns_tour_price_general'
 		);
@@ -463,7 +477,7 @@ A1,WINTER,WINTER</pre>
 	}
 
 	public function generalSectionCallback() {
-		echo '<p>' . esc_html__( 'Configure the basic settings for NS Tour Price Calendar.', 'ns-tour_price' ) . '</p>';
+		echo '<p>' . esc_html__( '色はシーズンパレットで統一。ヒートマップ関連設定は廃止されました。', 'ns-tour_price' ) . '</p>';
 	}
 
 	public function dataSourceFieldCallback() {
@@ -957,6 +971,46 @@ A1,WINTER,WINTER</pre>
 		<?php
 	}
 
+	/**
+	 * 色設定統一の説明コールバック
+	 */
+	public function colorMigrationNoticeCallback() {
+		// 非推奨オプションが残っているかチェック
+		$options = get_option( 'ns_tour_price_options', array() );
+		$deprecated_keys = array( 'heatmap_color_list', 'pricetable_color_mode', 'pricetable_color_bins', 'annual_view_season_colors' );
+		$has_deprecated = false;
+		
+		foreach ( $deprecated_keys as $key ) {
+			if ( isset( $options[ $key ] ) ) {
+				$has_deprecated = true;
+				break;
+			}
+		}
+		
+		// 非推奨キー記録
+		if ( $has_deprecated ) {
+			$deprecated_data = array();
+			foreach ( $deprecated_keys as $key ) {
+				if ( isset( $options[ $key ] ) ) {
+					$deprecated_data[ $key ] = $options[ $key ];
+				}
+			}
+			update_option( 'ns_tour_price_deprecated', $deprecated_data );
+		}
+		?>
+		<div class="notice notice-info inline">
+			<p><?php esc_html_e( '色設定はシーズンパレットに統一しました。ヒートマップ関連設定は廃止されています。', 'ns-tour_price' ); ?></p>
+			<?php if ( WP_DEBUG && $has_deprecated ) : ?>
+				<p class="description" style="color: #666;">
+					<?php esc_html_e( '[開発者向け] 非推奨オプションが残っています（内部データは保持）', 'ns-tour_price' ); ?>
+				</p>
+			<?php endif; ?>
+		</div>
+		<?php
+	}
+
+	// 非推奨コールバック（非表示だが残しておく）
+	/*
 	public function priceTableColorBinsFieldCallback() {
 		$options = get_option( 'ns_tour_price_options' );
 		$value = intval( $options['pricetable_color_bins'] ?? 10 );
@@ -967,4 +1021,5 @@ A1,WINTER,WINTER</pre>
 		</p>
 		<?php
 	}
+	*/
 }

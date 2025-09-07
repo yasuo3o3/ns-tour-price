@@ -105,17 +105,10 @@ class NS_Tour_Price_Loader {
 	 * @return array 色の配列（安→高順）
 	 */
 	public function getHeatmapColors() {
-		$options = get_option( 'ns_tour_price_options', array() );
-		
-		// 管理画面で設定された色リストがあれば使用
-		if ( isset( $options['heatmap_colors'] ) && is_array( $options['heatmap_colors'] ) && ! empty( $options['heatmap_colors'] ) ) {
-			return $options['heatmap_colors'];
-		}
-		
-		// デフォルトの13色パレット（安→高：寒色→暖色）
+		// 旧heatmap_colors設定は使わず、統一シーズンパレットを返す
 		return array(
-			'#ADCCEB', '#ADE0EB', '#ADEBE0', '#ADEBCC', '#ADEBB3', '#C7EBAD',
-			'#EBEBAD', '#EBE0AD', '#EBD6AD', '#EBCCAD', '#EBBDAD', '#EBADAD', '#EAADC6'
+			'#2d4f8e', '#336dbd', '#3a89d1', '#49a5d1', '#64c0bf',
+			'#8bd18f', '#c4dd5e', '#f2c03f', '#f28f32', '#e34a33', '#d32f2f'
 		);
 	}
 }

@@ -208,31 +208,13 @@ class NS_Tour_Price_Annual_Builder {
 	*/
 
 	/**
-	 * ヒートマップカラーパレットを取得
+	 * シーズンカラーパレットを取得（旧ヒートマップカラー代替）
 	 */
 	private function getHeatmapColors() {
-		$options = get_option( 'ns_tour_price_options', array() );
-		$colors_data = $options['heatmap_colors'] ?? '';
-		
-		// 型チェック: 既に配列の場合はそのまま使用
-		if ( is_array( $colors_data ) ) {
-			return array_filter( array_map( 'trim', $colors_data ) );
-		}
-		
-		// 文字列の場合は explode で分割
-		if ( ! empty( $colors_data ) && is_string( $colors_data ) ) {
-			$colors = array_map( 'trim', explode( ',', $colors_data ) );
-			return array_filter( $colors );
-		}
-
-		// デフォルト色
+		// 旧heatmap_colors設定は使わず、統一シーズンパレットを返す
 		return array(
-			'#e0f2fe',
-			'#b3e5fc', 
-			'#81d4fa',
-			'#4fc3f7',
-			'#29b6f6',
-			'#03a9f4',
+			'#2d4f8e', '#336dbd', '#3a89d1', '#49a5d1', '#64c0bf',
+			'#8bd18f', '#c4dd5e', '#f2c03f', '#f28f32', '#e34a33', '#d32f2f'
 		);
 	}
 

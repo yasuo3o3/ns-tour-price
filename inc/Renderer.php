@@ -85,8 +85,8 @@ class NS_Tour_Price_Renderer {
 			sanitize_text_field( $args['tour'] ?? 'A1' ),
 			sanitize_text_field( $args['month'] ?? gmdate( 'Y-m' ) ),
 			intval( $args['duration'] ?? 4 ),
-			intval( $options['heatmap_bins'] ?? 7 ),
-			sanitize_text_field( $options['heatmap_mode'] ?? 'quantile' ),
+			7, // 固定値（旧heatmap_binsは使用しない）
+			'season', // シーズンベース色付け（旧heatmap_modeは使用しない）
 			$args['heatmap'] ? '1' : '0',
 			$args['confirmed_only'] ? '1' : '0',
 			$args['show_legend'] ? '1' : '0',
