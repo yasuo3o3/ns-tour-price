@@ -30,18 +30,21 @@ class NS_Tour_Price_Annual_Builder {
 	 * @return array {html: string, meta: array}
 	 */
 	public function build( $tour, $duration, $year, $opts = array() ) {
+		error_log( "AnnualBuilder::build called with tour=$tour, duration=$duration, year=$year" );
+		
 		$defaults = array(
 			'show_mini_calendars' => true,
 			'show_season_table' => true,
 		);
 		$opts = wp_parse_args( $opts, $defaults );
 
-		if ( ! $this->repo->isDataAvailable() ) {
-			return array(
-				'html' => $this->buildErrorView( __( 'データが見つかりません', 'ns-tour_price' ) ),
-				'meta' => array(),
-			);
-		}
+		// Repo依存を削除してデータ有無チェックを簡素化
+		// if ( ! $this->repo->isDataAvailable() ) {
+		//	return array(
+		//		'html' => $this->buildErrorView( __( 'データが見つかりません', 'ns-tour_price' ) ),
+		//		'meta' => array(),
+		//	);
+		// }
 
 		// キャッシュチェック
 		$cache_key = $this->getCacheKey( $tour, $duration, $year );
@@ -51,8 +54,13 @@ class NS_Tour_Price_Annual_Builder {
 		}
 
 		// 年間データを生成
+		error_log( "AnnualBuilder: generateAnnualData開始" );
 		$annual_data = $this->generateAnnualData( $tour, $duration, $year, $opts );
+		error_log( "AnnualBuilder: generateAnnualData完了" );
+		
+		error_log( "AnnualBuilder: summarizeSeasonPrices開始" );
 		$season_summary = $this->summarizeSeasonPrices( $tour, $duration, $year );
+		error_log( "AnnualBuilder: summarizeSeasonPrices完了" );
 
 		$html = $this->renderAnnualView( $annual_data, $season_summary, $tour, $duration, $year, $opts );
 
@@ -646,12 +654,8 @@ class NS_Tour_Price_Annual_Builder {
 	 * キャッシュキーを生成
 	 */
 	private function getCacheKey( $tour, $duration, $year ) {
-		// CSVの最終更新時刻なども含めてハッシュ化
-		$data_hash = '';
-		if ( $this->repo->isDataAvailable() ) {
-			// 簡易的にcurrent_time()を使用してキャッシュキーを生成
-			$data_hash = gmdate( 'Y-m-d-H' ); // 時間単位でキャッシュを更新
-		}
+		// 簡易的なキャッシュキーを生成（Repo依存を削除）
+		$data_hash = gmdate( 'Y-m-d-H' ); // 時間単位でキャッシュを更新
 		
 		return 'tpc:annual:' . md5( $tour . ':' . $duration . ':' . $year . ':' . $data_hash );
 	}
@@ -676,11 +680,15 @@ class NS_Tour_Price_Annual_Builder {
 	 * @return array ['Y-m-d' => price_int, ...]
 	 */
 	private function getYearlyPricesDirectly( $tour_id, $duration, $year ) {
+		error_log( "getYearlyPricesDirectly: tour_id=$tour_id, duration=$duration, year=$year" );
 		$yearly_prices = array();
 		
 		// seasons.csvを読み込み
 		$seasons_path = NS_TOUR_PRICE_PLUGIN_DIR . 'data/seasons.csv';
 		$prices_path = NS_TOUR_PRICE_PLUGIN_DIR . 'data/base_prices.csv';
+		
+		error_log( "getYearlyPricesDirectly: seasons_path=$seasons_path" );
+		error_log( "getYearlyPricesDirectly: prices_path=$prices_path" );
 		
 		if ( ! file_exists( $seasons_path ) || ! file_exists( $prices_path ) ) {
 			error_log( "AnnualBuilder: CSV files not found" );
@@ -758,6 +766,7 @@ class NS_Tour_Price_Annual_Builder {
 			}
 		}
 		
+		error_log( "getYearlyPricesDirectly: 最終結果 yearly_prices count=" . count( $yearly_prices ) );
 		return $yearly_prices;
 	}
 
