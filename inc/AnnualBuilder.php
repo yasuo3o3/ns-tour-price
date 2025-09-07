@@ -80,8 +80,8 @@ class NS_Tour_Price_Annual_Builder {
 	private function generateAnnualData( $tour, $duration, $year, $opts = array() ) {
 		$show_empty_months = $opts['show_empty_months'] ?? false;
 		
-		// 年間価格データを取得
-		$yearly_prices = $this->repo->getYearlyPrices( $tour, $duration, $year );
+		// 年間価格データを取得（直接CSV読み込み）
+		$yearly_prices = $this->getYearlyPricesDirectly( $tour, $duration, $year );
 		
 		// ヒートマップ用の色分け計算
 		$prices_array = array_values( $yearly_prices );
@@ -277,8 +277,102 @@ class NS_Tour_Price_Annual_Builder {
 	 * シーズン料金要約を生成（結合・並び・価格修正版）
 	 */
 	private function summarizeSeasonPrices( $tour, $duration, $year ) {
-		// 新しいRepo関数を使用して安全なデータを取得
-		return $this->repo->getSeasonSummaryForYear( $tour, $year, $duration );
+		// 直接CSV読み込みでシーズン要約を生成
+		return $this->getSeasonSummaryDirectly( $tour, $year, $duration );
+	}
+	
+	/**
+	 * シーズン要約を直接CSVから生成
+	 */
+	private function getSeasonSummaryDirectly( $tour_id, $year, $duration ) {
+		$seasons_path = NS_TOUR_PRICE_PLUGIN_DIR . 'data/seasons.csv';
+		$prices_path = NS_TOUR_PRICE_PLUGIN_DIR . 'data/base_prices.csv';
+		
+		if ( ! file_exists( $seasons_path ) || ! file_exists( $prices_path ) ) {
+			return array();
+		}
+		
+		// シーズンデータを読み込み
+		$seasons = array();
+		$handle = fopen( $seasons_path, 'r' );
+		if ( $handle ) {
+			$headers = fgetcsv( $handle );
+			while ( ( $row = fgetcsv( $handle ) ) !== false ) {
+				if ( count( $row ) >= 5 && trim( $row[0] ) === $tour_id ) {
+					$seasons[] = array(
+						'season_code' => trim( $row[1] ),
+						'label' => trim( $row[2] ),
+						'date_start' => trim( $row[3] ),
+						'date_end' => trim( $row[4] ),
+					);
+				}
+			}
+			fclose( $handle );
+		}
+		
+		// 価格データを読み込み
+		$prices = array();
+		$handle = fopen( $prices_path, 'r' );
+		if ( $handle ) {
+			$headers = fgetcsv( $handle );
+			while ( ( $row = fgetcsv( $handle ) ) !== false ) {
+				if ( count( $row ) >= 4 && 
+					 trim( $row[0] ) === $tour_id && 
+					 intval( $row[2] ) === intval( $duration ) ) {
+					$prices[ trim( $row[1] ) ] = intval( $row[3] );
+				}
+			}
+			fclose( $handle );
+		}
+		
+		// シーズン要約を生成
+		$summary = array();
+		foreach ( $seasons as $season ) {
+			$code = $season['season_code'];
+			$price = $prices[ $code ] ?? null;
+			
+			if ( $price === null ) {
+				continue;
+			}
+			
+			// 年でフィルタした期間文字列を生成
+			$start_date = str_replace( '/', '-', $season['date_start'] );
+			$end_date = str_replace( '/', '-', $season['date_end'] );
+			
+			$start_time = strtotime( $start_date );
+			$end_time = strtotime( $end_date );
+			$year_start = strtotime( "$year-01-01" );
+			$year_end = strtotime( "$year-12-31" );
+			
+			if ( $end_time < $year_start || $start_time > $year_end ) {
+				continue;
+			}
+			
+			$effective_start = max( $start_time, $year_start );
+			$effective_end = min( $end_time, $year_end );
+			
+			$period = date( 'n/j', $effective_start ) . '–' . date( 'n/j', $effective_end );
+			
+			if ( ! isset( $summary[ $code ] ) ) {
+				$summary[ $code ] = array(
+					'label' => $season['label'],
+					'periods' => array(),
+					'price' => $price,
+				);
+			}
+			$summary[ $code ]['periods'][] = $period;
+		}
+		
+		// A-K順でソート
+		uksort( $summary, 'strnatcmp' );
+		
+		// periods重複除去
+		foreach ( $summary as &$item ) {
+			$item['periods'] = array_values( array_unique( $item['periods'] ) );
+			sort( $item['periods'] );
+		}
+		
+		return $summary;
 	}
 
 	/**
@@ -571,6 +665,100 @@ class NS_Tour_Price_Annual_Builder {
 		}
 
 		return '¥' . number_format( $price );
+	}
+
+	/**
+	 * 年間価格データを直接CSVから取得
+	 *
+	 * @param string $tour_id ツアーID
+	 * @param int $duration 日数
+	 * @param int $year 対象年
+	 * @return array ['Y-m-d' => price_int, ...]
+	 */
+	private function getYearlyPricesDirectly( $tour_id, $duration, $year ) {
+		$yearly_prices = array();
+		
+		// seasons.csvを読み込み
+		$seasons_path = NS_TOUR_PRICE_PLUGIN_DIR . 'data/seasons.csv';
+		$prices_path = NS_TOUR_PRICE_PLUGIN_DIR . 'data/base_prices.csv';
+		
+		if ( ! file_exists( $seasons_path ) || ! file_exists( $prices_path ) ) {
+			error_log( "AnnualBuilder: CSV files not found" );
+			return $yearly_prices;
+		}
+		
+		// シーズンデータを読み込み
+		$seasons = array();
+		$handle = fopen( $seasons_path, 'r' );
+		if ( $handle ) {
+			$headers = fgetcsv( $handle ); // ヘッダー行をスキップ
+			
+			while ( ( $row = fgetcsv( $handle ) ) !== false ) {
+				if ( count( $row ) >= 5 && trim( $row[0] ) === $tour_id ) {
+					$seasons[] = array(
+						'season_code' => trim( $row[1] ),
+						'date_start' => trim( $row[3] ),
+						'date_end' => trim( $row[4] ),
+					);
+				}
+			}
+			fclose( $handle );
+		}
+		
+		// 価格データを読み込み
+		$prices = array();
+		$handle = fopen( $prices_path, 'r' );
+		if ( $handle ) {
+			$headers = fgetcsv( $handle ); // ヘッダー行をスキップ
+			
+			while ( ( $row = fgetcsv( $handle ) ) !== false ) {
+				if ( count( $row ) >= 4 && 
+					 trim( $row[0] ) === $tour_id && 
+					 intval( $row[2] ) === intval( $duration ) ) {
+					$prices[ trim( $row[1] ) ] = intval( $row[3] );
+				}
+			}
+			fclose( $handle );
+		}
+		
+		// 年間の日付ごとに価格を設定
+		foreach ( $seasons as $season ) {
+			$season_code = $season['season_code'];
+			$price = $prices[ $season_code ] ?? null;
+			
+			if ( $price === null ) {
+				continue;
+			}
+			
+			// 日付範囲を処理
+			$start_date = date_create( str_replace( '/', '-', $season['date_start'] ) );
+			$end_date = date_create( str_replace( '/', '-', $season['date_end'] ) );
+			
+			if ( ! $start_date || ! $end_date ) {
+				continue;
+			}
+			
+			// 年でフィルタ
+			$year_start = date_create( "$year-01-01" );
+			$year_end = date_create( "$year-12-31" );
+			
+			$effective_start = max( $start_date, $year_start );
+			$effective_end = min( $end_date, $year_end );
+			
+			if ( $effective_start > $effective_end ) {
+				continue;
+			}
+			
+			// 期間内の全日に価格を設定
+			$current = clone $effective_start;
+			while ( $current <= $effective_end ) {
+				$date_key = $current->format( 'Y-m-d' );
+				$yearly_prices[ $date_key ] = $price;
+				$current->add( new DateInterval( 'P1D' ) );
+			}
+		}
+		
+		return $yearly_prices;
 	}
 
 	/**
