@@ -126,6 +126,22 @@ class NS_Tour_Price_Admin {
 		);
 
 		add_settings_field(
+			'season_palette',
+			__( 'Season Palette (15 colors)', 'ns-tour_price' ),
+			array( $this, 'seasonPaletteFieldCallback' ),
+			'ns_tour_price_settings',
+			'ns_tour_price_general'
+		);
+
+		add_settings_field(
+			'prune_mode',
+			__( 'Color Pruning Mode', 'ns-tour_price' ),
+			array( $this, 'pruneModeFieldCallback' ),
+			'ns_tour_price_settings',
+			'ns_tour_price_general'
+		);
+
+		add_settings_field(
 			'pricetable_color_bins',
 			__( 'Price Table Color Bins', 'ns-tour_price' ),
 			array( $this, 'priceTableColorBinsFieldCallback' ),
@@ -625,6 +641,42 @@ A1,WINTER,WINTER</pre>
 			$sanitized['heatmap_colors'] = $colors;
 		}
 
+		// シーズンパレットの検証
+		if ( isset( $input['season_palette'] ) ) {
+			$colors_text = sanitize_textarea_field( $input['season_palette'] );
+			$colors = array();
+			
+			if ( ! empty( $colors_text ) ) {
+				$lines = explode( "\n", $colors_text );
+				foreach ( $lines as $line ) {
+					$color = trim( $line );
+					if ( ! empty( $color ) ) {
+						$validated_color = sanitize_hex_color( $color );
+						if ( $validated_color ) {
+							$colors[] = $validated_color;
+						}
+					}
+				}
+			}
+			
+			// デフォルト15色パレット
+			if ( empty( $colors ) ) {
+				$colors = array(
+					'#e3f2fd', '#bbdefb', '#90caf9', '#64b5f6', '#42a5f5',
+					'#2196f3', '#1e88e5', '#1976d2', '#1565c0', '#0d47a1',
+					'#ff5722', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5'
+				);
+			}
+			
+			$sanitized['season_palette'] = $colors;
+		}
+
+		// 間引きモードの検証
+		if ( isset( $input['prune_mode'] ) ) {
+			$mode = sanitize_text_field( $input['prune_mode'] );
+			$sanitized['prune_mode'] = in_array( $mode, array( 'tail', 'balanced' ), true ) ? $mode : 'tail';
+		}
+
 		return $sanitized;
 	}
 
@@ -845,6 +897,66 @@ A1,WINTER,WINTER</pre>
 	/**
 	 * 価格表の色ビン数設定フィールド
 	 */
+	public function seasonPaletteFieldCallback() {
+		$options = get_option( 'ns_tour_price_options', array() );
+		$default_palette = array(
+			'#e3f2fd', '#bbdefb', '#90caf9', '#64b5f6', '#42a5f5',
+			'#2196f3', '#1e88e5', '#1976d2', '#1565c0', '#0d47a1',
+			'#ff5722', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5'
+		);
+		$current_colors = isset( $options['season_palette'] ) ? $options['season_palette'] : $default_palette;
+		$colors_text = implode( "\n", $current_colors );
+		?>
+		<textarea id="season_palette" name="ns_tour_price_options[season_palette]" rows="15" cols="50"><?php echo esc_textarea( $colors_text ); ?></textarea>
+		<p class="description">
+			<?php esc_html_e( 'Season fixed palette (15 colors recommended). Used for unified color display across legends, calendars, and season tables. Colors are assigned based on price order: cheapest season gets first color, most expensive gets last color.', 'ns-tour_price' ); ?><br>
+			<?php esc_html_e( 'Specify one color per line in #RRGGBB format. If empty, default 15-color palette is used.', 'ns-tour_price' ); ?>
+		</p>
+		<div id="season-palette-preview" style="margin-top: 10px;"></div>
+		<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			var textarea = document.getElementById('season_palette');
+			var preview = document.getElementById('season-palette-preview');
+			
+			function updatePreview() {
+				var colors = textarea.value.split('\n').filter(function(c) {
+					return c.trim() && c.match(/^#[0-9A-Fa-f]{6}$/);
+				});
+				
+				preview.innerHTML = '';
+				if (colors.length > 0) {
+					preview.innerHTML = '<strong>Season Palette Preview (' + colors.length + ' colors):</strong><br>';
+					colors.forEach(function(color, index) {
+						var swatch = document.createElement('span');
+						swatch.style.cssText = 'display:inline-block;width:30px;height:30px;background-color:' + color + ';margin:2px;border:1px solid #ddd;border-radius:3px;position:relative;';
+						swatch.title = 'Index ' + index + ': ' + color;
+						preview.appendChild(swatch);
+					});
+				}
+			}
+			
+			textarea.addEventListener('input', updatePreview);
+			updatePreview();
+		});
+		</script>
+		<?php
+	}
+
+	public function pruneModeFieldCallback() {
+		$options = get_option( 'ns_tour_price_options', array() );
+		$current = sanitize_text_field( $options['prune_mode'] ?? 'tail' );
+		?>
+		<select name="ns_tour_price_options[prune_mode]">
+			<option value="tail" <?php selected( $current, 'tail' ); ?>><?php esc_html_e( 'Tail Pruning (Phase 1)', 'ns-tour_price' ); ?></option>
+			<option value="balanced" <?php selected( $current, 'balanced' ); ?>><?php esc_html_e( 'Balanced Pruning (Phase 2)', 'ns-tour_price' ); ?></option>
+		</select>
+		<p class="description">
+			<?php esc_html_e( 'Color pruning method when seasons exceed palette colors. Tail pruning removes colors from the right side first (Phase 1). Balanced pruning distributes removal evenly (Phase 2).', 'ns-tour_price' ); ?><br>
+			<?php esc_html_e( 'Always keeps cheapest and most expensive season colors fixed at endpoints.', 'ns-tour_price' ); ?>
+		</p>
+		<?php
+	}
+
 	public function priceTableColorBinsFieldCallback() {
 		$options = get_option( 'ns_tour_price_options' );
 		$value = intval( $options['pricetable_color_bins'] ?? 10 );

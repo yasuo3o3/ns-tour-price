@@ -109,12 +109,11 @@ class NS_Tour_Price_Annual_Builder {
 					$priced_days_in_month++;
 				}
 
-				// ヒートマップクラス決定
-				$heatmap_class = '';
-				if ( $has_price ) {
-					$bin_index = $this->getPriceBinIndex( $price, $heatmap_data['bins'] );
-					$heatmap_class = 'hp-' . $bin_index;
-				}
+				// シーズン情報とカラー決定
+				$season_info = $this->getDateSeasonInfo( $tour, $date_str, $duration );
+				$season_code = $season_info['season_code'];
+				$season_color = $season_color_map[ $season_code ] ?? '#f3f4f6';
+				$season_class = $season_code ? 'season-' . strtolower( $season_code ) : '';
 
 				$month_days[] = array(
 					'day' => $day,
@@ -122,11 +121,11 @@ class NS_Tour_Price_Annual_Builder {
 					'weekday' => intval( gmdate( 'w', strtotime( $date_str ) ) ),
 					'price' => $price,
 					'has_price' => $has_price,
-					'heatmap_class' => $heatmap_class,
+					'season_class' => $season_class,
 					'is_today' => $date_str === gmdate( 'Y-m-d' ),
-					'has_season' => false,
-					'season_code' => null,
-					'season_color' => '#f3f4f6',
+					'has_season' => ! empty( $season_code ),
+					'season_code' => $season_code,
+					'season_color' => $season_color,
 				);
 			}
 
@@ -417,26 +416,8 @@ class NS_Tour_Price_Annual_Builder {
 	 * 年間ビューのHTMLを生成
 	 */
 	private function renderAnnualView( $annual_data, $season_summary, $tour, $duration, $year, $opts ) {
-		// シーズン料金表用のヒートマップクラス生成
-		$price_table_heatmap_classes = array();
-		if ( ! empty( $season_summary ) ) {
-			$prices = array();
-			foreach ( $season_summary as $season ) {
-				if ( isset( $season['price'] ) && $season['price'] > 0 ) {
-					$prices[] = $season['price'];
-				}
-			}
-			
-			if ( ! empty( $prices ) ) {
-				$options = get_option( 'ns_tour_price_options', array() );
-				$pt_bins = intval( $options['pricetable_color_bins'] ?? 10 );
-				$pt_mode = sanitize_text_field( $options['pricetable_color_mode'] ?? 'linear' );
-				
-				$heatmap = new NS_Tour_Price_Heatmap();
-				$buckets = $heatmap->buildBuckets( $prices, $pt_bins, $pt_mode );
-				$price_table_heatmap_classes = $heatmap->generateHeatmapClassesWithBuckets( $prices, $buckets );
-			}
-		}
+		// シーズン固定色マッピングを使用
+		$season_color_map = $annual_data['season_colors'] ?? array();
 
 		ob_start();
 		?>
@@ -482,20 +463,29 @@ class NS_Tour_Price_Annual_Builder {
 								// 日付セル
 								foreach ( $month_data['days'] as $day_data ) :
 									$day_classes = array( 'tpc-mini-day' );
-									if ( $day_data['has_price'] ) {
-										$day_classes[] = 'has-price';
-										$day_classes[] = $day_data['heatmap_class'];
+									$day_style = '';
+									
+									if ( $day_data['has_season'] ) {
+										$day_classes[] = 'has-season';
+										$day_classes[] = $day_data['season_class'];
+										$day_style = 'background-color: ' . esc_attr( $day_data['season_color'] ) . ';';
+										$day_style .= ' color: ' . esc_attr( $this->season_color_service->getTextColor( $day_data['season_color'] ) ) . ';';
 									}
+									
 									if ( $day_data['is_today'] ?? false ) {
 										$day_classes[] = 'tpc-today';
 									}
 									
 									$title = $day_data['date'];
-									if ( $day_data['has_price'] ) {
-										$title .= ' (¥' . number_format( $day_data['price'] ) . ')';
+									if ( $day_data['has_season'] ) {
+										$title .= ' (Season: ' . $day_data['season_code'] . ')';
+										if ( $day_data['has_price'] ) {
+											$title .= ' - ¥' . number_format( $day_data['price'] );
+										}
 									}
 									?>
 									<div class="<?php echo esc_attr( implode( ' ', $day_classes ) ); ?>"
+										 style="<?php echo esc_attr( $day_style ); ?>"
 										 title="<?php echo esc_attr( $title ); ?>">
 										<span class="day-number"><?php echo esc_html( $day_data['day'] ); ?></span>
 									</div>
@@ -527,13 +517,12 @@ class NS_Tour_Price_Annual_Builder {
 								$period_text = $periods ? implode( '、', $periods ) : '—';
 								$price_text = ( $price !== null && $price > 0 ) ? '¥' . number_format( $price ) : '—';
 								
-								// 価格ベースのヒートマップクラスを適用
-								$price_class = '';
-								if ( $price !== null && $price > 0 && isset( $price_table_heatmap_classes[ $price ] ) ) {
-									$price_class = 'hp-pricetable-' . $price_table_heatmap_classes[ $price ];
-								}
+								// シーズン固定色を適用
+								$season_color = $season_color_map[ $code ] ?? '#f3f4f6';
+								$text_color = $this->season_color_service->getTextColor( $season_color );
+								$season_style = 'background-color: ' . esc_attr( $season_color ) . '; color: ' . esc_attr( $text_color ) . ';';
 							?>
-							<tr data-season="<?php echo esc_attr( $code ); ?>" data-price="<?php echo esc_attr( $price ?? 0 ); ?>" class="<?php echo esc_attr( $price_class ); ?>">
+							<tr data-season="<?php echo esc_attr( $code ); ?>" data-price="<?php echo esc_attr( $price ?? 0 ); ?>" class="season-row season-<?php echo esc_attr( strtolower( $code ) ); ?>" style="<?php echo esc_attr( $season_style ); ?>">
 								<td class="season-code"><?php echo esc_html( $label ); ?></td>
 								<td class="season-periods"><?php echo esc_html( $period_text ); ?></td>
 								<td class="season-price"><?php echo esc_html( $price_text ); ?></td>

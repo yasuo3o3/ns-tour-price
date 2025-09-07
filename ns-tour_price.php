@@ -49,6 +49,7 @@ class NS_Tour_Price {
 		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/AnnualBuilder.php';
 		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/BookingPreview.php';
 		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Heatmap.php';
+		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/SeasonColorService.php';
 		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Renderer.php';
 		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Helpers.php';
 		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Rest/Annual_Controller.php';
@@ -312,6 +313,12 @@ class NS_Tour_Price {
 			'cache_expiry' => 3600,
 			'heatmap_bins' => 7,
 			'heatmap_mode' => 'quantile',
+			'season_palette' => array(
+				'#e3f2fd', '#bbdefb', '#90caf9', '#64b5f6', '#42a5f5',
+				'#2196f3', '#1e88e5', '#1976d2', '#1565c0', '#0d47a1',
+				'#ff5722', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5'
+			),
+			'prune_mode' => 'tail',
 		);
 
 		add_option( 'ns_tour_price_options', $default_options );
