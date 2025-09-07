@@ -187,8 +187,39 @@
     border-bottom: none;
 }
 
-.tpc-season-table tr:nth-child(even) {
-    background: #f9f9f9;
+/* シーズン別背景色（A～Kの各区分） */
+.tpc-season-table tr[data-season="A"] {
+    background: rgba(245, 129, 149, 0.1);
+}
+.tpc-season-table tr[data-season="B"] {
+    background: rgba(44, 177, 177, 0.1);
+}
+.tpc-season-table tr[data-season="C"] {
+    background: rgba(176, 146, 33, 0.1);
+}
+.tpc-season-table tr[data-season="D"] {
+    background: rgba(41, 170, 41, 0.1);
+}
+.tpc-season-table tr[data-season="E"] {
+    background: rgba(214, 42, 32, 0.1);
+}
+.tpc-season-table tr[data-season="F"] {
+    background: rgba(156, 39, 176, 0.1);
+}
+.tpc-season-table tr[data-season="G"] {
+    background: rgba(255, 152, 0, 0.1);
+}
+.tpc-season-table tr[data-season="H"] {
+    background: rgba(63, 81, 181, 0.1);
+}
+.tpc-season-table tr[data-season="I"] {
+    background: rgba(0, 150, 136, 0.1);
+}
+.tpc-season-table tr[data-season="J"] {
+    background: rgba(121, 85, 72, 0.1);
+}
+.tpc-season-table tr[data-season="K"] {
+    background: rgba(96, 125, 139, 0.1);
 }
 
 .tpc-season-chip {

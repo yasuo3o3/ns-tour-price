@@ -146,7 +146,7 @@ $year = $year ?? gmdate( 'Y' );
 				</thead>
 				<tbody>
 					<?php foreach ( $season_summary as $season_code => $season ) : ?>
-					<tr>
+					<tr data-season="<?php echo esc_attr( $season_code ); ?>">
 						<td>
 							<span class="tpc-season-chip" 
 								  style="background-color: <?php echo esc_attr( $season['color'] ); ?>"></span>
