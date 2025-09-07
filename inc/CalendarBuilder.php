@@ -314,51 +314,63 @@ class NS_Tour_Price_CalendarBuilder {
 	 * @return array 凡例データ
 	 */
 	private function buildSeasonBasedLegend( $tour_id, $duration ) {
-		$repo = NS_Tour_Price_Repo::getInstance();
-		$seasons = $repo->getSeasons( $tour_id );
-		$base_prices = $repo->getBasePrices( $tour_id );
-
-		if ( empty( $seasons ) || empty( $base_prices ) ) {
+		// 直接CSVから読み込んでテスト
+		$base_prices = $this->loadBasePricesDirectly( $tour_id, $duration );
+		
+		if ( empty( $base_prices ) ) {
+			error_log( "buildSeasonBasedLegend: 直接読み込みでもデータが空" );
 			return array();
 		}
-
-		// シーズンコードでグループ化
-		$season_prices = array();
-		foreach ( $seasons as $season ) {
-			$season_code = $season['season_code'];
-			if ( ! isset( $season_prices[ $season_code ] ) ) {
-				$season_prices[ $season_code ] = null;
-			}
-		}
-
-		// 価格を取得
-		foreach ( $base_prices as $price ) {
-			if ( $price['tour_id'] === $tour_id && intval( $price['duration_days'] ) === intval( $duration ) ) {
-				$season_code = $price['season_code'];
-				if ( isset( $season_prices[ $season_code ] ) ) {
-					$season_prices[ $season_code ] = intval( $price['price'] );
-				}
-			}
-		}
-
-		// A-K の順でソート
-		uksort( $season_prices, 'strnatcmp' );
-
+		
 		$legend = array();
 		$index = 0;
-		foreach ( $season_prices as $season_code => $price ) {
-			if ( $price !== null ) {
-				$legend[] = array(
-					'class' => 'hp-' . $index,
-					'season_code' => $season_code,
-					'price' => $price,
-					'formatted_price' => '¥' . number_format( $price ),
-				);
-				$index++;
+		foreach ( $base_prices as $season_code => $price ) {
+			$legend[] = array(
+				'class' => 'hp-' . $index,
+				'season_code' => $season_code,
+				'price' => $price,
+				'formatted_price' => '¥' . number_format( $price ),
+			);
+			$index++;
+		}
+		
+		error_log( "buildSeasonBasedLegend: 直接読み込み legend count=" . count( $legend ) );
+		return $legend;
+	}
+	
+	private function loadBasePricesDirectly( $tour_id, $duration ) {
+		$prices = array();
+		$csv_path = NS_TOUR_PRICE_PLUGIN_DIR . 'data/base_prices.csv';
+		
+		if ( ! file_exists( $csv_path ) ) {
+			error_log( "buildSeasonBasedLegend: CSV not found: $csv_path" );
+			return $prices;
+		}
+		
+		$handle = fopen( $csv_path, 'r' );
+		if ( ! $handle ) {
+			return $prices;
+		}
+		
+		$headers = fgetcsv( $handle ); // ヘッダー行をスキップ
+		
+		while ( ( $row = fgetcsv( $handle ) ) !== false ) {
+			if ( count( $row ) >= 4 && 
+				 trim( $row[0] ) === $tour_id && 
+				 intval( $row[2] ) === intval( $duration ) ) {
+				$season_code = trim( $row[1] );
+				$price = intval( $row[3] );
+				$prices[ $season_code ] = $price;
 			}
 		}
-
-		return $legend;
+		
+		fclose( $handle );
+		
+		// A-K の順でソート
+		uksort( $prices, 'strnatcmp' );
+		
+		error_log( "buildSeasonBasedLegend: 直接読み込み結果=" . print_r( $prices, true ) );
+		return $prices;
 	}
 
 	public function getWeekdayHeaders( $week_start = 0 ) {
