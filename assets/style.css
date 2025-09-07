@@ -242,7 +242,7 @@
 }
 
 /* フォールバック: 価格クラスなしまたは価格なしの行 */
-.tpc-season-table tr:not([class*="hp-pricetable-"]) {
+.tpc-season-table tr:not([class*="hp-pricetable-"]):not([class*="hp-"]) {
     background: #f8f9fa;
     color: #6c757d;
 }
@@ -285,6 +285,19 @@
 .tpc-annual-view .hp-8 { background-color: var(--hp-8); color: #ffffff; }
 .tpc-annual-view .hp-9 { background-color: var(--hp-9); color: #ffffff; }
 .tpc-annual-view .hp-10 { background-color: #d32f2f; color: #ffffff; }
+
+/* Season Table HP Classes */
+.tpc-season-table .hp-0 { background-color: var(--hp-0); color: #ffffff; }
+.tpc-season-table .hp-1 { background-color: var(--hp-1); color: #ffffff; }
+.tpc-season-table .hp-2 { background-color: var(--hp-2); color: #ffffff; }
+.tpc-season-table .hp-3 { background-color: var(--hp-3); color: #ffffff; }
+.tpc-season-table .hp-4 { background-color: var(--hp-4); color: #ffffff; }
+.tpc-season-table .hp-5 { background-color: var(--hp-5); color: #000000; }
+.tpc-season-table .hp-6 { background-color: var(--hp-6); color: #000000; }
+.tpc-season-table .hp-7 { background-color: var(--hp-7); color: #000000; }
+.tpc-season-table .hp-8 { background-color: var(--hp-8); color: #ffffff; }
+.tpc-season-table .hp-9 { background-color: var(--hp-9); color: #ffffff; }
+.tpc-season-table .hp-10 { background-color: #d32f2f; color: #ffffff; }
 
 /* 年間ビューの価格ある日は白テキスト */
 .tpc-annual-view .calendar-day.has-price .day-number { 

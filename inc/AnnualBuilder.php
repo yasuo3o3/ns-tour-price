@@ -670,19 +670,17 @@ class NS_Tour_Price_Annual_Builder {
 								$period_text = $periods ? implode( '、', $periods ) : '—';
 								$price_text = ( $price !== null && $price > 0 ) ? '¥' . number_format( $price ) : '—';
 								
-								// シーズン固定色を適用
-								$season_color = $season_color_map[ $code ] ?? '#f3f4f6';
-								$text_color = '#111111';
-								if ( isset( $season_color ) && $season_color ) {
-									if ( isset( $this->season_color_service ) && $this->season_color_service ) {
-										$text_color = $this->season_color_service->getTextColor( $season_color );
-									} else {
-										$text_color = $this->autoTextColor( $season_color );
-									}
+								// hpクラス方式でシーズン色を適用
+								$hp_class = $season_color_map[ $code ] ?? '';
+								$season_classes = array( 'season-row', 'season-' . strtolower( $code ) );
+								if ( ! empty( $hp_class ) ) {
+									$season_classes[] = $hp_class;
 								}
-								$season_style = 'background-color: ' . esc_attr( $season_color ) . '; color: ' . esc_attr( $text_color ) . ';';
+								
+								// 文字色を自動判定（CSSカスタムプロパティから実際の色を取得）
+								$text_color = $this->getTextColorForHpClass( $hp_class );
 							?>
-							<tr data-season="<?php echo esc_attr( $code ); ?>" data-price="<?php echo esc_attr( $price ?? 0 ); ?>" class="season-row season-<?php echo esc_attr( strtolower( $code ) ); ?>" style="<?php echo esc_attr( $season_style ); ?>">
+							<tr data-season="<?php echo esc_attr( $code ); ?>" data-price="<?php echo esc_attr( $price ?? 0 ); ?>" class="<?php echo esc_attr( implode( ' ', $season_classes ) ); ?>" style="color: <?php echo esc_attr( $text_color ); ?>;">
 								<td class="season-code"><?php echo esc_html( $label ); ?></td>
 								<td class="season-periods"><?php echo esc_html( $period_text ); ?></td>
 								<td class="season-price"><?php echo esc_html( $price_text ); ?></td>
@@ -826,6 +824,28 @@ class NS_Tour_Price_Annual_Builder {
 		
 		error_log( "getYearlyPricesDirectly: 最終結果 yearly_prices count=" . count( $yearly_prices ) );
 		return $yearly_prices;
+	}
+
+	/**
+	 * hpクラスに対応する適切な文字色を返す
+	 */
+	private function getTextColorForHpClass( $hp_class ) {
+		// hp-クラス別の文字色マッピング（CSSと一致）
+		$text_color_map = array(
+			'hp-0' => '#ffffff',
+			'hp-1' => '#ffffff', 
+			'hp-2' => '#ffffff',
+			'hp-3' => '#ffffff',
+			'hp-4' => '#ffffff',
+			'hp-5' => '#000000',
+			'hp-6' => '#000000',
+			'hp-7' => '#000000',
+			'hp-8' => '#ffffff',
+			'hp-9' => '#ffffff',
+			'hp-10' => '#ffffff',
+		);
+		
+		return $text_color_map[ $hp_class ] ?? '#111111';
 	}
 
 	/**
