@@ -22,7 +22,7 @@
 
 .tpc-annual-title {
     margin: 0 0 10px 0;
-    font-size: 1.5em;
+    font-size: 16px;
     font-weight: 600;
     color: #1f2937;
 }
@@ -87,15 +87,14 @@
 }
 
 .tpc-mini-calendar {
-    background: #f7fafc;
-    border-radius: 8px;
-    padding: 10px;
+    background: #f9fcfd;
+    padding: 0 6px 6px 6px;
     border: 1px solid #e2e8f0;
 }
 
 .tpc-mini-header {
     text-align: center;
-    margin-bottom: 8px;
+    margin-bottom: 0;
 }
 
 .tpc-mini-month {
@@ -136,9 +135,9 @@
 }
 
 .tpc-mini-day.has-price .day-number {
-    color: #fff;
-    font-weight: 600;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+    font-size: 12px;
+    font-weight: normal;
+    color: #333;
 }
 
 .tpc-mini-day.tpc-today {
@@ -172,15 +171,16 @@
     background: #f7fafc;
     color: #4a5568;
     font-weight: 600;
-    padding: 12px 16px;
+    padding: 6px 12px;
     text-align: left;
     border-bottom: 2px solid #e2e8f0;
 }
 
 .tpc-season-table td {
-    padding: 12px 16px;
+    padding: 6px 12px;
     border-bottom: 1px solid #e2e8f0;
     vertical-align: middle;
+    font-size: 12px;
 }
 
 .tpc-season-table tr:last-child td {
@@ -228,6 +228,18 @@
 /* 年間ビューの価格ある日は白テキスト */
 .tpc-annual-view .calendar-day.has-price .day-number { 
     color: #fff; 
+}
+
+/* 年間ビュー内の.day-number */
+.tpc-annual-view .day-number {
+    font-size: 12px;
+    font-weight: normal;
+    color: #666;
+}
+
+/* 年間ビュー内の.tpc-mini-day */
+.tpc-annual-view .tpc-mini-day {
+    width: 100%;
 }
 
 /* 年間ビューのシーズン料金テーブル */
@@ -316,7 +328,7 @@
     display: block;
     font-size: 14px;
     color: #2d3748;
-    margin-bottom: 8px;
+    margin-bottom: 0;
     font-weight: 500;
 }
 
@@ -374,7 +386,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 8px;
+    margin-bottom: 0;
     font-size: 14px;
 }
 
@@ -936,7 +948,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 8px;
+    margin-bottom: 0;
 }
 
 .calendar-title {
@@ -1655,7 +1667,7 @@
 
 .tpc-mini-header {
     text-align: center;
-    margin-bottom: 8px;
+    margin-bottom: 0;
 }
 
 .tpc-mini-month {
@@ -1871,7 +1883,7 @@
     .tpc-season-card-header {
         display: flex;
         align-items: center;
-        margin-bottom: 8px;
+        margin-bottom: 0;
     }
     
     .tpc-season-card-periods {

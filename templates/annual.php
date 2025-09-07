@@ -35,28 +35,23 @@ $year = $year ?? gmdate( 'Y' );
 				$duration 
 			); ?>
 		</h3>
-		<?php if ( ! empty( $annual_calendar['months'] ) ) : ?>
-			<div class="tpc-annual-stats">
-				<?php
-				$total_days = 0;
-				$covered_days = 0;
-				foreach ( $annual_calendar['months'] as $month_data ) {
-					foreach ( $month_data['days'] as $day ) {
-						$total_days++;
-						if ( ! empty( $day['season_code'] ) ) {
-							$covered_days++;
-						}
+		<?php 
+		// 統計をコメントとして残す
+		if ( ! empty( $annual_calendar['months'] ) ) : 
+			$total_days = 0;
+			$covered_days = 0;
+			foreach ( $annual_calendar['months'] as $month_data ) {
+				foreach ( $month_data['days'] as $day ) {
+					$total_days++;
+					if ( ! empty( $day['season_code'] ) ) {
+						$covered_days++;
 					}
 				}
-				printf( 
-					esc_html__( '対象期間: %d日 / 全%d日 (%.1f%%)', 'ns-tour_price' ),
-					$covered_days,
-					$total_days,
-					$total_days > 0 ? ( $covered_days / $total_days * 100 ) : 0
-				); 
-				?>
-			</div>
-		<?php endif; ?>
+			}
+			$percentage = $total_days > 0 ? ( $covered_days / $total_days * 100 ) : 0;
+			// 対象期間: <?php echo $covered_days; ?>日 / 全<?php echo $total_days; ?>日 (<?php echo number_format( $percentage, 1 ); ?>%)
+		endif; 
+		?>
 	</div>
 
 	<?php if ( ! empty( $annual_calendar['months'] ) ) : ?>
@@ -140,7 +135,6 @@ $year = $year ?? gmdate( 'Y' );
 
 	<?php if ( ! empty( $season_summary ) ) : ?>
 	<div class="tpc-annual-seasons">
-		<h4 class="tpc-section-title"><?php esc_html_e( 'シーズン料金一覧', 'ns-tour_price' ); ?></h4>
 		<div class="tpc-season-table-container">
 			<table class="tpc-season-table">
 				<thead>
