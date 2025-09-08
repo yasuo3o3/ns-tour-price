@@ -466,7 +466,7 @@ class NS_Tour_Price_Renderer {
 		<aside class="tpc-booking-panel" aria-label="<?php esc_attr_e( '予約内容の選択', 'ns-tour_price' ); ?>">
 			<div class="calendar-meta">
 				<span class="tour-id"><?php echo esc_html( $args['tour'] ); ?></span>
-				<span class="tour-name"><?php echo esc_html( $repo->getTourName( $args['tour'] ) ); ?></span>
+				<span class="tour-name"><?php echo esc_html( $this->repo->getTourName( $args['tour'] ) ); ?></span>
 			</div>
 			
 			<div class="tpc-duration-tabs tpc-duration-tabs--panel" data-tpc-duration-tabs>
