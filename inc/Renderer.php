@@ -554,7 +554,7 @@ class NS_Tour_Price_Renderer {
 					<span><?php esc_html_e( '合計概算金額', 'ns-tour_price' ); ?></span>
 					<strong data-tpc-total>—</strong>
 				</div>
-				<small class="tpc-quote__note"><?php esc_html_e( '※運賃変動等により金額は変更になる場合があります。', 'ns-tour_price' ); ?></small>
+				<small class="tpc-quote__note"><?php esc_html_e( '※運賃変動等により金額は変更になることがあります', 'ns-tour_price' ); ?></small>
 			</div>
 
 			<button class="tpc-submit" data-tpc-submit disabled>
