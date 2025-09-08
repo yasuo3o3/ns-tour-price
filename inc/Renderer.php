@@ -235,10 +235,6 @@ class NS_Tour_Price_Renderer {
 						<?php endforeach; ?>
 					</div>
 				<?php endif; ?>
-				
-				<div class="calendar-meta">
-					<span class="tour-id"><?php printf( esc_html__( 'ツアー: %s', 'ns-tour_price' ), esc_html( $args['tour'] ) ); ?></span>
-				</div>
 			</div>
 
 			<?php if ( ! empty( $calendar_data['invalid_season_codes'] ) ) : ?>
@@ -468,6 +464,11 @@ class NS_Tour_Price_Renderer {
 		ob_start();
 		?>
 		<aside class="tpc-booking-panel" aria-label="<?php esc_attr_e( '予約内容の選択', 'ns-tour_price' ); ?>">
+			<div class="calendar-meta">
+				<span class="tour-id"><?php echo esc_html( $args['tour'] ); ?></span>
+				<span class="tour-name"><?php echo esc_html( $repo->getTourName( $args['tour'] ) ); ?></span>
+			</div>
+			
 			<div class="tpc-duration-tabs tpc-duration-tabs--panel" data-tpc-duration-tabs>
 				<?php foreach ( $available_durations as $duration ) : ?>
 					<button type="button" 

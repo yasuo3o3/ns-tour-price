@@ -155,6 +155,33 @@ class NS_Tour_Price_Repo {
 	}
 
 	/**
+	 * ツアー名を取得
+	 * 
+	 * @param string $tour_id
+	 * @return string
+	 */
+	public function getTourName( $tour_id ) {
+		if ( ! $this->loader->isDataAvailable() ) {
+			return $tour_id; // フォールバック
+		}
+
+		$source = $this->loader->getActiveSource();
+		$tours = $source->load( 'tours' );
+		
+		if ( empty( $tours ) ) {
+			return $tour_id; // フォールバック
+		}
+
+		foreach ( $tours as $tour ) {
+			if ( isset( $tour['tour_id'] ) && $tour['tour_id'] === $tour_id ) {
+				return isset( $tour['tour_name'] ) ? $tour['tour_name'] : $tour_id;
+			}
+		}
+
+		return $tour_id; // 見つからない場合はIDを返す
+	}
+
+	/**
 	 * 年内の各日→価格（int）を返す。soloは含めない。
 	 *
 	 * @param string $tour_id
