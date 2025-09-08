@@ -41,7 +41,7 @@ class NS_Tour_Price_Admin {
 
 		add_settings_section(
 			'ns_tour_price_general',
-			__( '色設定（シーズンパレット）', 'ns-tour_price' ),
+			__( 'General Settings', 'ns-tour_price' ),
 			array( $this, 'generalSectionCallback' ),
 			'ns_tour_price_settings'
 		);
@@ -273,24 +273,24 @@ class NS_Tour_Price_Admin {
 				<code>[tour_price tour="A1" month="2024-07" duration="4" heatmap="true" show_legend="true"]</code>
 				
 				<h3><?php esc_html_e( 'Block', 'ns-tour_price' ); ?></h3>
-				<p><?php esc_html_e( 'Search for "ツアー価格カレンダー" in the block editor.', 'ns-tour_price' ); ?></p>
+				<p><?php printf( esc_html__( 'Search for "%s" in the block editor.', 'ns-tour_price' ), 'ツアー価格カレンダー' ); ?></p>
 			</div>
 
 			<hr>
 
-			<h2><?php esc_html_e( 'ソロフィー設定', 'ns-tour_price' ); ?></h2>
+			<h2><?php esc_html_e( 'Solo Fee Settings', 'ns-tour_price' ); ?></h2>
 
 			<div class="card">
-				<h3><?php esc_html_e( 'solo_fees.csv について', 'ns-tour_price' ); ?></h3>
-				<p><?php esc_html_e( 'ツアーの基本価格にソロフィーを加算するための設定です。ツアーIDと日数の組み合わせでソロフィーが決定されます。', 'ns-tour_price' ); ?></p>
+				<h3><?php esc_html_e( 'About solo_fees.csv', 'ns-tour_price' ); ?></h3>
+				<p><?php esc_html_e( 'This setting is for adding a solo fee to the base tour price. The solo fee is determined by the combination of tour ID and duration.', 'ns-tour_price' ); ?></p>
 				
-				<p><strong><?php esc_html_e( '配置場所:', 'ns-tour_price' ); ?></strong></p>
+				<p><strong><?php esc_html_e( 'Location:', 'ns-tour_price' ); ?></strong></p>
 				<ol>
-					<li><code><?php echo esc_html( NS_TOUR_PRICE_PLUGIN_DIR . 'data/solo_fees.csv' ); ?></code> (<?php esc_html_e( '優先', 'ns-tour_price' ); ?>)</li>
-					<li><code><?php echo esc_html( wp_upload_dir()['basedir'] . '/ns-tour_price/solo_fees.csv' ); ?></code> (<?php esc_html_e( 'フォールバック', 'ns-tour_price' ); ?>)</li>
+					<li><code><?php echo esc_html( NS_TOUR_PRICE_PLUGIN_DIR . 'data/solo_fees.csv' ); ?></code> (<?php esc_html_e( 'Priority', 'ns-tour_price' ); ?>)</li>
+					<li><code><?php echo esc_html( wp_upload_dir()['basedir'] . '/ns-tour_price/solo_fees.csv' ); ?></code> (<?php esc_html_e( 'Fallback', 'ns-tour_price' ); ?>)</li>
 				</ol>
 
-				<p><strong><?php esc_html_e( 'CSVスキーマ:', 'ns-tour_price' ); ?></strong></p>
+				<p><strong><?php esc_html_e( 'CSV Schema:', 'ns-tour_price' ); ?></strong></p>
 				<pre style="background: #f1f1f1; padding: 10px; border-radius: 4px;">tour_id,duration_days,solo_fee
 A1,4,18000
 A1,5,22000
@@ -298,69 +298,69 @@ A1,6,26000
 A2,5,22000
 A2,6,26000</pre>
 
-				<p><strong><?php esc_html_e( '機能:', 'ns-tour_price' ); ?></strong></p>
+				<p><strong><?php esc_html_e( 'Features:', 'ns-tour_price' ); ?></strong></p>
 				<ul>
-					<li><?php esc_html_e( 'tour_id と duration_days の組み合わせでソロフィーを指定', 'ns-tour_price' ); ?></li>
-					<li><?php esc_html_e( 'カレンダー表示価格は「ベース価格 + ソロフィー」で計算される', 'ns-tour_price' ); ?></li>
-					<li><?php esc_html_e( 'ベース価格が取得できない日付ではソロフィーも加算されない', 'ns-tour_price' ); ?></li>
-					<li><?php esc_html_e( 'solo_fees.csv にない組み合わせのソロフィーは0円', 'ns-tour_price' ); ?></li>
+					<li><?php esc_html_e( 'Specify solo fee by tour_id and duration_days combination', 'ns-tour_price' ); ?></li>
+					<li><?php esc_html_e( 'The price displayed on the calendar is calculated as "Base Price + Solo Fee"', 'ns-tour_price' ); ?></li>
+					<li><?php esc_html_e( 'Solo fee is not added on dates where the base price is not available', 'ns-tour_price' ); ?></li>
+					<li><?php esc_html_e( 'The solo fee is 0 for combinations not found in solo_fees.csv', 'ns-tour_price' ); ?></li>
 				</ul>
 			</div>
 
 			<hr>
 
-			<h2><?php esc_html_e( 'CSV データ書式', 'ns-tour_price' ); ?></h2>
+			<h2><?php esc_html_e( 'CSV Data Format', 'ns-tour_price' ); ?></h2>
 
 			<div class="card">
-				<h3><?php esc_html_e( 'seasons.csv の日付書式', 'ns-tour_price' ); ?></h3>
-				<p><?php esc_html_e( 'date_start、date_end 列で使用できる日付書式は以下の通りです。', 'ns-tour_price' ); ?></p>
+				<h3><?php esc_html_e( 'Date Format in seasons.csv', 'ns-tour_price' ); ?></h3>
+				<p><?php esc_html_e( 'The following date formats can be used in the date_start and date_end columns.', 'ns-tour_price' ); ?></p>
 				
-				<p><strong><?php esc_html_e( '推奨書式:', 'ns-tour_price' ); ?></strong></p>
+				<p><strong><?php esc_html_e( 'Recommended Format:', 'ns-tour_price' ); ?></strong></p>
 				<ul>
-					<li><code>YYYY-MM-DD</code> <?php esc_html_e( '（例: 2025-04-15）', 'ns-tour_price' ); ?></li>
+					<li><code>YYYY-MM-DD</code> <?php esc_html_e( '(e.g., 2025-04-15)', 'ns-tour_price' ); ?></li>
 				</ul>
 
-				<p><strong><?php esc_html_e( '受入可能書式:', 'ns-tour_price' ); ?></strong></p>
+				<p><strong><?php esc_html_e( 'Accepted Formats:', 'ns-tour_price' ); ?></strong></p>
 				<ul>
-					<li><code>YYYY/M/D</code> <?php esc_html_e( '（例: 2025/4/15）', 'ns-tour_price' ); ?></li>
-					<li><code>YYYY/MM/DD</code> <?php esc_html_e( '（例: 2025/04/15）', 'ns-tour_price' ); ?></li>
-					<li><code>YYYY-M-D</code> <?php esc_html_e( '（例: 2025-4-15）', 'ns-tour_price' ); ?></li>
-					<li><code>YYYY.M.D</code> <?php esc_html_e( '（例: 2025.4.15）', 'ns-tour_price' ); ?></li>
+					<li><code>YYYY/M/D</code> <?php esc_html_e( '(e.g., 2025/4/15)', 'ns-tour_price' ); ?></li>
+					<li><code>YYYY/MM/DD</code> <?php esc_html_e( '(e.g., 2025/04/15)', 'ns-tour_price' ); ?></li>
+					<li><code>YYYY-M-D</code> <?php esc_html_e( '(e.g., 2025-4-15)', 'ns-tour_price' ); ?></li>
+					<li><code>YYYY.M.D</code> <?php esc_html_e( '(e.g., 2025.4.15)', 'ns-tour_price' ); ?></li>
 				</ul>
 
-				<p><strong><?php esc_html_e( '自動正規化機能:', 'ns-tour_price' ); ?></strong></p>
+				<p><strong><?php esc_html_e( 'Auto-Normalization Feature:', 'ns-tour_price' ); ?></strong></p>
 				<ul>
-					<li><?php esc_html_e( '全角数字・記号も半角に変換（２０２５－０４－１５ → 2025-04-15）', 'ns-tour_price' ); ?></li>
-					<li><?php esc_html_e( 'すべて内部では YYYY-MM-DD 形式で処理される', 'ns-tour_price' ); ?></li>
-					<li><?php esc_html_e( 'パース失敗時は error_log に詳細な統計情報を出力', 'ns-tour_price' ); ?></li>
+					<li><?php esc_html_e( 'Full-width numbers and symbols are converted to half-width (e.g., ２０２５－０４－１５ → 2025-04-15)', 'ns-tour_price' ); ?></li>
+					<li><?php esc_html_e( 'All dates are processed internally in YYYY-MM-DD format', 'ns-tour_price' ); ?></li>
+					<li><?php esc_html_e( 'Detailed statistics are output to error_log on parsing failure', 'ns-tour_price' ); ?></li>
 				</ul>
 			</div>
 
 			<div class="card">
-				<h3><?php esc_html_e( 'ヒートマップ・凡例の価格範囲', 'ns-tour_price' ); ?></h3>
-				<p><?php esc_html_e( 'カレンダーのヒートマップと凡例は「全期間（全シーズン）」を基準に計算されます。', 'ns-tour_price' ); ?></p>
+				<h3><?php esc_html_e( 'Price Range for Heatmap and Legend', 'ns-tour_price' ); ?></h3>
+				<p><?php esc_html_e( 'The calendar heatmap and legend are calculated based on the "entire period (all seasons)".', 'ns-tour_price' ); ?></p>
 				<ul>
-					<li><?php esc_html_e( '同一 tour_id × duration_days の全ての base_prices から価格範囲を決定', 'ns-tour_price' ); ?></li>
-					<li><?php esc_html_e( '月を跨いでも色基準と凡例が一貫して表示', 'ns-tour_price' ); ?></li>
-					<li><?php esc_html_e( '当月に出ていない価格も凡例に表示される', 'ns-tour_price' ); ?></li>
+					<li><?php esc_html_e( 'The price range is determined from all base_prices for the same tour_id × duration_days.', 'ns-tour_price' ); ?></li>
+					<li><?php esc_html_e( 'Color standards and legends are displayed consistently across months.', 'ns-tour_price' ); ?></li>
+					<li><?php esc_html_e( 'Prices not appearing in the current month are also displayed in the legend.', 'ns-tour_price' ); ?></li>
 				</ul>
 			</div>
 
 			<hr>
 
-			<h2><?php esc_html_e( 'Season Code エイリアス', 'ns-tour_price' ); ?></h2>
+			<h2><?php esc_html_e( 'Season Code Alias', 'ns-tour_price' ); ?></h2>
 
 			<div class="card">
-				<h3><?php esc_html_e( 'season_aliases.csv について', 'ns-tour_price' ); ?></h3>
-				<p><?php esc_html_e( 'seasons.csv と base_prices.csv で異なる season_code 表記（A/B/C と LOW/MID/HIGH など）を使用している場合、season_aliases.csv を配置することで表記差を自動吸収できます。', 'ns-tour_price' ); ?></p>
+				<h3><?php esc_html_e( 'About season_aliases.csv', 'ns-tour_price' ); ?></h3>
+				<p><?php esc_html_e( 'If you use different season_code notations in seasons.csv and base_prices.csv (e.g., A/B/C and LOW/MID/HIGH), you can place season_aliases.csv to automatically resolve the differences.', 'ns-tour_price' ); ?></p>
 				
-				<p><strong><?php esc_html_e( '配置場所:', 'ns-tour_price' ); ?></strong></p>
+				<p><strong><?php esc_html_e( 'Location:', 'ns-tour_price' ); ?></strong></p>
 				<ol>
-					<li><code><?php echo esc_html( NS_TOUR_PRICE_PLUGIN_DIR . 'data/season_aliases.csv' ); ?></code> (<?php esc_html_e( '優先', 'ns-tour_price' ); ?>)</li>
-					<li><code><?php echo esc_html( wp_upload_dir()['basedir'] . '/ns-tour_price/season_aliases.csv' ); ?></code> (<?php esc_html_e( 'フォールバック', 'ns-tour_price' ); ?>)</li>
+					<li><code><?php echo esc_html( NS_TOUR_PRICE_PLUGIN_DIR . 'data/season_aliases.csv' ); ?></code> (<?php esc_html_e( 'Priority', 'ns-tour_price' ); ?>)</li>
+					<li><code><?php echo esc_html( wp_upload_dir()['basedir'] . '/ns-tour_price/season_aliases.csv' ); ?></code> (<?php esc_html_e( 'Fallback', 'ns-tour_price' ); ?>)</li>
 				</ol>
 
-				<p><strong><?php esc_html_e( 'CSVスキーマ:', 'ns-tour_price' ); ?></strong></p>
+				<p><strong><?php esc_html_e( 'CSV Schema:', 'ns-tour_price' ); ?></strong></p>
 				<pre style="background: #f1f1f1; padding: 10px; border-radius: 4px;">tour_id,alias,season_code
 A1,A,LOW
 A1,B,HIGH
@@ -369,12 +369,12 @@ A1,GREEN,LOW
 A1,ハイ,HIGH
 A1,WINTER,WINTER</pre>
 
-				<p><strong><?php esc_html_e( '機能:', 'ns-tour_price' ); ?></strong></p>
+				<p><strong><?php esc_html_e( 'Features:', 'ns-tour_price' ); ?></strong></p>
 				<ul>
-					<li><?php esc_html_e( 'base_prices.csv で "A" → seasons.csv の "LOW" にマッピング', 'ns-tour_price' ); ?></li>
-					<li><?php esc_html_e( '大文字・小文字、全角・半角、前後空白の差も自動正規化', 'ns-tour_price' ); ?></li>
-					<li><?php esc_html_e( 'エイリアスファイルがない環境でも、正規化のみで基本的な差は吸収', 'ns-tour_price' ); ?></li>
-					<li><?php esc_html_e( '不整合がある場合は error_log に詳細、フロントエンドには警告表示', 'ns-tour_price' ); ?></li>
+					<li><?php esc_html_e( 'Maps "A" in base_prices.csv to "LOW" in seasons.csv', 'ns-tour_price' ); ?></li>
+					<li><?php esc_html_e( 'Automatically normalizes differences in case, full/half-width characters, and leading/trailing spaces.', 'ns-tour_price' ); ?></li>
+					<li><?php esc_html_e( 'Even without an alias file, basic differences are absorbed by normalization alone.', 'ns-tour_price' ); ?></li>
+					<li><?php esc_html_e( 'If there are inconsistencies, details are logged to error_log and a warning is displayed on the frontend.', 'ns-tour_price' ); ?></li>
 				</ul>
 			</div>
 		</div>
@@ -477,7 +477,7 @@ A1,WINTER,WINTER</pre>
 	}
 
 	public function generalSectionCallback() {
-		echo '<p>' . esc_html__( '色はシーズンパレットで統一。ヒートマップ関連設定は廃止されました。', 'ns-tour_price' ) . '</p>';
+		echo '<p>' . esc_html__( 'Color settings are unified in the Season Palette. Heatmap-related settings have been deprecated.', 'ns-tour_price' ) . '</p>';
 	}
 
 	public function dataSourceFieldCallback() {
@@ -821,7 +821,7 @@ A1,WINTER,WINTER</pre>
 	 * 年間ビューセクションコールバック
 	 */
 	public function annualSectionCallback() {
-		echo '<p>' . esc_html__( '年間価格概要機能の設定', 'ns-tour_price' ) . '</p>';
+		echo '<p>' . esc_html__( 'Settings for the Annual Price Overview feature.', 'ns-tour_price' ) . '</p>';
 	}
 
 	/**
@@ -832,7 +832,7 @@ A1,WINTER,WINTER</pre>
 		$season_codes = $this->repo->getDistinctSeasonCodes();
 		
 		if ( empty( $season_codes ) ) {
-			echo '<p>' . esc_html__( '現在、seasons.csv にシーズンレコードがありません。CSVファイルをアップロードしてください。', 'ns-tour_price' ) . '</p>';
+			echo '<p>' . esc_html__( 'There are currently no season records in seasons.csv. Please upload the CSV file.', 'ns-tour_price' ) . '</p>';
 			return;
 		}
 
@@ -853,7 +853,7 @@ A1,WINTER,WINTER</pre>
 		}
 		
 		echo '</tbody></table>';
-		echo '<p class="description">' . esc_html__( '年間ビューでのシーズン表示色を設定します。未設定の場合はデフォルト色が使用されます。', 'ns-tour_price' ) . '</p>';
+		echo '<p class="description">' . esc_html__( 'Set the display colors for seasons in the annual view. If not set, default colors will be used.', 'ns-tour_price' ) . '</p>';
 	}
 
 	/**
@@ -924,8 +924,8 @@ A1,WINTER,WINTER</pre>
 		?>
 		<textarea id="season_palette" name="ns_tour_price_options[season_palette]" rows="15" cols="50"><?php echo esc_textarea( $colors_text ); ?></textarea>
 		<p class="description">
-			<?php esc_html_e( 'Season fixed palette (15 colors recommended). Used for unified color display across legends, calendars, and season tables. Colors are assigned based on price order: cheapest season gets first color, most expensive gets last color.', 'ns-tour_price' ); ?><br>
-			<?php esc_html_e( 'Specify one color per line in #RRGGBB format. If empty, default 15-color palette is used.', 'ns-tour_price' ); ?>
+			<?php esc_html_e( 'A fixed palette for seasons (15 colors recommended). Used for a unified color display across legends, calendars, and season tables. Colors are assigned based on price order: the cheapest season gets the first color, and the most expensive gets the last.', 'ns-tour_price' ); ?><br>
+			<?php esc_html_e( 'Specify one color per line in #RRGGBB format. If empty, the default 15-color palette is used.', 'ns-tour_price' ); ?>
 		</p>
 		<div id="season-palette-preview" style="margin-top: 10px;"></div>
 		<script>
@@ -962,12 +962,12 @@ A1,WINTER,WINTER</pre>
 		$current = sanitize_text_field( $options['prune_mode'] ?? 'tail' );
 		?>
 		<select name="ns_tour_price_options[prune_mode]">
-			<option value="tail" <?php selected( $current, 'tail' ); ?>><?php esc_html_e( 'Tail Pruning (Phase 1)', 'ns-tour_price' ); ?></option>
-			<option value="balanced" <?php selected( $current, 'balanced' ); ?>><?php esc_html_e( 'Balanced Pruning (Phase 2)', 'ns-tour_price' ); ?></option>
+			<option value="tail" <?php selected( $current, 'tail' ); ?>><?php esc_html_e( 'Tail Pruning', 'ns-tour_price' ); ?></option>
+			<option value="balanced" <?php selected( $current, 'balanced' ); ?>><?php esc_html_e( 'Balanced Pruning', 'ns-tour_price' ); ?></option>
 		</select>
 		<p class="description">
-			<?php esc_html_e( 'Color pruning method when seasons exceed palette colors. Tail pruning removes colors from the right side first (Phase 1). Balanced pruning distributes removal evenly (Phase 2).', 'ns-tour_price' ); ?><br>
-			<?php esc_html_e( 'Always keeps cheapest and most expensive season colors fixed at endpoints.', 'ns-tour_price' ); ?>
+			<?php esc_html_e( 'Method for pruning colors when the number of seasons exceeds the number of palette colors. "Tail Pruning" removes colors from the right side (higher prices) first. "Balanced Pruning" distributes removal evenly.', 'ns-tour_price' ); ?><br>
+			<?php esc_html_e( 'The colors for the cheapest and most expensive seasons are always fixed at the ends of the palette.', 'ns-tour_price' ); ?>
 		</p>
 		<?php
 	}
@@ -1000,10 +1000,10 @@ A1,WINTER,WINTER</pre>
 		}
 		?>
 		<div class="notice notice-info inline">
-			<p><?php esc_html_e( '色設定はシーズンパレットに統一しました。ヒートマップ関連設定は廃止されています。', 'ns-tour_price' ); ?></p>
+			<p><?php esc_html_e( 'Color settings are now unified in the Season Palette. Heatmap-related settings are deprecated.', 'ns-tour_price' ); ?></p>
 			<?php if ( WP_DEBUG && $has_deprecated ) : ?>
 				<p class="description" style="color: #666;">
-					<?php esc_html_e( '[開発者向け] 非推奨オプションが残っています（内部データは保持）', 'ns-tour_price' ); ?>
+					<?php esc_html_e( '[For Developers] Deprecated options remain (internal data is retained).', 'ns-tour_price' ); ?>
 				</p>
 			<?php endif; ?>
 		</div>

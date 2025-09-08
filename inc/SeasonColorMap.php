@@ -121,20 +121,30 @@ class NS_Tour_Price_SeasonColorMap {
      * @return array 色の配列
      */
     private function getColorPalette() {
-        return array(
-            '#2d4f8e', // hp-0
-            '#336dbd', // hp-1
-            '#3a89d1', // hp-2
-            '#49a5d1', // hp-3
-            '#64c0bf', // hp-4
-            '#8bd18f', // hp-5
-            '#c4dd5e', // hp-6
-            '#f2c03f', // hp-7
-            '#f28f32', // hp-8
-            '#e34a33', // hp-9
-            '#d32f2f'  // hp-10
-        );
-    }
+		return self::get_palette();
+	}
+
+	/**
+	 * カラーパレットを取得（静的メソッド）
+	 * 管理画面設定を優先し、なければデフォルトを返す
+	 *
+	 * @return array 色の配列
+	 */
+	public static function get_palette() {
+		$options = get_option( 'ns_tour_price_options', array() );
+
+		// 管理画面で設定されたシーズンパレットを使用
+		if ( ! empty( $options['season_palette'] ) && is_array( $options['season_palette'] ) ) {
+			return $options['season_palette'];
+		}
+
+		// フォールバックとしてデフォルトのパレットを返す
+		return array(
+			'#e3f2fd', '#bbdefb', '#90caf9', '#64b5f6', '#42a5f5',
+			'#2196f3', '#1e88e5', '#1976d2', '#1565c0', '#0d47a1',
+			'#ff5722', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5'
+		);
+	}
 
     /**
      * シーズンコードからhp-classレベルを取得

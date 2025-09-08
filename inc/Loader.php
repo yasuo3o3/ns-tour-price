@@ -105,10 +105,7 @@ class NS_Tour_Price_Loader {
 	 * @return array 色の配列（安→高順）
 	 */
 	public function getHeatmapColors() {
-		// 旧heatmap_colors設定は使わず、統一シーズンパレットを返す
-		return array(
-			'#2d4f8e', '#336dbd', '#3a89d1', '#49a5d1', '#64c0bf',
-			'#8bd18f', '#c4dd5e', '#f2c03f', '#f28f32', '#e34a33', '#d32f2f'
-		);
+		// 色の取得はSeasonColorMapに一元化
+		return NS_Tour_Price_SeasonColorMap::get_palette();
 	}
 }
