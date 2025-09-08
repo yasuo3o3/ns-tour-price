@@ -494,7 +494,7 @@
             calendars.forEach(function(calendar) {
                 // 年間ビュー切替チェックボックスを確認・追加
                 const header = calendar.querySelector('.calendar-header');
-                if (header && !header.querySelector('.tpc-annual-toggle')) {
+                if (header && !calendar.querySelector('.tpc-annual-toggle')) {
                     const toggleContainer = document.createElement('div');
                     toggleContainer.className = 'tpc-annual-toggle';
                     toggleContainer.innerHTML = `

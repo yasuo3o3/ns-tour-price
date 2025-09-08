@@ -213,7 +213,7 @@ class NS_Tour_Price_Renderer {
 				
 				if ( count( $available_durations ) > 1 ) :
 				?>
-					<div class="tpc-duration-tabs">
+					<div class="tpc-duration-tabs tpc-duration-tabs--header">
 						<?php foreach ( $available_durations as $duration ) : 
 							$is_active = ( $duration === $current_duration );
 							// 相対クエリ専用ヘルパーでdurationタブURLを生成
@@ -468,7 +468,7 @@ class NS_Tour_Price_Renderer {
 		ob_start();
 		?>
 		<aside class="tpc-booking-panel" aria-label="<?php esc_attr_e( '予約内容の選択', 'ns-tour_price' ); ?>">
-			<div class="tpc-duration-tabs" data-tpc-duration-tabs>
+			<div class="tpc-duration-tabs tpc-duration-tabs--panel" data-tpc-duration-tabs>
 				<?php foreach ( $available_durations as $duration ) : ?>
 					<button type="button" 
 							role="tab" 
