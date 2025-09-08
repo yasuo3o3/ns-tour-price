@@ -484,6 +484,36 @@ class NS_Tour_Price_Annual_Builder {
 		ob_start();
 		?>
 		<div class="tpc-annual-view" data-tour="<?php echo esc_attr( $tour ); ?>" data-duration="<?php echo esc_attr( $duration ); ?>" data-year="<?php echo esc_attr( $year ); ?>">
+			<?php
+			// 年間ビュー用期間タブの表示
+			$repo = NS_Tour_Price_Repo::getInstance();
+			$available_durations = $repo->getAvailableDurations( $tour );
+			$current_duration = intval( $duration );
+			
+			if ( count( $available_durations ) > 1 ) :
+			?>
+				<div class="tpc-duration-tabs tpc-duration-tabs--annual">
+					<?php foreach ( $available_durations as $duration_option ) : 
+						$is_active = ( $duration_option === $current_duration );
+						// 年間ビュー用の相対クエリURL生成
+						$tab_href = NS_Tour_Price_Helpers::build_relative_query( array( 'tpc_duration' => $duration_option ) );
+						
+						$tab_classes = array( 'tpc-duration-tab', 'tpc-nav-link' );
+						if ( $is_active ) {
+							$tab_classes[] = 'is-active';
+						}
+						?>
+						<a href="<?php echo esc_attr( $tab_href ); ?>" 
+						   class="<?php echo esc_attr( implode( ' ', $tab_classes ) ); ?>" 
+						   data-duration="<?php echo esc_attr( $duration_option ); ?>"
+						   <?php if ( $is_active ) : ?>aria-current="page"<?php endif; ?>
+						   aria-label="<?php printf( esc_attr__( '%d日間に切替', 'ns-tour_price' ), $duration_option ); ?>">
+							<?php printf( esc_html__( '%d日間', 'ns-tour_price' ), $duration_option ); ?>
+						</a>
+					<?php endforeach; ?>
+				</div>
+			<?php endif; ?>
+			
 			<div class="tpc-annual-header">
 				<h3 class="tpc-annual-title">
 					<?php printf( esc_html__( '%d年 年間価格概要 - %s（%d日間）', 'ns-tour_price' ), $year, esc_html( $tour ), $duration ); ?>
