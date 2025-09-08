@@ -201,10 +201,6 @@ class NS_Tour_Price_Renderer {
 					</nav>
 				</div>
 				
-				<div class="calendar-meta">
-					<span class="tour-id"><?php printf( esc_html__( 'ツアー: %s', 'ns-tour_price' ), esc_html( $args['tour'] ) ); ?></span>
-				</div>
-				
 				<?php
 				// durationタブの表示
 				$repo = NS_Tour_Price_Repo::getInstance();
@@ -239,6 +235,10 @@ class NS_Tour_Price_Renderer {
 						<?php endforeach; ?>
 					</div>
 				<?php endif; ?>
+				
+				<div class="calendar-meta">
+					<span class="tour-id"><?php printf( esc_html__( 'ツアー: %s', 'ns-tour_price' ), esc_html( $args['tour'] ) ); ?></span>
+				</div>
 			</div>
 
 			<?php if ( ! empty( $calendar_data['invalid_season_codes'] ) ) : ?>
