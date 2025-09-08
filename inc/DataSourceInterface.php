@@ -12,6 +12,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 interface NS_Tour_Price_DataSourceInterface {
 
 	/**
+	 * データソースを初期化（必要に応じて）
+	 */
+	public function load(): void;
+
+	/**
 	 * ツアーのシーズン情報を取得
 	 *
 	 * @param string $tour_id ツアーID

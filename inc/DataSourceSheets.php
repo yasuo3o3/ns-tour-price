@@ -11,6 +11,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class NS_Tour_Price_DataSourceSheets implements NS_Tour_Price_DataSourceInterface {
 
+	public function load(): void {
+		// このデータソースは現在スタブであり、将来のバージョンで実装予定です。
+		// インターフェースの契約を満たすために空のメソッドとして実装しています。
+	}
+
 	public function getSeasons( $tour_id ) {
 		// Google Sheets実装は将来のバージョンで対応予定
 		return array();

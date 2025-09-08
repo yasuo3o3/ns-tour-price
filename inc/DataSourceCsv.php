@@ -28,6 +28,12 @@ class NS_Tour_Price_DataSourceCsv implements NS_Tour_Price_DataSourceInterface {
 		);
 	}
 
+	public function load(): void {
+		// このデータソースは遅延ロード（getSeasons()などが呼ばれた際に都度CSVを読み込む）
+		// を採用しているため、このメソッドでの事前一括ロードは不要です。
+		// インターフェースの契約を満たすために空のメソッドとして実装しています。
+	}
+
 	/**
 	 * ログ出力（WP_DEBUGに連動）
 	 */
