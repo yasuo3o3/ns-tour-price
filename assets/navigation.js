@@ -503,7 +503,8 @@
                         </label>
                     `;
                     
-                    header.appendChild(toggleContainer);
+                    // templates/calendar.phpで凡例下に配置済みのため、カレンダー末尾に追加
+                    calendar.appendChild(toggleContainer);
                 }
                 
                 // 年間ビュー表示エリアを追加

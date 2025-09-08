@@ -125,7 +125,7 @@ if ( ! $calendar_data || isset( $calendar_data['error'] ) ) {
 
 	<div class="tpc-annual-toggle">
 		<label>
-			<input type="checkbox" id="tpc-annual-checkbox"> <?php esc_html_e( '年間価格概要を表示', 'ns-tour_price' ); ?>
+			<input type="checkbox" id="tpc-annual-checkbox"> <?php esc_html_e( '年間価格概要を表示する', 'ns-tour_price' ); ?>
 		</label>
 	</div>
 
