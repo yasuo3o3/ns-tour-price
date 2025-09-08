@@ -468,12 +468,6 @@ class NS_Tour_Price_Renderer {
 		ob_start();
 		?>
 		<aside class="tpc-booking-panel" aria-label="<?php esc_attr_e( '予約内容の選択', 'ns-tour_price' ); ?>">
-			<div class="tpc-booking-date">
-				<div class="tpc-booking-date__label"><?php esc_html_e( '出発日', 'ns-tour_price' ); ?></div>
-				<div class="tpc-booking-date__value" data-tpc-date><?php esc_html_e( '未選択', 'ns-tour_price' ); ?></div>
-				<div class="tpc-booking-date__season" data-tpc-season></div>
-			</div>
-
 			<div class="tpc-duration-tabs" data-tpc-duration-tabs>
 				<?php foreach ( $available_durations as $duration ) : ?>
 					<button type="button" 
@@ -484,6 +478,12 @@ class NS_Tour_Price_Renderer {
 						<?php printf( esc_html__( '%d日間', 'ns-tour_price' ), $duration ); ?>
 					</button>
 				<?php endforeach; ?>
+			</div>
+
+			<div class="tpc-booking-date">
+				<div class="tpc-booking-date__label"><?php esc_html_e( '出発日', 'ns-tour_price' ); ?></div>
+				<div class="tpc-booking-date__value" data-tpc-date><?php esc_html_e( '未選択', 'ns-tour_price' ); ?></div>
+				<div class="tpc-booking-date__season" data-tpc-season></div>
 			</div>
 
 			<div class="tpc-booking-group">
