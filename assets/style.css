@@ -1,6 +1,5 @@
 /**
  * NS Tour Price Calendar - Frontend Styles
- * Base44風のデザインを採用
  */
 
 /* ==== 年間価格概要 ==== */
@@ -358,40 +357,6 @@
     color: #4a5568;
 }
 
-/* 期間タブ */
-.tpc-duration-tabs {
-    display: flex;
-    gap: 4px;
-    margin-bottom: 20px;
-    background: #f7fafc;
-    border-radius: 8px;
-    padding: 4px;
-}
-
-.tpc-duration-tab {
-    flex: 1;
-    padding: 8px 12px;
-    border: 1px solid #e2e8f0;
-    background: #ffffff;
-    border-radius: 6px;
-    font-size: 14px;
-    color: #2d3748;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.tpc-duration-tab:hover {
-    background: #e6f3ff;
-    color: #2b6cb0;
-    border-color: #3182ce;
-}
-
-.tpc-duration-tab.is-active {
-    background: #4299e1;
-    color: #ffffff;
-    font-weight: 500;
-}
 
 /* 参加人数エリア */
 .tpc-booking-group {
@@ -594,14 +559,6 @@
     margin-bottom: 0;
 }
 
-.tpc-section-title {
-    margin: 0 0 15px 0;
-    font-size: 1.2em;
-    font-weight: 600;
-    color: #2d3748;
-    border-bottom: 2px solid #e2e8f0;
-    padding-bottom: 8px;
-}
 
 /* 選択済み情報 */
 .tpc-info-grid {
@@ -646,12 +603,6 @@
     font-weight: 600;
 }
 
-/* 日数タブ */
-.tpc-duration-tabs {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-}
 
 .tpc-duration-tab-radio {
     display: flex;
@@ -1697,32 +1648,13 @@
     border-radius: 8px;
 }
 
-.tpc-annual-view {
-    color: #1f2937;
-}
 
-/* 年間ビューヘッダー */
-
-
-.tpc-annual-title {
-    font-size: 20px;
-    font-weight: 600;
-    margin: 0 0 8px;
-    color: #1f2937;
-}
-
-.tpc-annual-stats {
-    font-size: 14px;
-    color: #6b7280;
-}
-
-/* セクションタイトル */
 .tpc-section-title {
-    font-size: 16px;
-    font-weight: 500;
-    margin: 0 0 15px;
-    color: #333;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    margin: 0 0 15px 0;
+    font-size: 1.2em;
+    font-weight: 600;
+    color: #1f2937;
+    border-bottom: 2px solid #e2e8f0;
     padding-bottom: 8px;
 }
 

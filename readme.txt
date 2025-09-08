@@ -9,11 +9,11 @@ Requires PHP: 8.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Base44風のツアー価格カレンダーを表示するWordPressプラグイン。CSV二段階探索とヒートマップ表示に対応。
+ツアー価格カレンダーを表示するWordPressプラグイン。CSV二段階探索とヒートマップ表示に対応。
 
 == Description ==
 
-NS Tour Price Calendarは、ツアーの価格情報をカレンダー形式で美しく表示するWordPressプラグインです。Base44風のデザインを採用し、ヒートマップ表示によって価格の高低を視覚的に表現します。
+NS Tour Price Calendarは、ツアーの価格情報をカレンダー形式で美しく表示するWordPressプラグインです。ヒートマップ表示によって価格の高低を視覚的に表現します。
 
 = 主要機能 =
 

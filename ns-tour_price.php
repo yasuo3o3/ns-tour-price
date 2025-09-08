@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: NS Tour Price Calendar
- * Description: Base44風のツアー価格カレンダーを表示するWordPressプラグイン。CSV二段階探索とヒートマップ表示に対応。
+ * Description: ツアー価格カレンダーを表示するWordPressプラグイン。CSV二段階探索とヒートマップ表示に対応。
  * Version: 1.0.0
  * Author: Netservice
  * Author URI: https://netservice.jp/
