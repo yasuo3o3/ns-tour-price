@@ -67,6 +67,7 @@ class NS_Tour_Price_DataSourceCsv implements NS_Tour_Price_DataSourceInterface {
 			'base_prices.csv' => array( 'tour_id', 'season_code', 'duration_days', 'price' ),
 			'solo_fees.csv' => array( 'tour_id', 'duration_days', 'solo_fee' ),
 			'daily_flags.csv' => array( 'tour_id', 'date', 'is_confirmed' ),
+			'tours.csv' => array( 'tour_id', 'tour_name' ),
 		);
 
 		return isset( $required_columns[ $filename ] ) ? $required_columns[ $filename ] : array();
@@ -340,7 +341,7 @@ class NS_Tour_Price_DataSourceCsv implements NS_Tour_Price_DataSourceInterface {
 
 	public function isAvailable() {
 		// CSV存在チェックとログ出力
-		$csv_files = array( 'seasons.csv', 'base_prices.csv', 'solo_fees.csv', 'daily_flags.csv', 'tour_options.csv' );
+		$csv_files = array( 'seasons.csv', 'base_prices.csv', 'solo_fees.csv', 'daily_flags.csv', 'tour_options.csv', 'tours.csv' );
 		$found_files = array();
 		$missing_files = array();
 		$active_source_path = '';
@@ -650,6 +651,38 @@ class NS_Tour_Price_DataSourceCsv implements NS_Tour_Price_DataSourceInterface {
 
 			if ( $this->validateTourOptionData( $option ) ) {
 				$result[] = $option;
+			}
+		}
+
+		set_transient( $cache_key, $result, $this->cache_expiry );
+		return $result;
+	}
+
+	public function getTours() {
+		$cache_key = $this->cache_prefix . 'tours';
+		$cached = get_transient( $cache_key );
+
+		if ( false !== $cached ) {
+			return $cached;
+		}
+
+		$data = $this->readCsvFile( 'tours.csv' );
+		if ( empty( $data ) ) {
+			return array();
+		}
+
+		$result = array();
+		foreach ( $data as $row ) {
+			$tour = array(
+				'tour_id'     => sanitize_text_field( $row['tour_id'] ?? '' ),
+				'tour_name'   => sanitize_text_field( $row['tour_name'] ?? '' ),
+				'description' => sanitize_text_field( $row['description'] ?? '' ),
+				'category'    => sanitize_text_field( $row['category'] ?? '' ),
+				'status'      => sanitize_text_field( $row['status'] ?? '' ),
+			);
+
+			if ( ! empty( $tour['tour_id'] ) ) {
+				$result[] = $tour;
 			}
 		}
 

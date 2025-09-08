@@ -758,6 +758,7 @@ A1,WINTER,WINTER</pre>
 			'flags' => $this->repo->getDailyFlags( $tour_id ),
 			'solo_fees' => $this->repo->getSoloFees( $tour_id ),
 			'tour_options' => $this->repo->getTourOptions( $tour_id ),
+			'tours' => $this->repo->getTours(),
 			'data_source' => $this->repo->getDataSourceInfo(),
 		);
 

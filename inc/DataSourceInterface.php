@@ -64,6 +64,13 @@ interface NS_Tour_Price_DataSourceInterface {
 	public function getTourOptions( $tour_id = null );
 
 	/**
+	 * ツアー情報を取得
+	 *
+	 * @return array ツアー情報の配列
+	 */
+	public function getTours();
+
+	/**
 	 * データソースが利用可能かチェック
 	 *
 	 * @return bool 利用可能な場合はtrue

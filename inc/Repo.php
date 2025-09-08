@@ -15,6 +15,7 @@ class NS_Tour_Price_Repo {
 	private static $instance = null;
 	private $aliases_cache = array();
 	private $statistics_logged = array(); // 統計ログ出力済みマーク
+	private $tours_cache = null;
 
 	public function __construct() {
 		$this->loader = new NS_Tour_Price_Loader();
@@ -154,31 +155,37 @@ class NS_Tour_Price_Repo {
 		return $source->getTourOptions( $tour_id );
 	}
 
-	/**
-	 * ツアー名を取得
-	 * 
-	 * @param string $tour_id
-	 * @return string
-	 */
-	public function getTourName( $tour_id ) {
-		if ( ! $this->loader->isDataAvailable() ) {
-			return $tour_id; // フォールバック
+	public function getTours() {
+		if ( null !== $this->tours_cache ) {
+			return $this->tours_cache;
 		}
 
-		$source = $this->loader->getActiveSource();
-		$tours = $source->load( 'tours' );
-		
+		$this->tours_cache = array(); // Default to empty array
+
+		if ( $this->loader->isDataAvailable() ) {
+			$source = $this->loader->getActiveSource();
+			if ( method_exists( $source, 'getTours' ) ) {
+				$this->tours_cache = $source->getTours();
+			}
+		}
+
+		return $this->tours_cache;
+	}
+
+	public function getTourName( $tour_id ) {
+		$tours = $this->getTours();
 		if ( empty( $tours ) ) {
-			return $tour_id; // フォールバック
+			return $tour_id; // Fallback to tour_id
 		}
 
 		foreach ( $tours as $tour ) {
 			if ( isset( $tour['tour_id'] ) && $tour['tour_id'] === $tour_id ) {
-				return isset( $tour['tour_name'] ) ? $tour['tour_name'] : $tour_id;
+				// tour_name が空でなければそれを返し、空なら tour_id を返す
+				return ! empty( $tour['tour_name'] ) ? $tour['tour_name'] : $tour_id;
 			}
 		}
 
-		return $tour_id; // 見つからない場合はIDを返す
+		return $tour_id; // Fallback if not found
 	}
 
 	/**

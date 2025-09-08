@@ -158,15 +158,6 @@ class NS_Tour_Price_Renderer {
 			
 			<div class="calendar-header">
 				<div class="calendar-title-row">
-					<h3 class="calendar-title">
-						<?php printf( 
-							esc_html__( '%1$s年%2$s （%3$d日間）', 'ns-tour_price' ),
-							$month_data['year'],
-							$month_data['month_name'],
-							$args['duration']
-						); ?>
-					</h3>
-					
 					<?php 
 					$month_nav = NS_Tour_Price_Helpers::month_prev_next( $args['month'] );
 					
@@ -174,31 +165,36 @@ class NS_Tour_Price_Renderer {
 					$prev_href = NS_Tour_Price_Helpers::build_relative_query( array( 'tpc_month' => $month_nav['prev'] ) );
 					$next_href = NS_Tour_Price_Helpers::build_relative_query( array( 'tpc_month' => $month_nav['next'] ) );
 					?>
-					
-					<nav class="tpc-nav">
-						<a href="<?php echo esc_attr( $prev_href ); ?>" 
-						   class="tpc-nav__btn tpc-nav__btn--prev tpc-nav-link" 
-						   data-month="<?php echo esc_attr( $month_nav['prev'] ); ?>"
-						   data-tour="<?php echo esc_attr( $args['tour'] ); ?>"
-						   data-duration="<?php echo esc_attr( $args['duration'] ); ?>"
-						   data-heatmap="<?php echo esc_attr( $args['heatmap'] ? '1' : '0' ); ?>"
-						   data-show-legend="<?php echo esc_attr( $args['show_legend'] ? '1' : '0' ); ?>"
-						   data-confirmed-only="<?php echo esc_attr( $args['confirmed_only'] ? '1' : '0' ); ?>"
-						   aria-label="<?php esc_attr_e( '前月', 'ns-tour_price' ); ?>">
-							<span class="tpc-nav__arrow">◀</span>
-						</a>
-						<a href="<?php echo esc_attr( $next_href ); ?>" 
-						   class="tpc-nav__btn tpc-nav__btn--next tpc-nav-link"
-						   data-month="<?php echo esc_attr( $month_nav['next'] ); ?>"
-						   data-tour="<?php echo esc_attr( $args['tour'] ); ?>"
-						   data-duration="<?php echo esc_attr( $args['duration'] ); ?>"
-						   data-heatmap="<?php echo esc_attr( $args['heatmap'] ? '1' : '0' ); ?>"
-						   data-show-legend="<?php echo esc_attr( $args['show_legend'] ? '1' : '0' ); ?>"
-						   data-confirmed-only="<?php echo esc_attr( $args['confirmed_only'] ? '1' : '0' ); ?>"
-						   aria-label="<?php esc_attr_e( '翌月', 'ns-tour_price' ); ?>">
-							<span class="tpc-nav__arrow">▶</span>
-						</a>
-					</nav>
+					<a href="<?php echo esc_attr( $prev_href ); ?>"
+					   class="tpc-nav__btn tpc-nav__btn--prev tpc-nav-link"
+					   data-month="<?php echo esc_attr( $month_nav['prev'] ); ?>"
+					   data-tour="<?php echo esc_attr( $args['tour'] ); ?>"
+					   data-duration="<?php echo esc_attr( $args['duration'] ); ?>"
+					   data-heatmap="<?php echo esc_attr( $args['heatmap'] ? '1' : '0' ); ?>"
+					   data-show-legend="<?php echo esc_attr( $args['show_legend'] ? '1' : '0' ); ?>"
+					   data-confirmed-only="<?php echo esc_attr( $args['confirmed_only'] ? '1' : '0' ); ?>"
+					   aria-label="<?php esc_attr_e( '前月', 'ns-tour_price' ); ?>">
+						<span class="tpc-nav__arrow">◀</span>
+					</a>
+					<h3 class="calendar-title">
+						<?php printf(
+							esc_html__( '%1$s年%2$s （%3$d日間）', 'ns-tour_price' ),
+							$month_data['year'],
+							$month_data['month_name'],
+							$args['duration']
+						); ?>
+					</h3>
+					<a href="<?php echo esc_attr( $next_href ); ?>"
+					   class="tpc-nav__btn tpc-nav__btn--next tpc-nav-link"
+					   data-month="<?php echo esc_attr( $month_nav['next'] ); ?>"
+					   data-tour="<?php echo esc_attr( $args['tour'] ); ?>"
+					   data-duration="<?php echo esc_attr( $args['duration'] ); ?>"
+					   data-heatmap="<?php echo esc_attr( $args['heatmap'] ? '1' : '0' ); ?>"
+					   data-show-legend="<?php echo esc_attr( $args['show_legend'] ? '1' : '0' ); ?>"
+					   data-confirmed-only="<?php echo esc_attr( $args['confirmed_only'] ? '1' : '0' ); ?>"
+					   aria-label="<?php esc_attr_e( '翌月', 'ns-tour_price' ); ?>">
+						<span class="tpc-nav__arrow">▶</span>
+					</a>
 				</div>
 				
 				<?php
