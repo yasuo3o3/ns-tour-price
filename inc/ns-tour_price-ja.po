@@ -1,0 +1,641 @@
+# Japanese translation for NS Tour Price Calendar
+# Copyright (C) 2024 Netservice
+# This file is distributed under the same license as the NS Tour Price Calendar package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: NS Tour Price Calendar 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-05-23 10:00+0900\n"
+"PO-Revision-Date: 2024-05-23 10:00+0900\n"
+"Last-Translator: Gemini Code Assist\n"
+"Language-Team: Japanese\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: inc/Admin.php:28
+msgid "NS Tour Price Settings"
+msgstr "ツアー価格設定"
+
+#: inc/Admin.php:29, inc/DataSourceSheets.php:54
+msgid "NS Tour Price"
+msgstr "ツアー価格"
+
+#: inc/Admin.php:49
+msgid "General Settings"
+msgstr "一般設定"
+
+#: inc/Admin.php:56
+msgid "Annual View Settings"
+msgstr "年間ビュー設定"
+
+#: inc/Admin.php:62
+msgid "Data Source"
+msgstr "データソース"
+
+#: inc/Admin.php:69
+msgid "Week Starts On"
+msgstr "週の始まり"
+
+#: inc/Admin.php:76
+msgid "Show Confirmed Badges"
+msgstr "催行確定バッジを表示"
+
+#: inc/Admin.php:83
+msgid "Cache Expiry (seconds)"
+msgstr "キャッシュ有効期間（秒）"
+
+#: inc/Admin.php:90
+msgid "Heatmap Bins"
+msgstr "ヒートマップの段階数"
+
+#: inc/Admin.php:97
+msgid "Heatmap Mode"
+msgstr "ヒートマップのモード"
+
+#: inc/Admin.php:104
+msgid "Season Colors"
+msgstr "シーズンカラー"
+
+#: inc/Admin.php:128
+msgid "Season Palette (15 colors)"
+msgstr "シーズンパレット（15色）"
+
+#: inc/Admin.php:135
+msgid "Color Pruning Mode"
+msgstr "カラー間引きモード"
+
+#: inc/Admin.php:163
+msgid "Settings saved."
+msgstr "設定を保存しました。"
+
+#: inc/Admin.php:176
+msgid "Data Source Status:"
+msgstr "データソースの状態:"
+
+#: inc/Admin.php:179
+msgid "Active: %s"
+msgstr "有効: %s"
+
+#: inc/Admin.php:182
+msgid "No data source available. Please check CSV files."
+msgstr "利用可能なデータソースがありません。CSVファイルを確認してください。"
+
+#: inc/Admin.php:186
+msgid "Show all data sources"
+msgstr "すべてのデータソースを表示"
+
+#: inc/Admin.php:191
+msgid "Available"
+msgstr "利用可能"
+
+#: inc/Admin.php:193
+msgid "Not available"
+msgstr "利用不可"
+
+#: inc/Admin.php:203
+msgid "Quick Cache Clear"
+msgstr "クイックキャッシュクリア"
+
+#: inc/Admin.php:204
+msgid "Development shortcut - Clear all cached data quickly."
+msgstr "開発用ショートカット - 全てのキャッシュデータを素早くクリアします。"
+
+#: inc/Admin.php:206, inc/Admin.php:230
+msgid "Clear Cache"
+msgstr "キャッシュをクリア"
+
+#: inc/Admin.php:211
+msgid "CSV File Locations:"
+msgstr "CSVファイルの場所:"
+
+#: inc/Admin.php:213, inc/Admin.php:286, inc/Admin.php:350
+msgid "Priority"
+msgstr "優先"
+
+#: inc/Admin.php:214, inc/Admin.php:287, inc/Admin.php:351
+msgid "Fallback"
+msgstr "フォールバック"
+
+#: inc/Admin.php:225
+msgid "Tools"
+msgstr "ツール"
+
+#: inc/Admin.php:228
+msgid "Cache Management"
+msgstr "キャッシュ管理"
+
+#: inc/Admin.php:229
+msgid "Clear all cached data to force reload from CSV files."
+msgstr "全てのキャッシュデータをクリアして、CSVファイルから強制的に再読み込みします。"
+
+#: inc/Admin.php:235
+msgid "Data Test"
+msgstr "データテスト"
+
+#: inc/Admin.php:236
+msgid "Test data loading for a specific tour ID."
+msgstr "指定したツアーIDのデータ読み込みをテストします。"
+
+#: inc/Admin.php:243
+msgid "Usage Examples"
+msgstr "使用例"
+
+#: inc/Admin.php:246
+msgid "Shortcode"
+msgstr "ショートコード"
+
+#: inc/Admin.php:249
+msgid "Block"
+msgstr "ブロック"
+
+#: inc/Admin.php:250
+msgid "Search for \"%s\" in the block editor."
+msgstr "ブロックエディタで「%s」を検索してください。"
+
+#: inc/Admin.php:255
+msgid "Solo Fee Settings"
+msgstr "ソロフィー設定"
+
+#: inc/Admin.php:258
+msgid "About solo_fees.csv"
+msgstr "solo_fees.csv について"
+
+#: inc/Admin.php:259
+msgid "This setting is for adding a solo fee to the base tour price. The solo fee is determined by the combination of tour ID and duration."
+msgstr "ツアーの基本価格にソロフィーを加算するための設定です。ソロフィーはツアーIDと日数の組み合わせで決定されます。"
+
+#: inc/Admin.php:262, inc/Admin.php:349
+msgid "Location:"
+msgstr "配置場所:"
+
+#: inc/Admin.php:267, inc/Admin.php:354
+msgid "CSV Schema:"
+msgstr "CSVスキーマ:"
+
+#: inc/Admin.php:275, inc/Admin.php:362
+msgid "Features:"
+msgstr "機能:"
+
+#: inc/Admin.php:277
+msgid "Specify solo fee by tour_id and duration_days combination"
+msgstr "tour_id と duration_days の組み合わせでソロフィーを指定"
+
+#: inc/Admin.php:278
+msgid "The price displayed on the calendar is calculated as \"Base Price + Solo Fee\""
+msgstr "カレンダー表示価格は「ベース価格 + ソロフィー」で計算される"
+
+#: inc/Admin.php:279
+msgid "Solo fee is not added on dates where the base price is not available"
+msgstr "ベース価格が取得できない日付ではソロフィーも加算されない"
+
+#: inc/Admin.php:280
+msgid "The solo fee is 0 for combinations not found in solo_fees.csv"
+msgstr "solo_fees.csv にない組み合わせのソロフィーは0円"
+
+#: inc/Admin.php:284
+msgid "CSV Data Format"
+msgstr "CSV データ書式"
+
+#: inc/Admin.php:287
+msgid "Date Format in seasons.csv"
+msgstr "seasons.csv の日付書式"
+
+#: inc/Admin.php:288
+msgid "The following date formats can be used in the date_start and date_end columns."
+msgstr "date_start、date_end 列で使用できる日付書式は以下の通りです。"
+
+#: inc/Admin.php:291
+msgid "Recommended Format:"
+msgstr "推奨書式:"
+
+#: inc/Admin.php:293
+msgid "(e.g., 2025-04-15)"
+msgstr "（例: 2025-04-15）"
+
+#: inc/Admin.php:296
+msgid "Accepted Formats:"
+msgstr "受入可能書式:"
+
+#: inc/Admin.php:298
+msgid "(e.g., 2025/4/15)"
+msgstr "（例: 2025/4/15）"
+
+#: inc/Admin.php:299
+msgid "(e.g., 2025/04/15)"
+msgstr "（例: 2025/04/15）"
+
+#: inc/Admin.php:300
+msgid "(e.g., 2025-4-15)"
+msgstr "（例: 2025-4-15）"
+
+#: inc/Admin.php:301
+msgid "(e.g., 2025.4.15)"
+msgstr "（例: 2025.4.15）"
+
+#: inc/Admin.php:304
+msgid "Auto-Normalization Feature:"
+msgstr "自動正規化機能:"
+
+#: inc/Admin.php:306
+msgid "Full-width numbers and symbols are converted to half-width (e.g., ２０２５－０４－１５ → 2025-04-15)"
+msgstr "全角数字・記号も半角に変換（例: ２０２５－０４－１５ → 2025-04-15）"
+
+#: inc/Admin.php:307
+msgid "All dates are processed internally in YYYY-MM-DD format"
+msgstr "すべて内部では YYYY-MM-DD 形式で処理される"
+
+#: inc/Admin.php:308
+msgid "Detailed statistics are output to error_log on parsing failure"
+msgstr "パース失敗時は error_log に詳細な統計情報を出力"
+
+#: inc/Admin.php:312
+msgid "Price Range for Heatmap and Legend"
+msgstr "ヒートマップ・凡例の価格範囲"
+
+#: inc/Admin.php:313
+msgid "The calendar heatmap and legend are calculated based on the \"entire period (all seasons)\"."
+msgstr "カレンダーのヒートマップと凡例は「全期間（全シーズン）」を基準に計算されます。"
+
+#: inc/Admin.php:315
+msgid "The price range is determined from all base_prices for the same tour_id × duration_days."
+msgstr "同一 tour_id × duration_days の全ての base_prices から価格範囲を決定"
+
+#: inc/Admin.php:316
+msgid "Color standards and legends are displayed consistently across months."
+msgstr "月を跨いでも色基準と凡例が一貫して表示"
+
+#: inc/Admin.php:317
+msgid "Prices not appearing in the current month are also displayed in the legend."
+msgstr "当月に出ていない価格も凡例に表示される"
+
+#: inc/Admin.php:322
+msgid "Season Code Alias"
+msgstr "Season Code エイリアス"
+
+#: inc/Admin.php:325
+msgid "About season_aliases.csv"
+msgstr "season_aliases.csv について"
+
+#: inc/Admin.php:326
+msgid "If you use different season_code notations in seasons.csv and base_prices.csv (e.g., A/B/C and LOW/MID/HIGH), you can place season_aliases.csv to automatically resolve the differences."
+msgstr "seasons.csv と base_prices.csv で異なる season_code 表記（A/B/C と LOW/MID/HIGH など）を使用している場合、season_aliases.csv を配置することで表記差を自動吸収できます。"
+
+#: inc/Admin.php:339
+msgid "Maps \"A\" in base_prices.csv to \"LOW\" in seasons.csv"
+msgstr "base_prices.csv で \"A\" → seasons.csv の \"LOW\" にマッピング"
+
+#: inc/Admin.php:340
+msgid "Automatically normalizes differences in case, full/half-width characters, and leading/trailing spaces."
+msgstr "大文字・小文字、全角・半角、前後空白の差も自動正規化"
+
+#: inc/Admin.php:341
+msgid "Even without an alias file, basic differences are absorbed by normalization alone."
+msgstr "エイリアスファイルがない環境でも、正規化のみで基本的な差は吸収"
+
+#: inc/Admin.php:342
+msgid "If there are inconsistencies, details are logged to error_log and a warning is displayed on the frontend."
+msgstr "不整合がある場合は error_log に詳細、フロントエンドには警告表示"
+
+#: inc/Admin.php:512, inc/Admin.php:826
+msgid "Color settings are now unified in the Season Palette. Heatmap-related settings are deprecated."
+msgstr "色設定はシーズンパレットに統一しました。ヒートマップ関連設定は廃止されています。"
+
+#: inc/Admin.php:521
+msgid "Not Available"
+msgstr "利用不可"
+
+#: inc/Admin.php:528
+msgid "Sunday"
+msgstr "日曜日"
+
+#: inc/Admin.php:529
+msgid "Monday"
+msgstr "月曜日"
+
+#: inc/Admin.php:537
+msgid "Show confirmed booking badges when daily_flags.csv is available"
+msgstr "daily_flags.csv が利用可能な場合に催行確定バッジを表示する"
+
+#: inc/Admin.php:545
+msgid "(300-86400 seconds)"
+msgstr "（300～86400秒）"
+
+#: inc/Admin.php:554, inc/Admin.php:555, inc/Admin.php:556
+msgid "bins"
+msgstr "段階"
+
+#: inc/Admin.php:558
+msgid "Number of heatmap color levels"
+msgstr "ヒートマップの色の段階数"
+
+#: inc/Admin.php:566
+msgid "Quantile (Recommended)"
+msgstr "分位数（推奨）"
+
+#: inc/Admin.php:567
+msgid "Linear"
+msgstr "線形"
+
+#: inc/Admin.php:570
+msgid "Quantile mode distributes colors more evenly across price ranges, avoiding blue bias."
+msgstr "分位数モードは、価格帯全体で色をより均等に配分し、安い価格帯に色が偏るのを防ぎます。"
+
+#: inc/Admin.php:670
+msgid "Settings for the Annual Price Overview feature."
+msgstr "年間価格概要機能の設定"
+
+#: inc/Admin.php:678
+msgid "There are currently no season records in seasons.csv. Please upload the CSV file."
+msgstr "現在、seasons.csv にシーズンレコードがありません。CSVファイルをアップロードしてください。"
+
+#: inc/Admin.php:683, inc/Renderer.php:304, inc/Renderer.php:487, inc/Renderer.php:563
+msgid "Season Code"
+msgstr "シーズンコード"
+
+#: inc/Admin.php:683
+msgid "Color"
+msgstr "色"
+
+#: inc/Admin.php:695
+msgid "Set the display colors for seasons in the annual view. If not set, default colors will be used."
+msgstr "年間ビューでのシーズン表示色を設定します。未設定の場合はデフォルト色が使用されます。"
+
+#: inc/Admin.php:760
+msgid "A fixed palette for seasons (15 colors recommended). Used for a unified color display across legends, calendars, and season tables. Colors are assigned based on price order: the cheapest season gets the first color, and the most expensive gets the last."
+msgstr "シーズン固定パレット（15色推奨）。凡例、カレンダー、シーズン表で統一された色表示に使用されます。色は価格順に割り当てられます：最も安いシーズンが最初の色、最も高いシーズンが最後の色になります。"
+
+#: inc/Admin.php:761
+msgid "Specify one color per line in #RRGGBB format. If empty, the default 15-color palette is used."
+msgstr "#RRGGBB形式で1行に1色ずつ指定してください。空の場合は、デフォルトの15色パレットが使用されます。"
+
+#: inc/Admin.php:796
+msgid "Tail Pruning"
+msgstr "末尾から間引き"
+
+#: inc/Admin.php:797
+msgid "Balanced Pruning"
+msgstr "均等に間引き"
+
+#: inc/Admin.php:800
+msgid "Method for pruning colors when the number of seasons exceeds the number of palette colors. \"Tail Pruning\" removes colors from the right side (higher prices) first. \"Balanced Pruning\" distributes removal evenly."
+msgstr "シーズン数がパレットの色数を超える場合の色を間引く方法です。「末尾から間引き」は右側（価格が高い方）から色を削除します。「均等に間引き」は全体から均等に削除します。"
+
+#: inc/Admin.php:801
+msgid "The colors for the cheapest and most expensive seasons are always fixed at the ends of the palette."
+msgstr "最も安いシーズンと最も高いシーズンの色は常にパレットの両端に固定されます。"
+
+#: inc/Admin.php:829
+msgid "[For Developers] Deprecated options remain (internal data is retained)."
+msgstr "[開発者向け] 非推奨オプションが残っています（内部データは保持）"
+
+#: inc/Renderer.php:195
+msgid "前月"
+msgstr "前月"
+
+#: inc/Renderer.php:201, inc/Renderer.php:437, inc/AnnualBuilder.php:571
+msgid "%1$s年%2$s （%3$d日間）"
+msgstr "%1$s年%2$s （%3$d日間）"
+
+#: inc/Renderer.php:208
+msgid "翌月"
+msgstr "翌月"
+
+#: inc/Renderer.php:229
+msgid "%d日間に切替"
+msgstr "%d日間に切替"
+
+#: inc/Renderer.php:230, inc/Renderer.php:579
+msgid "%d日間"
+msgstr "%d日間"
+
+#: inc/Renderer.php:239
+msgid "一部の season_code（%s）が seasons.csv に存在しません。価格表示が不完全になる可能性があります。"
+msgstr "一部の season_code（%s）が seasons.csv に存在しません。価格表示が不完全になる可能性があります。"
+
+#: inc/Renderer.php:299, inc/Helpers.php:161
+msgid "設定なし"
+msgstr "設定なし"
+
+#: inc/Renderer.php:302
+msgid "催行確定"
+msgstr "催行確定"
+
+#: inc/Renderer.php:310
+msgid "価格区分"
+msgstr "価格区分"
+
+#: inc/Renderer.php:327
+msgid "トラブルシューティング"
+msgstr "トラブルシューティング"
+
+#: inc/Renderer.php:329
+msgid "CSVファイルが正しい場所に配置されているか確認してください"
+msgstr "CSVファイルが正しい場所に配置されているか確認してください"
+
+#: inc/Renderer.php:330
+msgid "ツアーIDが存在するか確認してください"
+msgstr "ツアーIDが存在するか確認してください"
+
+#: inc/Renderer.php:331
+msgid "月の形式が YYYY-MM になっているか確認してください"
+msgstr "月の形式が YYYY-MM になっているか確認してください"
+
+#: inc/Renderer.php:332
+msgid "管理画面でデータソースの状態を確認してください"
+msgstr "管理画面でデータソースの状態を確認してください"
+
+#: inc/Renderer.php:484
+msgid "予約内容の選択"
+msgstr "予約内容の選択"
+
+#: inc/Renderer.php:494
+msgid "出発日"
+msgstr "出発日"
+
+#: inc/Renderer.php:495
+msgid "未選択"
+msgstr "未選択"
+
+#: inc/Renderer.php:500
+msgid "参加人数"
+msgstr "参加人数"
+
+#: inc/Renderer.php:502
+msgid "1名"
+msgstr "1名"
+
+#: inc/Renderer.php:503
+msgid "2名"
+msgstr "2名"
+
+#: inc/Renderer.php:504
+msgid "3名"
+msgstr "3名"
+
+#: inc/Renderer.php:505
+msgid "4名"
+msgstr "4名"
+
+#: inc/Renderer.php:506
+msgid "5名"
+msgstr "5名"
+
+#: inc/Renderer.php:507
+msgid "6名"
+msgstr "6名"
+
+#: inc/Renderer.php:519
+msgid "オプション（任意）"
+msgstr "オプション（任意）"
+
+#: inc/Renderer.php:542
+msgid "基本料金"
+msgstr "基本料金"
+
+#: inc/Renderer.php:546
+msgid "お一人様参加料金"
+msgstr "お一人様参加料金"
+
+#: inc/Renderer.php:554
+msgid "合計概算金額"
+msgstr "合計概算金額"
+
+#: inc/Renderer.php:558
+msgid "※運賃変動等により金額は変更になることがあります"
+msgstr "※運賃変動等により金額は変更になることがあります"
+
+#: inc/Renderer.php:562
+msgid "申込フォームへ"
+msgstr "申込フォームへ"
+
+#: inc/DataSourceCsv.php:467
+msgid "CSV Files"
+msgstr "CSVファイル"
+
+#: inc/DataSourceSheets.php:50
+msgid "Google Sheets"
+msgstr "Googleスプレッドシート"
+
+#: inc/CalendarBuilder.php:47
+msgid "データが見つかりません"
+msgstr "データが見つかりません"
+
+#: inc/CalendarBuilder.php:52
+msgid "無効な月が指定されました"
+msgstr "無効な月が指定されました"
+
+#: inc/CalendarBuilder.php:181, inc/AnnualBuilder.php:875
+msgid "1月"
+msgstr "1月"
+
+#: inc/CalendarBuilder.php:182, inc/AnnualBuilder.php:876
+msgid "2月"
+msgstr "2月"
+
+#: inc/CalendarBuilder.php:183, inc/AnnualBuilder.php:877
+msgid "3月"
+msgstr "3月"
+
+#: inc/CalendarBuilder.php:184, inc/AnnualBuilder.php:878
+msgid "4月"
+msgstr "4月"
+
+#: inc/CalendarBuilder.php:185, inc/AnnualBuilder.php:879
+msgid "5月"
+msgstr "5月"
+
+#: inc/CalendarBuilder.php:186, inc/AnnualBuilder.php:880
+msgid "6月"
+msgstr "6月"
+
+#: inc/CalendarBuilder.php:187, inc/AnnualBuilder.php:881
+msgid "7月"
+msgstr "7月"
+
+#: inc/CalendarBuilder.php:188, inc/AnnualBuilder.php:882
+msgid "8月"
+msgstr "8月"
+
+#: inc/CalendarBuilder.php:189, inc/AnnualBuilder.php:883
+msgid "9月"
+msgstr "9月"
+
+#: inc/CalendarBuilder.php:190, inc/AnnualBuilder.php:884
+msgid "10月"
+msgstr "10月"
+
+#: inc/CalendarBuilder.php:191, inc/AnnualBuilder.php:885
+msgid "11月"
+msgstr "11月"
+
+#: inc/CalendarBuilder.php:192, inc/AnnualBuilder.php:886
+msgid "12月"
+msgstr "12月"
+
+#: inc/CalendarBuilder.php:427
+msgid "日"
+msgstr "日"
+
+#: inc/CalendarBuilder.php:428
+msgid "月"
+msgstr "月"
+
+#: inc/CalendarBuilder.php:429
+msgid "火"
+msgstr "火"
+
+#: inc/CalendarBuilder.php:430
+msgid "水"
+msgstr "水"
+
+#: inc/CalendarBuilder.php:431
+msgid "木"
+msgstr "木"
+
+#: inc/CalendarBuilder.php:432
+msgid "金"
+msgstr "金"
+
+#: inc/CalendarBuilder.php:433
+msgid "土"
+msgstr "土"
+
+#: inc/AnnualBuilder.php:655
+msgid "シーズン"
+msgstr "シーズン"
+
+#: inc/AnnualBuilder.php:656
+msgid "期間"
+msgstr "期間"
+
+#: inc/AnnualBuilder.php:657
+msgid "料金"
+msgstr "料金"
+
+#: inc/AnnualBuilder.php:707
+msgid "設定なし"
+msgstr "設定なし"
+
+#: inc/Helpers.php:100
+msgid "（今月）"
+msgstr "（今月）"
+
+#: inc/Helpers.php:120
+msgid "ツアーA1"
+msgstr "ツアーA1"
+
+#: inc/Helpers.php:121
+msgid "ツアーB2"
+msgstr "ツアーB2"
+
+#: inc/Helpers.php:122
+msgid "ツアーC3"
+msgstr "ツアーC3"
+
+#: inc/Helpers.php:143
+msgid "（税込）"
+msgstr "（税込）"
