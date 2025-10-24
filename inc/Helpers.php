@@ -511,24 +511,29 @@ class NS_Tour_Price_Helpers {
 		$current_month = gmdate( 'Y-m' );
 		$next_month = gmdate( 'Y-m', strtotime( '+1 month' ) );
 
-		// 1. 翌月にデータがあるか確認
+		// 1. 現在月にデータがあるか確認（最優先）
+		if ( in_array( $current_month, $available_months, true ) ) {
+			return $current_month;
+		}
+
+		// 2. 翌月にデータがあるか確認
 		if ( in_array( $next_month, $available_months, true ) ) {
 			return $next_month;
 		}
 
-		// 2. 翌月以降で最初にデータがある月を探す
+		// 3. 翌月以降で最初にデータがある月を探す
 		$future_month = self::findNextAvailableMonth( $tour_id, $next_month );
 		if ( $future_month ) {
 			return $future_month;
 		}
 
-		// 3. 翌月以降にデータがない場合、過去で最新の月を探す
+		// 4. 翌月以降にデータがない場合、過去で最新の月を探す
 		$past_month = self::findLatestPastMonth( $tour_id, $current_month );
 		if ( $past_month ) {
 			return $past_month;
 		}
 
-		// 4. 全てのデータが現在月より後の場合、最初の利用可能月
+		// 5. 全てのデータが現在月より後の場合、最初の利用可能月
 		return $available_months[0];
 	}
 
