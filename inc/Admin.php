@@ -200,7 +200,14 @@ class NS_Tour_Price_Admin {
 			</nav>
 
 			<?php if ( $current_tab === 'csv' ) : ?>
-				<?php $this->renderCsvManagementTab(); ?>
+				<?php
+				$action = isset( $_GET['action'] ) ? sanitize_text_field( $_GET['action'] ) : '';
+				if ( $action === 'view' ) {
+					$this->renderCsvViewPage();
+				} else {
+					$this->renderCsvManagementTab();
+				}
+				?>
 			<?php else : ?>
 				<?php $this->renderSettingsTab( $data_source_info, $is_data_available ); ?>
 			<?php endif; ?>
@@ -569,6 +576,10 @@ A1,WINTER,WINTER</pre>
 								<td><?php echo $file_exists ? esc_html( $last_modified ) : '-'; ?></td>
 								<td>
 									<?php if ( $file_exists ) : ?>
+										<a href="<?php echo esc_url( add_query_arg( array( 'tab' => 'csv', 'action' => 'view', 'file' => $filename ), admin_url( 'options-general.php?page=ns-tour-price' ) ) ); ?>"
+										   class="button button-secondary" style="margin-right: 5px;">
+											<?php esc_html_e( 'View', 'ns-tour_price' ); ?>
+										</a>
 										<form method="post" style="display: inline;">
 											<?php wp_nonce_field( 'ns_tour_price_delete_csv' ); ?>
 											<input type="hidden" name="filename" value="<?php echo esc_attr( $filename ); ?>">
@@ -701,6 +712,146 @@ A1,WINTER,WINTER</pre>
 		if ( isset( $formats[ $filename ] ) ) {
 			echo '<pre style="background: #f1f1f1; padding: 8px; border-radius: 3px; font-size: 12px;">' . esc_html( $formats[ $filename ] ) . '</pre>';
 		}
+	}
+
+	private function renderCsvViewPage() {
+		$filename = isset( $_GET['file'] ) ? sanitize_file_name( $_GET['file'] ) : '';
+		$allowed_files = array(
+			'base_prices.csv', 'seasons.csv', 'daily_flags.csv',
+			'solo_fees.csv', 'tour_options.csv', 'tours.csv'
+		);
+
+		// セキュリティチェック
+		if ( ! in_array( $filename, $allowed_files, true ) ) {
+			?>
+			<div class="tab-content">
+				<div class="notice notice-error">
+					<p><?php esc_html_e( 'Invalid file specified.', 'ns-tour_price' ); ?></p>
+				</div>
+				<a href="<?php echo esc_url( admin_url( 'options-general.php?page=ns-tour-price&tab=csv' ) ); ?>" class="button">
+					<?php esc_html_e( '← Back to CSV Management', 'ns-tour_price' ); ?>
+				</a>
+			</div>
+			<?php
+			return;
+		}
+
+		$file_path = NS_TOUR_PRICE_PLUGIN_DIR . 'data/' . $filename;
+
+		if ( ! file_exists( $file_path ) ) {
+			?>
+			<div class="tab-content">
+				<div class="notice notice-error">
+					<p><?php esc_html_e( 'File not found.', 'ns-tour_price' ); ?></p>
+				</div>
+				<a href="<?php echo esc_url( admin_url( 'options-general.php?page=ns-tour-price&tab=csv' ) ); ?>" class="button">
+					<?php esc_html_e( '← Back to CSV Management', 'ns-tour_price' ); ?>
+				</a>
+			</div>
+			<?php
+			return;
+		}
+
+		// CSVデータ読み込み
+		$csv_data = array();
+		$max_rows = 1000; // 表示制限
+		$row_count = 0;
+
+		if ( ( $handle = fopen( $file_path, 'r' ) ) !== false ) {
+			while ( ( $data = fgetcsv( $handle, 1000, ',' ) ) !== false && $row_count < $max_rows ) {
+				// BOM除去（最初の行のみ）
+				if ( $row_count === 0 && ! empty( $data[0] ) ) {
+					$data[0] = preg_replace( '/^\xEF\xBB\xBF/', '', $data[0] );
+				}
+				$csv_data[] = $data;
+				$row_count++;
+			}
+			fclose( $handle );
+		}
+
+		$file_labels = array(
+			'base_prices.csv' => __( 'Base Prices', 'ns-tour_price' ),
+			'seasons.csv' => __( 'Seasons', 'ns-tour_price' ),
+			'daily_flags.csv' => __( 'Daily Flags', 'ns-tour_price' ),
+			'solo_fees.csv' => __( 'Solo Fees', 'ns-tour_price' ),
+			'tour_options.csv' => __( 'Tour Options', 'ns-tour_price' ),
+			'tours.csv' => __( 'Tours', 'ns-tour_price' ),
+		);
+
+		$file_label = isset( $file_labels[ $filename ] ) ? $file_labels[ $filename ] : $filename;
+		$total_file_rows = count( file( $file_path ) );
+		?>
+		<div class="tab-content">
+			<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+				<h2><?php printf( esc_html__( 'Viewing: %s', 'ns-tour_price' ), esc_html( $file_label ) ); ?></h2>
+				<a href="<?php echo esc_url( admin_url( 'options-general.php?page=ns-tour-price&tab=csv' ) ); ?>" class="button">
+					<?php esc_html_e( '← Back to CSV Management', 'ns-tour_price' ); ?>
+				</a>
+			</div>
+
+			<div class="notice notice-info">
+				<p>
+					<strong><?php esc_html_e( 'File:', 'ns-tour_price' ); ?></strong> <?php echo esc_html( $filename ); ?><br>
+					<strong><?php esc_html_e( 'Total Rows:', 'ns-tour_price' ); ?></strong> <?php echo esc_html( number_format( $total_file_rows ) ); ?>
+					<?php if ( $total_file_rows > $max_rows ) : ?>
+						<br><strong><?php esc_html_e( 'Note:', 'ns-tour_price' ); ?></strong>
+						<?php printf( esc_html__( 'Showing first %d rows only.', 'ns-tour_price' ), $max_rows ); ?>
+					<?php endif; ?>
+				</p>
+			</div>
+
+			<?php if ( ! empty( $csv_data ) ) : ?>
+				<div class="card">
+					<table class="widefat fixed" style="table-layout: auto;">
+						<thead>
+							<tr>
+								<th style="width: 50px;"><?php esc_html_e( 'Row', 'ns-tour_price' ); ?></th>
+								<?php if ( ! empty( $csv_data[0] ) ) : ?>
+									<?php foreach ( $csv_data[0] as $index => $header ) : ?>
+										<th style="font-weight: bold; background-color: #f9f9f9;">
+											<?php echo esc_html( $header ); ?>
+										</th>
+									<?php endforeach; ?>
+								<?php endif; ?>
+							</tr>
+						</thead>
+						<tbody>
+							<?php foreach ( $csv_data as $row_index => $row_data ) : ?>
+								<?php if ( $row_index === 0 ) continue; // ヘッダー行をスキップ ?>
+								<tr>
+									<td style="background-color: #f9f9f9; text-align: center; font-weight: bold;">
+										<?php echo esc_html( $row_index + 1 ); ?>
+									</td>
+									<?php foreach ( $row_data as $cell_data ) : ?>
+										<td style="border: 1px solid #ddd; padding: 8px;">
+											<?php
+											$cell_value = esc_html( $cell_data );
+											// 長いテキストの場合は省略表示
+											if ( strlen( $cell_value ) > 100 ) {
+												$cell_value = substr( $cell_value, 0, 100 ) . '...';
+											}
+											echo $cell_value;
+											?>
+										</td>
+									<?php endforeach; ?>
+								</tr>
+							<?php endforeach; ?>
+						</tbody>
+					</table>
+				</div>
+			<?php else : ?>
+				<div class="notice notice-warning">
+					<p><?php esc_html_e( 'No data found in this CSV file.', 'ns-tour_price' ); ?></p>
+				</div>
+			<?php endif; ?>
+
+			<div style="margin-top: 20px;">
+				<a href="<?php echo esc_url( admin_url( 'options-general.php?page=ns-tour-price&tab=csv' ) ); ?>" class="button button-primary">
+					<?php esc_html_e( '← Back to CSV Management', 'ns-tour_price' ); ?>
+				</a>
+			</div>
+		</div>
+		<?php
 	}
 
 	public function generalSectionCallback() {
