@@ -267,7 +267,7 @@ class NS_Tour_Price_Helpers {
 	 * @param string $attr_month ブロック/ショートコード属性の月
 	 * @return string YYYY-MM形式の月文字列
 	 */
-	public static function resolve_month( $attr_month ) {
+	public static function resolve_month( $attr_month, $tour_id = 'A1' ) {
 		// ① $_GET['tpc_month'] が最優先
 		if ( ! empty( $_GET['tpc_month'] ) ) {
 			$get_month = sanitize_text_field( wp_unslash( $_GET['tpc_month'] ) );
@@ -284,8 +284,8 @@ class NS_Tour_Price_Helpers {
 			}
 		}
 
-		// ③ 今日を含む月（フォールバック）
-		return gmdate( 'Y-m' );
+		// ③ スマートデフォルト月（旅行予約の特性を考慮）
+		return self::getSmartDefaultMonth( $tour_id );
 	}
 
 	/**
@@ -492,5 +492,137 @@ class NS_Tour_Price_Helpers {
 
 		$query_string = http_build_query( $normalized, '', '&', PHP_QUERY_RFC3986 );
 		return $query_string === '' ? '?' : '?' . $query_string; // 最低でも "?" を返す（リンク構文上安全）
+	}
+
+	/**
+	 * スマートなデフォルト月を取得（旅行予約の特性を考慮）
+	 *
+	 * @param string $tour_id ツアーID
+	 * @return string YYYY-MM形式の月
+	 */
+	public static function getSmartDefaultMonth( $tour_id = 'A1' ) {
+		$available_months = self::getAvailableMonths( $tour_id );
+
+		if ( empty( $available_months ) ) {
+			// データがない場合は現在月をフォールバック
+			return gmdate( 'Y-m' );
+		}
+
+		$current_month = gmdate( 'Y-m' );
+		$next_month = gmdate( 'Y-m', strtotime( '+1 month' ) );
+
+		// 1. 翌月にデータがあるか確認
+		if ( in_array( $next_month, $available_months, true ) ) {
+			return $next_month;
+		}
+
+		// 2. 翌月以降で最初にデータがある月を探す
+		$future_month = self::findNextAvailableMonth( $tour_id, $next_month );
+		if ( $future_month ) {
+			return $future_month;
+		}
+
+		// 3. 翌月以降にデータがない場合、過去で最新の月を探す
+		$past_month = self::findLatestPastMonth( $tour_id, $current_month );
+		if ( $past_month ) {
+			return $past_month;
+		}
+
+		// 4. 全てのデータが現在月より後の場合、最初の利用可能月
+		return $available_months[0];
+	}
+
+	/**
+	 * ツアーの利用可能月一覧を取得
+	 *
+	 * @param string $tour_id ツアーID
+	 * @return array YYYY-MM形式の月配列（昇順）
+	 */
+	public static function getAvailableMonths( $tour_id ) {
+		static $cache = array();
+
+		if ( isset( $cache[ $tour_id ] ) ) {
+			return $cache[ $tour_id ];
+		}
+
+		$repo = NS_Tour_Price_Repo::getInstance();
+		$seasons = $repo->getSeasons( $tour_id );
+
+		$months = array();
+
+		foreach ( $seasons as $season ) {
+			$start_date = self::normalize_date( $season['date_start'] );
+			$end_date = self::normalize_date( $season['date_end'] );
+
+			if ( $start_date && $end_date ) {
+				$current = DateTime::createFromFormat( 'Y-m-d', $start_date );
+				$end = DateTime::createFromFormat( 'Y-m-d', $end_date );
+
+				if ( $current && $end ) {
+					while ( $current <= $end ) {
+						$month_key = $current->format( 'Y-m' );
+						if ( ! in_array( $month_key, $months, true ) ) {
+							$months[] = $month_key;
+						}
+						$current->modify( '+1 month' );
+					}
+				}
+			}
+		}
+
+		// 昇順にソート
+		sort( $months );
+
+		$cache[ $tour_id ] = $months;
+		return $months;
+	}
+
+	/**
+	 * 指定月以降で最初の利用可能月を探す
+	 *
+	 * @param string $tour_id ツアーID
+	 * @param string $from_month YYYY-MM形式の開始月
+	 * @return string|null 見つかった月、またはnull
+	 */
+	public static function findNextAvailableMonth( $tour_id, $from_month ) {
+		$available_months = self::getAvailableMonths( $tour_id );
+
+		foreach ( $available_months as $month ) {
+			if ( $month >= $from_month ) {
+				return $month;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * 指定月以前で最新の利用可能月を探す
+	 *
+	 * @param string $tour_id ツアーID
+	 * @param string $before_month YYYY-MM形式の基準月
+	 * @return string|null 見つかった月、またはnull
+	 */
+	public static function findLatestPastMonth( $tour_id, $before_month ) {
+		$available_months = self::getAvailableMonths( $tour_id );
+
+		// 降順で探索
+		$past_months = array_reverse( $available_months );
+
+		foreach ( $past_months as $month ) {
+			if ( $month < $before_month ) {
+				return $month;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * 利用可能月のキャッシュをクリア
+	 */
+	public static function clearAvailableMonthsCache() {
+		// 静的キャッシュはリクエスト終了時に自動クリアされるため
+		// 必要に応じて将来的にTransientキャッシュに移行可能
 	}
 }

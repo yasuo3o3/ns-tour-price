@@ -255,9 +255,9 @@ class NS_Tour_Price {
 		$args['heatmap'] = filter_var( $args['heatmap'], FILTER_VALIDATE_BOOLEAN );
 		$args['duration'] = intval( $args['duration'] );
 
-		// 月を解決（QueryString > 属性 > 現在月の優先順位）
+		// 月を解決（QueryString > 属性 > スマートデフォルト月の優先順位）
 		// 注意: CalendarBuilder でも実行されるが、統一性のためここでも適用
-		$args['month'] = NS_Tour_Price_Helpers::resolve_month( $args['month'] );
+		$args['month'] = NS_Tour_Price_Helpers::resolve_month( $args['month'], $args['tour'] );
 
 		// 日数を解決（QueryString > 属性 > 最小値の優先順位）
 		$repo = NS_Tour_Price_Repo::getInstance();
@@ -357,8 +357,8 @@ function ns_tour_price_render_block( $attributes ) {
 	$args['confirmed_only'] = $args['confirmedOnly'];
 	unset( $args['showLegend'], $args['confirmedOnly'] );
 
-	// 月を解決（QueryString > 属性 > 現在月の優先順位）
-	$args['month'] = NS_Tour_Price_Helpers::resolve_month( $args['month'] );
+	// 月を解決（QueryString > 属性 > スマートデフォルト月の優先順位）
+	$args['month'] = NS_Tour_Price_Helpers::resolve_month( $args['month'], $args['tour'] );
 
 	// 日数を解決（QueryString > 属性 > 最小値の優先順位）
 	$repo = NS_Tour_Price_Repo::getInstance();

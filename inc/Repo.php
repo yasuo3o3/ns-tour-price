@@ -796,6 +796,9 @@ class NS_Tour_Price_Repo {
 		$this->aliases_cache = array();
 		$this->statistics_logged = array(); // 統計ログも再出力可能にリセット
 
+		// スマートデフォルト月のキャッシュもクリア
+		NS_Tour_Price_Helpers::clearAvailableMonthsCache();
+
 		// 他のキャッシュもクリア
 		delete_transient( 'ns_tour_price_calendar_cache' );
 		
