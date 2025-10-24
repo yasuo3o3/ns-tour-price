@@ -2,7 +2,7 @@
 /**
  * Plugin Name: NS Tour Price Calendar
  * Description: ツアー価格カレンダーを表示するWordPressプラグイン。CSV二段階探索とヒートマップ表示に対応。
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: Netservice
  * Author URI: https://netservice.jp/
  * License: GPL v2 or later
