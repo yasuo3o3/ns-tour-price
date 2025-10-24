@@ -53,3 +53,5 @@ wp-config.php
 .history/
 .claude/
 CLAUDE.md
+
+/zips/
