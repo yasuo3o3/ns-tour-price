@@ -294,7 +294,7 @@ class NS_Tour_Price {
 	}
 
 	public function enqueue_admin_assets( $hook ) {
-		if ( 'tools_page_ns-tour-price' !== $hook ) {
+		if ( 'settings_page_ns-tour-price' !== $hook ) {
 			return;
 		}
 

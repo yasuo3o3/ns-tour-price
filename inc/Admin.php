@@ -26,7 +26,7 @@ class NS_Tour_Price_Admin {
 	}
 
 	public function addAdminMenu() {
-		add_management_page(
+		add_options_page(
 			__( 'NS Tour Price Settings', 'ns-tour_price' ),
 			__( 'NS Tour Price', 'ns-tour_price' ),
 			'manage_options',
@@ -178,12 +178,40 @@ class NS_Tour_Price_Admin {
 			);
 		}
 
+		$current_tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'settings';
+		$tabs = array(
+			'settings' => __( 'Settings', 'ns-tour_price' ),
+			'csv' => __( 'CSV Management', 'ns-tour_price' )
+		);
+
 		$data_source_info = $this->repo->getDataSourceInfo();
 		$is_data_available = $this->repo->isDataAvailable();
 		?>
 		<div class="wrap">
 			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
-			
+
+			<nav class="nav-tab-wrapper">
+				<?php foreach ( $tabs as $tab_key => $tab_label ) : ?>
+					<a href="<?php echo esc_url( add_query_arg( 'tab', $tab_key, admin_url( 'options-general.php?page=ns-tour-price' ) ) ); ?>"
+					   class="nav-tab <?php echo $current_tab === $tab_key ? 'nav-tab-active' : ''; ?>">
+						<?php echo esc_html( $tab_label ); ?>
+					</a>
+				<?php endforeach; ?>
+			</nav>
+
+			<?php if ( $current_tab === 'csv' ) : ?>
+				<?php $this->renderCsvManagementTab(); ?>
+			<?php else : ?>
+				<?php $this->renderSettingsTab( $data_source_info, $is_data_available ); ?>
+			<?php endif; ?>
+		</div>
+		<?php
+	}
+
+	private function renderSettingsTab( $data_source_info, $is_data_available ) {
+		?>
+		<div class="tab-content">
+
 			<?php settings_errors( 'ns_tour_price_messages' ); ?>
 
 			<div class="notice notice-info">
@@ -473,7 +501,206 @@ A1,WINTER,WINTER</pre>
 			});
 		});
 		</script>
+		</div>
 		<?php
+	}
+
+	private function renderCsvManagementTab() {
+		$csv_files = array(
+			'base_prices.csv' => __( 'Base Prices', 'ns-tour_price' ),
+			'seasons.csv' => __( 'Seasons', 'ns-tour_price' ),
+			'daily_flags.csv' => __( 'Daily Flags', 'ns-tour_price' ),
+			'solo_fees.csv' => __( 'Solo Fees', 'ns-tour_price' ),
+			'tour_options.csv' => __( 'Tour Options', 'ns-tour_price' ),
+			'tours.csv' => __( 'Tours', 'ns-tour_price' ),
+		);
+
+		if ( isset( $_POST['upload_csv'] ) && wp_verify_nonce( $_POST['_wpnonce'], 'ns_tour_price_upload_csv' ) ) {
+			$this->handleCsvUpload();
+		}
+
+		if ( isset( $_POST['delete_csv'] ) && wp_verify_nonce( $_POST['_wpnonce'], 'ns_tour_price_delete_csv' ) ) {
+			$this->handleCsvDelete();
+		}
+		?>
+		<div class="tab-content">
+			<h2><?php esc_html_e( 'CSV File Management', 'ns-tour_price' ); ?></h2>
+
+			<div class="notice notice-info">
+				<p><?php esc_html_e( 'Manage CSV data files. Upload new files or delete existing ones. Files are automatically backed up before replacement.', 'ns-tour_price' ); ?></p>
+			</div>
+
+			<!-- Current CSV Files Status -->
+			<div class="card">
+				<h3><?php esc_html_e( 'Current CSV Files', 'ns-tour_price' ); ?></h3>
+				<table class="widefat fixed">
+					<thead>
+						<tr>
+							<th><?php esc_html_e( 'File', 'ns-tour_price' ); ?></th>
+							<th><?php esc_html_e( 'Status', 'ns-tour_price' ); ?></th>
+							<th><?php esc_html_e( 'Rows', 'ns-tour_price' ); ?></th>
+							<th><?php esc_html_e( 'Last Modified', 'ns-tour_price' ); ?></th>
+							<th><?php esc_html_e( 'Actions', 'ns-tour_price' ); ?></th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php foreach ( $csv_files as $filename => $label ) : ?>
+							<?php
+							$file_path = NS_TOUR_PRICE_PLUGIN_DIR . 'data/' . $filename;
+							$file_exists = file_exists( $file_path );
+							$row_count = 0;
+							$last_modified = '';
+
+							if ( $file_exists ) {
+								$row_count = max( 0, count( file( $file_path ) ) - 1 ); // -1 for header
+								$last_modified = date( 'Y-m-d H:i:s', filemtime( $file_path ) );
+							}
+							?>
+							<tr>
+								<td><strong><?php echo esc_html( $label ); ?></strong><br><code><?php echo esc_html( $filename ); ?></code></td>
+								<td>
+									<?php if ( $file_exists ) : ?>
+										<span style="color: green;">✅ <?php esc_html_e( 'Exists', 'ns-tour_price' ); ?></span>
+									<?php else : ?>
+										<span style="color: red;">❌ <?php esc_html_e( 'Missing', 'ns-tour_price' ); ?></span>
+									<?php endif; ?>
+								</td>
+								<td><?php echo $file_exists ? esc_html( number_format( $row_count ) ) : '-'; ?></td>
+								<td><?php echo $file_exists ? esc_html( $last_modified ) : '-'; ?></td>
+								<td>
+									<?php if ( $file_exists ) : ?>
+										<form method="post" style="display: inline;">
+											<?php wp_nonce_field( 'ns_tour_price_delete_csv' ); ?>
+											<input type="hidden" name="filename" value="<?php echo esc_attr( $filename ); ?>">
+											<button type="submit" name="delete_csv" class="button button-secondary"
+													onclick="return confirm('<?php esc_attr_e( 'Are you sure you want to delete this file? This action cannot be undone.', 'ns-tour_price' ); ?>')">
+												<?php esc_html_e( 'Delete', 'ns-tour_price' ); ?>
+											</button>
+										</form>
+									<?php endif; ?>
+								</td>
+							</tr>
+						<?php endforeach; ?>
+					</tbody>
+				</table>
+			</div>
+
+			<!-- Upload CSV Files -->
+			<div class="card">
+				<h3><?php esc_html_e( 'Upload CSV File', 'ns-tour_price' ); ?></h3>
+				<form method="post" enctype="multipart/form-data">
+					<?php wp_nonce_field( 'ns_tour_price_upload_csv' ); ?>
+					<table class="form-table">
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Select CSV File', 'ns-tour_price' ); ?></th>
+							<td>
+								<input type="file" name="csv_file" accept=".csv" required>
+								<p class="description"><?php esc_html_e( 'Select a CSV file to upload. The filename will determine which data it replaces.', 'ns-tour_price' ); ?></p>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Backup Option', 'ns-tour_price' ); ?></th>
+							<td>
+								<label>
+									<input type="checkbox" name="create_backup" value="1" checked>
+									<?php esc_html_e( 'Create backup of existing file before replacement', 'ns-tour_price' ); ?>
+								</label>
+							</td>
+						</tr>
+					</table>
+					<p class="submit">
+						<button type="submit" name="upload_csv" class="button button-primary">
+							<?php esc_html_e( 'Upload CSV', 'ns-tour_price' ); ?>
+						</button>
+					</p>
+				</form>
+			</div>
+
+			<!-- CSV Format Information -->
+			<div class="card">
+				<h3><?php esc_html_e( 'CSV Format Requirements', 'ns-tour_price' ); ?></h3>
+				<details>
+					<summary><?php esc_html_e( 'Click to view required formats for each CSV file', 'ns-tour_price' ); ?></summary>
+					<div style="margin-top: 10px;">
+						<?php foreach ( $csv_files as $filename => $label ) : ?>
+							<h4><?php echo esc_html( $label ); ?> (<?php echo esc_html( $filename ); ?>)</h4>
+							<?php $this->renderCsvFormatInfo( $filename ); ?>
+						<?php endforeach; ?>
+					</div>
+				</details>
+			</div>
+		</div>
+		<?php
+	}
+
+	private function handleCsvUpload() {
+		if ( ! isset( $_FILES['csv_file'] ) || $_FILES['csv_file']['error'] !== UPLOAD_ERR_OK ) {
+			add_settings_error( 'ns_tour_price_messages', 'upload_error', __( 'File upload failed.', 'ns-tour_price' ), 'error' );
+			return;
+		}
+
+		$uploaded_file = $_FILES['csv_file'];
+		$filename = sanitize_file_name( $uploaded_file['name'] );
+
+		// Check if it's a valid CSV file
+		if ( pathinfo( $filename, PATHINFO_EXTENSION ) !== 'csv' ) {
+			add_settings_error( 'ns_tour_price_messages', 'invalid_file', __( 'Please upload a CSV file.', 'ns-tour_price' ), 'error' );
+			return;
+		}
+
+		$target_path = NS_TOUR_PRICE_PLUGIN_DIR . 'data/' . $filename;
+
+		// Create backup if requested and file exists
+		if ( ! empty( $_POST['create_backup'] ) && file_exists( $target_path ) ) {
+			$backup_path = $target_path . '.backup.' . date( 'Y-m-d-H-i-s' );
+			if ( ! copy( $target_path, $backup_path ) ) {
+				add_settings_error( 'ns_tour_price_messages', 'backup_failed', __( 'Failed to create backup.', 'ns-tour_price' ), 'error' );
+				return;
+			}
+		}
+
+		// Move uploaded file
+		if ( move_uploaded_file( $uploaded_file['tmp_name'], $target_path ) ) {
+			// Clear cache after successful upload
+			$this->repo->clearCache();
+			add_settings_error( 'ns_tour_price_messages', 'upload_success',
+				sprintf( __( 'CSV file %s uploaded successfully.', 'ns-tour_price' ), $filename ), 'updated' );
+		} else {
+			add_settings_error( 'ns_tour_price_messages', 'upload_failed', __( 'Failed to save uploaded file.', 'ns-tour_price' ), 'error' );
+		}
+	}
+
+	private function handleCsvDelete() {
+		$filename = sanitize_file_name( $_POST['filename'] );
+		$file_path = NS_TOUR_PRICE_PLUGIN_DIR . 'data/' . $filename;
+
+		if ( ! file_exists( $file_path ) ) {
+			add_settings_error( 'ns_tour_price_messages', 'file_not_found', __( 'File not found.', 'ns-tour_price' ), 'error' );
+			return;
+		}
+
+		if ( unlink( $file_path ) ) {
+			$this->repo->clearCache();
+			add_settings_error( 'ns_tour_price_messages', 'delete_success',
+				sprintf( __( 'CSV file %s deleted successfully.', 'ns-tour_price' ), $filename ), 'updated' );
+		} else {
+			add_settings_error( 'ns_tour_price_messages', 'delete_failed', __( 'Failed to delete file.', 'ns-tour_price' ), 'error' );
+		}
+	}
+
+	private function renderCsvFormatInfo( $filename ) {
+		$formats = array(
+			'base_prices.csv' => 'tour_id,season_code,duration_days,price',
+			'seasons.csv' => 'tour_id,season_code,label,date_start,date_end',
+			'daily_flags.csv' => 'tour_id,date,is_confirmed,note',
+			'solo_fees.csv' => 'tour_id,duration_days,solo_fee',
+			'tour_options.csv' => 'tour_id,option_id,option_label,price_min,price_max,show_price,description,image_url,affects_total',
+			'tours.csv' => 'tour_id,tour_name,description,category,status'
+		);
+
+		if ( isset( $formats[ $filename ] ) ) {
+			echo '<pre style="background: #f1f1f1; padding: 8px; border-radius: 3px; font-size: 12px;">' . esc_html( $formats[ $filename ] ) . '</pre>';
+		}
 	}
 
 	public function generalSectionCallback() {
