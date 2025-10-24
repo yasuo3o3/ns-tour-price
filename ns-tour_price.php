@@ -97,7 +97,7 @@ class NS_Tour_Price {
 					'required' => false,
 					'type' => 'string',
 					'sanitize_callback' => 'sanitize_text_field',
-					'default' => gmdate( 'Y-m' ),
+					'default' => null,
 				),
 				'duration' => array(
 					'required' => false,
@@ -171,9 +171,17 @@ class NS_Tour_Price {
 	}
 
 	public function rest_calendar_callback( $request ) {
+		$tour = $request->get_param( 'tour' ) ?: 'A1';
+		$month = $request->get_param( 'month' );
+
+		// monthパラメータが未指定の場合、スマートデフォルト月を使用
+		if ( empty( $month ) ) {
+			$month = NS_Tour_Price_Helpers::getSmartDefaultMonth( $tour );
+		}
+
 		$args = array(
-			'tour' => $request->get_param( 'tour' ),
-			'month' => $request->get_param( 'month' ),
+			'tour' => $tour,
+			'month' => $month,
 			'duration' => $request->get_param( 'duration' ),
 			'heatmap' => $request->get_param( 'heatmap' ),
 			'confirmed_only' => $request->get_param( 'confirmed_only' ),

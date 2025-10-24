@@ -268,18 +268,20 @@ class NS_Tour_Price_Helpers {
 	 * @return string YYYY-MM形式の月文字列
 	 */
 	public static function resolve_month( $attr_month, $tour_id = 'A1' ) {
-		// ① $_GET['tpc_month'] が最優先
+		$available_months = self::getAvailableMonths( $tour_id );
+
+		// ① $_GET['tpc_month'] が最優先（データ存在チェック付き）
 		if ( ! empty( $_GET['tpc_month'] ) ) {
 			$get_month = sanitize_text_field( wp_unslash( $_GET['tpc_month'] ) );
-			if ( self::validateMonth( $get_month ) ) {
+			if ( self::validateMonth( $get_month ) && in_array( $get_month, $available_months, true ) ) {
 				return $get_month;
 			}
 		}
 
-		// ② 属性の month
+		// ② 属性の month（データ存在チェック付き）
 		if ( ! empty( $attr_month ) ) {
 			$attr_month = sanitize_text_field( $attr_month );
-			if ( self::validateMonth( $attr_month ) ) {
+			if ( self::validateMonth( $attr_month ) && in_array( $attr_month, $available_months, true ) ) {
 				return $attr_month;
 			}
 		}
