@@ -93,16 +93,15 @@ class NS_Tour_Price {
 		if ( class_exists( 'NS_Tour_Price_Rest' ) ) {
 			add_action( 'rest_api_init', array( 'NS_Tour_Price_Rest', 'register_routes' ) );
 		}
-		add_action( 'wp_ajax_ns_tour_price_clear_cache', array( 'NS_Tour_Price_Admin', 'ajax_clear_cache' ) );
-		add_action( 'wp_ajax_ns_tour_price_test_data', array( 'NS_Tour_Price_Admin', 'ajax_test_data' ) );
-		add_action( 'wp_ajax_ns_tour_price_upload_csv', array( 'NS_Tour_Price_Admin', 'ajax_upload_csv' ) );
-		add_action( 'wp_ajax_ns_tour_price_delete_csv', array( 'NS_Tour_Price_Admin', 'ajax_delete_csv' ) );
-
 		// ショートコード登録
 		add_shortcode( 'ns_tour_price_calendar', array( $this, 'shortcode_calendar' ) );
 
 		// WordPress管理画面初期化
-		new NS_Tour_Price_Admin();
+		$admin = new NS_Tour_Price_Admin();
+
+		// AJAXフックはインスタンス作成後に登録
+		add_action( 'wp_ajax_ns_tour_price_clear_cache', array( $admin, 'ajaxClearCache' ) );
+		add_action( 'wp_ajax_ns_tour_price_test_data', array( $admin, 'ajaxTestData' ) );
 	}
 
 	public function enqueue_frontend_assets() {
