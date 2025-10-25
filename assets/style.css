@@ -659,6 +659,11 @@
 
 /* 人数コントロール */
 .tpc-pax-controls {
+    display: block;
+}
+
+/* 旧式のボタン型人数コントロール（使用時のみ適用） */
+.tpc-pax-controls.tpc-pax-controls--buttons {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -691,13 +696,27 @@
 }
 
 .tpc-pax-input {
-    width: 80px;
+    width: 120px;
     padding: 8px 12px;
     border: 2px solid #e2e8f0;
     border-radius: 8px;
-    text-align: center;
     font-size: 1.1em;
     font-weight: 600;
+    background: white;
+    cursor: pointer;
+}
+
+/* セレクトボックス専用スタイル */
+select.tpc-pax-input {
+    width: 120px;
+    text-align: left;
+    appearance: menulist;
+}
+
+/* 数値入力専用スタイル（ボタン式の場合） */
+input[type="number"].tpc-pax-input {
+    width: 80px;
+    text-align: center;
 }
 
 .tpc-pax-input:focus {
@@ -894,7 +913,7 @@
         justify-content: center;
     }
 
-    .tpc-pax-controls {
+    .tpc-pax-controls.tpc-pax-controls--buttons {
         justify-content: center;
     }
 
