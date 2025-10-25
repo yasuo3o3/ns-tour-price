@@ -189,6 +189,14 @@ class NS_Tour_Price {
 
 	public function activate() {
 		// アクティベーション時の処理
+		// 必要なクラスファイルを読み込み
+		if ( ! class_exists( 'NS_Tour_Price_Migration' ) ) {
+			require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Migration.php';
+		}
+		if ( ! class_exists( 'NS_Tour_Price_Repo' ) ) {
+			require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Repo.php';
+		}
+
 		$migration = new NS_Tour_Price_Migration();
 		$migration->check_and_migrate();
 
@@ -200,6 +208,10 @@ class NS_Tour_Price {
 
 	public function deactivate() {
 		// ディアクティベーション時の処理
+		if ( ! class_exists( 'NS_Tour_Price_Repo' ) ) {
+			require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Repo.php';
+		}
+
 		NS_Tour_Price_Repo::clear_cache();
 		flush_rewrite_rules();
 	}
