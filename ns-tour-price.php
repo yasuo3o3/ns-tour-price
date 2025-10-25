@@ -68,7 +68,11 @@ class NS_Tour_Price {
 			require_once $migration_file;
 		}
 
-		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'blocks/price-calendar/index.php';
+		// Gutenberg ブロック（存在する場合のみ）
+		$block_file = NS_TOUR_PRICE_PLUGIN_DIR . 'blocks/price-calendar/index.php';
+		if ( file_exists( $block_file ) ) {
+			require_once $block_file;
+		}
 	}
 
 	private function hooks() {
