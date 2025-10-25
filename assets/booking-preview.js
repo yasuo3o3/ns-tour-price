@@ -23,7 +23,7 @@
             active: 'active',
         },
         API: {
-            endpoint: '/wp-json/ns-tour-price/v1/price-calc',
+            endpoint: '/wp-json/ns-tour-price/v1/quote',
             timeout: 10000,
         },
         LIMITS: {

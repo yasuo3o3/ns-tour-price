@@ -89,10 +89,8 @@ class NS_Tour_Price {
 		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_editor_assets' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_assets' ) );
 
-		// REST API クラスが存在する場合のみ登録
-		if ( class_exists( 'NS_Tour_Price_Rest' ) ) {
-			add_action( 'rest_api_init', array( 'NS_Tour_Price_Rest', 'register_routes' ) );
-		}
+		// REST API ルートを登録
+		add_action( 'rest_api_init', array( 'NS_Tour_Price_Rest', 'register_routes' ) );
 		// ショートコード登録
 		add_shortcode( 'ns_tour_price_calendar', array( $this, 'shortcode_calendar' ) );
 
