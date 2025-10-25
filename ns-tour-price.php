@@ -204,13 +204,25 @@ class NS_Tour_Price {
 
 	public function activate() {
 		// アクティベーション時の処理
-		// 必要なクラスファイルを読み込み
+		// 必要なクラスファイルを依存関係順に読み込み
+
+		// Loader.php（Repoクラスの依存関係）
+		if ( ! class_exists( 'NS_Tour_Price_Loader' ) ) {
+			$loader_file = NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Loader.php';
+			if ( file_exists( $loader_file ) ) {
+				require_once $loader_file;
+			}
+		}
+
+		// Repo.php
+		if ( ! class_exists( 'NS_Tour_Price_Repo' ) ) {
+			require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Repo.php';
+		}
+
+		// Migration.php
 		$migration_file = NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Migration.php';
 		if ( file_exists( $migration_file ) && ! class_exists( 'NS_Tour_Price_Migration' ) ) {
 			require_once $migration_file;
-		}
-		if ( ! class_exists( 'NS_Tour_Price_Repo' ) ) {
-			require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Repo.php';
 		}
 
 		// マイグレーション実行（ファイルが存在する場合のみ）
@@ -230,12 +242,24 @@ class NS_Tour_Price {
 
 	public function deactivate() {
 		// ディアクティベーション時の処理
+
+		// Loader.php（Repoクラスの依存関係）
+		if ( ! class_exists( 'NS_Tour_Price_Loader' ) ) {
+			$loader_file = NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Loader.php';
+			if ( file_exists( $loader_file ) ) {
+				require_once $loader_file;
+			}
+		}
+
+		// Repo.php
 		if ( ! class_exists( 'NS_Tour_Price_Repo' ) ) {
 			require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Repo.php';
 		}
 
-		$repo = NS_Tour_Price_Repo::getInstance();
-		$repo->clearCache();
+		if ( class_exists( 'NS_Tour_Price_Repo' ) ) {
+			$repo = NS_Tour_Price_Repo::getInstance();
+			$repo->clearCache();
+		}
 		flush_rewrite_rules();
 	}
 }
