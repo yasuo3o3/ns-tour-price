@@ -221,7 +221,8 @@ class NS_Tour_Price {
 
 		// キャッシュクリア
 		if ( class_exists( 'NS_Tour_Price_Repo' ) ) {
-			NS_Tour_Price_Repo::clear_cache();
+			$repo = NS_Tour_Price_Repo::getInstance();
+			$repo->clearCache();
 		}
 
 		flush_rewrite_rules();
@@ -233,7 +234,8 @@ class NS_Tour_Price {
 			require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Repo.php';
 		}
 
-		NS_Tour_Price_Repo::clear_cache();
+		$repo = NS_Tour_Price_Repo::getInstance();
+		$repo->clearCache();
 		flush_rewrite_rules();
 	}
 }
