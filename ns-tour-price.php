@@ -206,17 +206,21 @@ class NS_Tour_Price {
 		// アクティベーション時の処理
 		// 必要なクラスファイルを依存関係順に読み込み
 
-		// Loader.php（Repoクラスの依存関係）
-		if ( ! class_exists( 'NS_Tour_Price_Loader' ) ) {
-			$loader_file = NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Loader.php';
-			if ( file_exists( $loader_file ) ) {
-				require_once $loader_file;
-			}
-		}
+		// 基底インターフェースとデータソースクラス
+		$required_files = array(
+			'inc/DataSourceInterface.php',
+			'inc/DataSourceCsv.php',
+			'inc/DataSourceSheets.php',
+			'inc/Loader.php',
+			'inc/Helpers.php',
+			'inc/Repo.php'
+		);
 
-		// Repo.php
-		if ( ! class_exists( 'NS_Tour_Price_Repo' ) ) {
-			require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Repo.php';
+		foreach ( $required_files as $file ) {
+			$filepath = NS_TOUR_PRICE_PLUGIN_DIR . $file;
+			if ( file_exists( $filepath ) ) {
+				require_once $filepath;
+			}
 		}
 
 		// Migration.php
@@ -243,17 +247,21 @@ class NS_Tour_Price {
 	public function deactivate() {
 		// ディアクティベーション時の処理
 
-		// Loader.php（Repoクラスの依存関係）
-		if ( ! class_exists( 'NS_Tour_Price_Loader' ) ) {
-			$loader_file = NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Loader.php';
-			if ( file_exists( $loader_file ) ) {
-				require_once $loader_file;
-			}
-		}
+		// 必要なクラスファイルを読み込み
+		$required_files = array(
+			'inc/DataSourceInterface.php',
+			'inc/DataSourceCsv.php',
+			'inc/DataSourceSheets.php',
+			'inc/Loader.php',
+			'inc/Helpers.php',
+			'inc/Repo.php'
+		);
 
-		// Repo.php
-		if ( ! class_exists( 'NS_Tour_Price_Repo' ) ) {
-			require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Repo.php';
+		foreach ( $required_files as $file ) {
+			$filepath = NS_TOUR_PRICE_PLUGIN_DIR . $file;
+			if ( file_exists( $filepath ) ) {
+				require_once $filepath;
+			}
 		}
 
 		if ( class_exists( 'NS_Tour_Price_Repo' ) ) {
