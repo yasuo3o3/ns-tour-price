@@ -50,8 +50,12 @@ $selected_options = (array) ( $args['options'] ?? array() );
 				<div class="tpc-info-item">
 					<label><?php esc_html_e( '旅行日付', 'ns-tour-price' ); ?></label>
 					<div class="tpc-info-value">
-						<strong><?php echo esc_html( date_i18n( 'Y年n月j日', strtotime( $date ) ) ); ?></strong>
-						<span class="tpc-weekday">(<?php echo esc_html( date_i18n( 'l', strtotime( $date ) ) ); ?>)</span>
+						<strong data-tpc-date><?php
+							echo esc_html( $date ? date_i18n( 'Y年n月j日', strtotime( $date ) ) : '未選択' );
+						?></strong>
+						<span class="tpc-weekday" data-tpc-weekday><?php
+							echo $date ? '(' . esc_html( date_i18n( 'l', strtotime( $date ) ) ) . ')' : '';
+						?></span>
 					</div>
 				</div>
 
@@ -59,8 +63,9 @@ $selected_options = (array) ( $args['options'] ?? array() );
 				<div class="tpc-info-item">
 					<label><?php esc_html_e( 'シーズン', 'ns-tour-price' ); ?></label>
 					<div class="tpc-info-value">
-						<span class="tpc-season-badge" 
-							  data-season="<?php echo esc_attr( $season_info['season_code'] ); ?>">
+						<span class="tpc-season-badge"
+							  data-season="<?php echo esc_attr( $season_info['season_code'] ); ?>"
+							  data-tpc-season>
 							<?php echo esc_html( $season_info['season_label'] ); ?>
 						</span>
 					</div>
@@ -107,19 +112,17 @@ $selected_options = (array) ( $args['options'] ?? array() );
 		<!-- 人数選択 -->
 		<div class="tpc-booking-section tpc-pax-section">
 			<h4 class="tpc-section-title"><?php esc_html_e( '人数（ご本人含む）', 'ns-tour-price' ); ?></h4>
-			
+
 			<div class="tpc-pax-controls">
-				<button type="button" class="tpc-pax-btn tpc-pax-minus" data-action="minus">−</button>
-				<input type="number" 
-					   name="pax" 
-					   class="tpc-pax-input" 
-					   value="<?php echo esc_attr( $pax ); ?>" 
-					   min="1" 
-					   max="20">
-				<button type="button" class="tpc-pax-btn tpc-pax-plus" data-action="plus">＋</button>
-				<span class="tpc-pax-unit">名様</span>
+				<select name="pax" class="tpc-pax-input" data-tpc-pax>
+					<?php for ( $i = 1; $i <= 6; $i++ ) : ?>
+						<option value="<?php echo esc_attr( $i ); ?>" <?php selected( $i, $pax ); ?>>
+							<?php printf( esc_html__( '%d名', 'ns-tour-price' ), $i ); ?>
+						</option>
+					<?php endfor; ?>
+				</select>
 			</div>
-			
+
 			<?php if ( $pax === 1 ) : ?>
 				<p class="tpc-pax-notice">
 					<small><?php esc_html_e( 'お一人様参加の場合は追加料金が発生します', 'ns-tour-price' ); ?></small>

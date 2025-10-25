@@ -677,6 +677,7 @@
         findElements: function() {
             this.els = {
                 date: document.querySelector('[data-tpc-date]'),
+                weekday: document.querySelector('[data-tpc-weekday]'),
                 season: document.querySelector('[data-tpc-season]'),
                 base: document.querySelector('[data-tpc-base]'),
                 solo: document.querySelector('[data-tpc-solo]'),
@@ -837,9 +838,12 @@
         
         renderQuote: function(data) {
             console.log('Quote data received:', data); // デバッグ用
-            
+
             if (this.els.date) {
                 this.els.date.textContent = this.formatDateJP(this.state.date);
+            }
+            if (this.els.weekday) {
+                this.els.weekday.textContent = this.formatWeekdayJP(this.state.date);
             }
             if (this.els.season) {
                 this.els.season.textContent = data.season_code ? 'シーズン: ' + data.season_code : '';
@@ -898,6 +902,9 @@
             if (this.els.date) {
                 this.els.date.textContent = '未選択';
             }
+            if (this.els.weekday) {
+                this.els.weekday.textContent = '';
+            }
             if (this.els.season) {
                 this.els.season.textContent = '';
             }
@@ -928,11 +935,22 @@
         formatDateJP: function(dateStr) {
             try {
                 const date = new Date(dateStr);
+                const year = date.getFullYear();
                 const month = date.getMonth() + 1;
                 const day = date.getDate();
-                return month + '月' + day + '日';
+                return year + '年' + month + '月' + day + '日';
             } catch (e) {
                 return dateStr;
+            }
+        },
+
+        formatWeekdayJP: function(dateStr) {
+            try {
+                const date = new Date(dateStr);
+                const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+                return '(' + weekdays[date.getDay()] + ')';
+            } catch (e) {
+                return '';
             }
         },
         
