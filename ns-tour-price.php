@@ -50,6 +50,11 @@ class NS_Tour_Price {
 	}
 
 	private function includes() {
+		// 基底クラスから順に読み込み
+		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/DataSourceInterface.php';
+		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/DataSourceCsv.php';
+		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/DataSourceSheets.php';
+		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Loader.php';
 		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Helpers.php';
 		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Repo.php';
 		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Renderer.php';
