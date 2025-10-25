@@ -28,11 +28,13 @@ $year = $year ?? gmdate( 'Y' );
 	
 	<div class="tpc-annual-header">
 		<h3 class="tpc-annual-title">
-			<?php printf( 
-				esc_html__( '%d年 年間価格概要 - %s（%d日間）', 'ns-tour_price' ), 
-				$year, 
-				esc_html( $tour ), 
-				$duration 
+			<?php
+			/* translators: 1: year, 2: tour name, 3: duration in days */
+			printf(
+				esc_html__( '%1$d年 年間価格概要 - %2$s（%3$d日間）', 'ns-tour-price' ),
+				esc_html( absint( $year ) ),
+				esc_html( $tour ),
+				esc_html( absint( $duration ) )
 			); ?>
 		</h3>
 		<?php 
@@ -49,18 +51,18 @@ $year = $year ?? gmdate( 'Y' );
 				}
 			}
 			$percentage = $total_days > 0 ? ( $covered_days / $total_days * 100 ) : 0;
-			// 対象期間: <?php echo $covered_days; ?>日 / 全<?php echo $total_days; ?>日 (<?php echo number_format( $percentage, 1 ); ?>%)
+			// 対象期間: covered_days 日 / 全 total_days 日 (percentage %)
 		endif; 
 		?>
 	</div>
 
 	<?php if ( ! empty( $annual_calendar['months'] ) ) : ?>
 	<div class="tpc-annual-calendars">
-		<h4 class="tpc-section-title"><?php esc_html_e( '月別価格ヒートマップ', 'ns-tour_price' ); ?></h4>
+		<h4 class="tpc-section-title"><?php esc_html_e( '月別価格ヒートマップ', 'ns-tour-price' ); ?></h4>
 		
 		<?php if ( ! empty( $annual_calendar['heatmap']['colors'] ) ) : ?>
 		<div class="tpc-heatmap-legend">
-			<span class="legend-label"><?php esc_html_e( '価格帯:', 'ns-tour_price' ); ?></span>
+			<span class="legend-label"><?php esc_html_e( '価格帯:', 'ns-tour-price' ); ?></span>
 			<?php foreach ( $annual_calendar['heatmap']['colors'] as $i => $color ) : 
 				$bin = $annual_calendar['heatmap']['bins'][$i] ?? null;
 				if ( $bin ) :
@@ -68,7 +70,7 @@ $year = $year ?? gmdate( 'Y' );
 					$max_formatted = '¥' . number_format( $bin['max'] );
 					$label = ( $bin['min'] === $bin['max'] ) ? $min_formatted : $min_formatted . '～' . $max_formatted;
 				?>
-				<span class="legend-item hp-<?php echo $i; ?>" style="background-color: <?php echo esc_attr( $color ); ?>">
+				<span class="legend-item hp-<?php echo esc_attr( absint( $i ) ); ?>" style="background-color: <?php echo esc_attr( $color ); ?>">
 					<?php echo esc_html( $label ); ?>
 				</span>
 			<?php endif; endforeach; ?>
@@ -139,9 +141,9 @@ $year = $year ?? gmdate( 'Y' );
 			<table class="tpc-season-table">
 				<thead>
 					<tr>
-						<th><?php esc_html_e( 'シーズン', 'ns-tour_price' ); ?></th>
-						<th><?php esc_html_e( '期間', 'ns-tour_price' ); ?></th>
-						<th><?php esc_html_e( '料金', 'ns-tour_price' ); ?></th>
+						<th><?php esc_html_e( 'シーズン', 'ns-tour-price' ); ?></th>
+						<th><?php esc_html_e( '期間', 'ns-tour-price' ); ?></th>
+						<th><?php esc_html_e( '料金', 'ns-tour-price' ); ?></th>
 					</tr>
 				</thead>
 				<tbody>

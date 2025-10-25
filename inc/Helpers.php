@@ -94,7 +94,7 @@ class NS_Tour_Price_Helpers {
 		// 現在月を追加
 		$options[] = array(
 			'value' => $current->format( 'Y-m' ),
-			'label' => $current->format( 'Y年n月' ) . __( '（今月）', 'ns-tour_price' ),
+			'label' => $current->format( 'Y年n月' ) . __( '（今月）', 'ns-tour-price' ),
 			'is_current' => true,
 		);
 
@@ -122,9 +122,9 @@ class NS_Tour_Price_Helpers {
 		// とりあえず基本的なツアーIDリストを提供
 		// 実際の実装では、CSVから動的に取得するか設定で管理
 		$tour_ids = apply_filters( 'ns_tour_price_available_tours', array(
-			'A1' => __( 'ツアーA1', 'ns-tour_price' ),
-			'B2' => __( 'ツアーB2', 'ns-tour_price' ),
-			'C3' => __( 'ツアーC3', 'ns-tour_price' ),
+			'A1' => __( 'ツアーA1', 'ns-tour-price' ),
+			'B2' => __( 'ツアーB2', 'ns-tour-price' ),
+			'C3' => __( 'ツアーC3', 'ns-tour-price' ),
 		) );
 
 		$options = array();
@@ -143,7 +143,8 @@ class NS_Tour_Price_Helpers {
 		for ( $i = $min; $i <= $max; $i++ ) {
 			$options[] = array(
 				'value' => $i,
-				'label' => sprintf( __( '%d日間', 'ns-tour_price' ), $i ),
+				/* translators: %d is the number of days for tour duration */
+				'label' => sprintf( __( '%d日間', 'ns-tour-price' ), $i ),
 			);
 		}
 		return $options;
@@ -151,14 +152,14 @@ class NS_Tour_Price_Helpers {
 
 	public static function formatPrice( $price, $include_tax = true ) {
 		if ( null === $price || $price < 0 ) {
-			return __( '設定なし', 'ns-tour_price' );
+			return __( '設定なし', 'ns-tour-price' );
 		}
 
 		$formatted = number_format( $price );
 		$result = '¥' . $formatted;
 
 		if ( $include_tax && $price > 0 ) {
-			$result .= __( '（税込）', 'ns-tour_price' );
+			$result .= __( '（税込）', 'ns-tour-price' );
 		}
 
 		return apply_filters( 'ns_tour_price_price_format', $result, $price );

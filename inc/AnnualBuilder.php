@@ -43,7 +43,7 @@ class NS_Tour_Price_Annual_Builder {
 		// Repo依存を削除してデータ有無チェックを簡素化
 		// if ( ! $this->repo->isDataAvailable() ) {
 		//	return array(
-		//		'html' => $this->buildErrorView( __( 'データが見つかりません', 'ns-tour_price' ) ),
+		//		'html' => $this->buildErrorView( __( 'データが見つかりません', 'ns-tour-price' ) ),
 		//		'meta' => array(),
 		//	);
 		// }
@@ -489,16 +489,18 @@ class NS_Tour_Price_Annual_Builder {
 			
 			<div class="tpc-annual-header">
 				<h3 class="tpc-annual-title">
-					<?php printf( esc_html__( '%d年 年間価格概要 - %s（%d日間）', 'ns-tour_price' ), $year, esc_html( $tour ), $duration ); ?>
+					<?php
+					/* translators: 1: year, 2: tour name, 3: duration in days */
+					printf( esc_html__( '%1$d年 年間価格概要 - %2$s（%3$d日間）', 'ns-tour-price' ), esc_html( absint( $year ) ), esc_html( $tour ), esc_html( absint( $duration ) ) ); ?>
 				</h3>
 				<?php
 				// 対象期間統計をコメントとして保存
 				$percentage = $annual_data['total_days'] > 0 ? ( $annual_data['covered_days'] / $annual_data['total_days'] * 100 ) : 0;
-				printf( 
-					'<!-- 対象期間: %d日 / 全%d日 (%.1f%%) -->',
-					$annual_data['covered_days'],
-					$annual_data['total_days'],
-					$percentage
+				printf(
+					'<!-- 対象期間: %1$d日 / 全%2$d日 (%3$.1f%%) -->',
+					absint( $annual_data['covered_days'] ),
+					absint( $annual_data['total_days'] ),
+					number_format_i18n( $percentage, 1 )
 				);
 				?>
 			</div>
@@ -586,10 +588,14 @@ class NS_Tour_Price_Annual_Builder {
 						?>
 						<a href="<?php echo esc_attr( $tab_href ); ?>" 
 						   class="<?php echo esc_attr( implode( ' ', $tab_classes ) ); ?>" 
-						   data-duration="<?php echo esc_attr( $duration_option ); ?>"
+						   data-duration="<?php echo esc_attr( absint( $duration_option ) ); ?>"
 						   <?php if ( $is_active ) : ?>aria-current="page"<?php endif; ?>
-						   aria-label="<?php printf( esc_attr__( '%d日間に切替', 'ns-tour_price' ), $duration_option ); ?>">
-							<?php printf( esc_html__( '%d日間', 'ns-tour_price' ), $duration_option ); ?>
+						   aria-label="<?php
+						   /* translators: %d is the number of days for tour duration */
+						   printf( esc_attr__( '%d日間に切替', 'ns-tour-price' ), esc_attr( absint( $duration_option ) ) ); ?>">
+							<?php
+							/* translators: %d is the number of days for tour duration */
+							printf( esc_html__( '%d日間', 'ns-tour-price' ), esc_html( absint( $duration_option ) ) ); ?>
 						</a>
 					<?php endforeach; ?>
 				</div>
@@ -601,9 +607,9 @@ class NS_Tour_Price_Annual_Builder {
 					<table class="tpc-season-table">
 						<thead>
 							<tr>
-								<th><?php esc_html_e( 'シーズン', 'ns-tour_price' ); ?></th>
-								<th><?php esc_html_e( '期間', 'ns-tour_price' ); ?></th>
-								<th><?php esc_html_e( '料金', 'ns-tour_price' ); ?></th>
+								<th><?php esc_html_e( 'シーズン', 'ns-tour-price' ); ?></th>
+								<th><?php esc_html_e( '期間', 'ns-tour-price' ); ?></th>
+								<th><?php esc_html_e( '料金', 'ns-tour-price' ); ?></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -666,7 +672,7 @@ class NS_Tour_Price_Annual_Builder {
 	 */
 	private function formatPrice( $price ) {
 		if ( null === $price || $price <= 0 ) {
-			return __( '設定なし', 'ns-tour_price' );
+			return __( '設定なし', 'ns-tour-price' );
 		}
 
 		return '¥' . number_format( $price );
@@ -817,18 +823,18 @@ class NS_Tour_Price_Annual_Builder {
 	 */
 	private function getMonthName( $month ) {
 		$names = array(
-			1 => __( '1月', 'ns-tour_price' ),
-			2 => __( '2月', 'ns-tour_price' ),
-			3 => __( '3月', 'ns-tour_price' ),
-			4 => __( '4月', 'ns-tour_price' ),
-			5 => __( '5月', 'ns-tour_price' ),
-			6 => __( '6月', 'ns-tour_price' ),
-			7 => __( '7月', 'ns-tour_price' ),
-			8 => __( '8月', 'ns-tour_price' ),
-			9 => __( '9月', 'ns-tour_price' ),
-			10 => __( '10月', 'ns-tour_price' ),
-			11 => __( '11月', 'ns-tour_price' ),
-			12 => __( '12月', 'ns-tour_price' ),
+			1 => __( '1月', 'ns-tour-price' ),
+			2 => __( '2月', 'ns-tour-price' ),
+			3 => __( '3月', 'ns-tour-price' ),
+			4 => __( '4月', 'ns-tour-price' ),
+			5 => __( '5月', 'ns-tour-price' ),
+			6 => __( '6月', 'ns-tour-price' ),
+			7 => __( '7月', 'ns-tour-price' ),
+			8 => __( '8月', 'ns-tour-price' ),
+			9 => __( '9月', 'ns-tour-price' ),
+			10 => __( '10月', 'ns-tour-price' ),
+			11 => __( '11月', 'ns-tour-price' ),
+			12 => __( '12月', 'ns-tour-price' ),
 		);
 
 		return $names[ $month ] ?? (string) $month;

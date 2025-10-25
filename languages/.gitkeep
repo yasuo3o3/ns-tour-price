@@ -1,0 +1,2 @@
+# This file ensures that the languages directory is tracked by Git
+# The languages directory is required for WordPress plugin textdomain support

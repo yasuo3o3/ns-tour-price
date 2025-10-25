@@ -144,7 +144,8 @@ class NS_Tour_Price_Renderer {
 					$class = esc_attr( $legend_item['class'] );
 					$color = esc_attr( $legend_item['color'] );
 					$text_color = $this->getTextColor( $color );
-					echo ".ns-tour-price-calendar .{$class} { background-color: {$color}; color: {$text_color}; }\n";
+					printf( ".ns-tour-price-calendar .%s { background-color: %s; color: %s; }\n",
+						esc_attr( $class ), esc_attr( $color ), esc_attr( $text_color ) );
 				}
 			}
 			echo '</style>';
@@ -173,15 +174,17 @@ class NS_Tour_Price_Renderer {
 					   data-heatmap="<?php echo esc_attr( $args['heatmap'] ? '1' : '0' ); ?>"
 					   data-show-legend="<?php echo esc_attr( $args['show_legend'] ? '1' : '0' ); ?>"
 					   data-confirmed-only="<?php echo esc_attr( $args['confirmed_only'] ? '1' : '0' ); ?>"
-					   aria-label="<?php esc_attr_e( '前月', 'ns-tour_price' ); ?>">
+					   aria-label="<?php esc_attr_e( '前月', 'ns-tour-price' ); ?>">
 						<span class="tpc-nav__arrow">◀</span>
 					</a>
 					<h3 class="calendar-title">
-						<?php printf(
-							esc_html__( '%1$s年%2$s （%3$d日間）', 'ns-tour_price' ),
-							$month_data['year'],
-							$month_data['month_name'],
-							$args['duration']
+						<?php
+						/* translators: 1: year, 2: month name, 3: duration in days */
+						printf(
+							esc_html__( '%1$s年%2$s （%3$d日間）', 'ns-tour-price' ),
+							esc_html( absint( $month_data['year'] ) ),
+							esc_html( $month_data['month_name'] ),
+							esc_html( absint( $args['duration'] ) )
 						); ?>
 					</h3>
 					<a href="<?php echo esc_attr( $next_href ); ?>"
@@ -192,7 +195,7 @@ class NS_Tour_Price_Renderer {
 					   data-heatmap="<?php echo esc_attr( $args['heatmap'] ? '1' : '0' ); ?>"
 					   data-show-legend="<?php echo esc_attr( $args['show_legend'] ? '1' : '0' ); ?>"
 					   data-confirmed-only="<?php echo esc_attr( $args['confirmed_only'] ? '1' : '0' ); ?>"
-					   aria-label="<?php esc_attr_e( '翌月', 'ns-tour_price' ); ?>">
+					   aria-label="<?php esc_attr_e( '翌月', 'ns-tour-price' ); ?>">
 						<span class="tpc-nav__arrow">▶</span>
 					</a>
 				</div>
@@ -225,8 +228,12 @@ class NS_Tour_Price_Renderer {
 							   data-show-legend="<?php echo esc_attr( $args['show_legend'] ? '1' : '0' ); ?>"
 							   data-confirmed-only="<?php echo esc_attr( $args['confirmed_only'] ? '1' : '0' ); ?>"
 							   <?php if ( $is_active ) : ?>aria-current="page"<?php endif; ?>
-							   aria-label="<?php printf( esc_attr__( '%d日間に切替', 'ns-tour_price' ), $duration ); ?>">
-								<?php printf( esc_html__( '%d日間', 'ns-tour_price' ), $duration ); ?>
+							   aria-label="<?php
+							   /* translators: %d is the number of days for tour duration */
+							   printf( esc_attr__( '%d日間に切替', 'ns-tour-price' ), $duration ); ?>">
+								<?php
+								/* translators: %d is the number of days for tour duration */
+								printf( esc_html__( '%d日間', 'ns-tour-price' ), esc_html( absint( $duration ) ) ); ?>
 							</a>
 						<?php endforeach; ?>
 					</div>
@@ -235,8 +242,10 @@ class NS_Tour_Price_Renderer {
 
 			<?php if ( ! empty( $calendar_data['invalid_season_codes'] ) ) : ?>
 				<div class="tpc-alert tpc-alert--warn">
-					<?php printf(
-						esc_html__( '一部の season_code（%s）が seasons.csv に存在しません。価格表示が不完全になる可能性があります。', 'ns-tour_price' ),
+					<?php
+					/* translators: %s is a comma-separated list of invalid season codes */
+					printf(
+						esc_html__( '一部の season_code（%s）が seasons.csv に存在しません。価格表示が不完全になる可能性があります。', 'ns-tour-price' ),
 						esc_html( implode( ', ', $calendar_data['invalid_season_codes'] ) )
 					); ?>
 				</div>
@@ -253,7 +262,7 @@ class NS_Tour_Price_Renderer {
 					<?php foreach ( $grid as $week ) : ?>
 						<div class="calendar-week">
 							<?php foreach ( $week as $day ) : ?>
-								<?php echo $this->renderDay( $day, $calendar_data ); ?>
+								<?php echo wp_kses_post( $this->renderDay( $day, $calendar_data ) ); ?>
 							<?php endforeach; ?>
 						</div>
 					<?php endforeach; ?>
@@ -262,7 +271,7 @@ class NS_Tour_Price_Renderer {
 
 			<?php if ( $args['show_legend'] && ! empty( $calendar_data['legend'] ) ) : ?>
 				<div class="calendar-legend">
-					<h4><?php esc_html_e( '価格区分', 'ns-tour_price' ); ?></h4>
+					<h4><?php esc_html_e( '価格区分', 'ns-tour-price' ); ?></h4>
 					<div class="legend-items">
 						<?php foreach ( $calendar_data['legend'] as $legend_item ) : ?>
 							<div class="legend-item">
@@ -277,7 +286,7 @@ class NS_Tour_Price_Renderer {
 			<?php endif; ?>
 		</div>
 
-		<?php echo $this->renderBookingPanel( $args, $calendar_data ); ?>
+		<?php echo wp_kses_post( $this->renderBookingPanel( $args, $calendar_data ) ); ?>
 		</div>
 		
 		<?php
@@ -340,11 +349,11 @@ class NS_Tour_Price_Renderer {
 				<?php if ( $day['should_display'] && $day['has_price'] ) : ?>
 					<div class="day-price"><?php echo esc_html( $day['formatted_price'] ); ?></div>
 				<?php elseif ( $day['should_display'] && ! $day['has_price'] ) : ?>
-					<div class="day-price no-data"><?php esc_html_e( '設定なし', 'ns-tour_price' ); ?></div>
+					<div class="day-price no-data"><?php esc_html_e( '設定なし', 'ns-tour-price' ); ?></div>
 				<?php endif; ?>
 
 				<?php if ( $day['is_confirmed'] ) : ?>
-					<div class="confirmed-badge" title="<?php esc_attr_e( '催行確定', 'ns-tour_price' ); ?>">
+					<div class="confirmed-badge" title="<?php esc_attr_e( '催行確定', 'ns-tour-price' ); ?>">
 						<span class="badge-text">✓</span>
 					</div>
 				<?php endif; ?>
@@ -362,12 +371,12 @@ class NS_Tour_Price_Renderer {
 			<div class="error-message">
 				<p><?php echo esc_html( $message ); ?></p>
 				<details>
-					<summary><?php esc_html_e( 'トラブルシューティング', 'ns-tour_price' ); ?></summary>
+					<summary><?php esc_html_e( 'トラブルシューティング', 'ns-tour-price' ); ?></summary>
 					<ul>
-						<li><?php esc_html_e( 'CSVファイルが正しい場所に配置されているか確認してください', 'ns-tour_price' ); ?></li>
-						<li><?php esc_html_e( 'ツアーIDが存在するか確認してください', 'ns-tour_price' ); ?></li>
-						<li><?php esc_html_e( '月の形式が YYYY-MM になっているか確認してください', 'ns-tour_price' ); ?></li>
-						<li><?php esc_html_e( '管理画面でデータソースの状態を確認してください', 'ns-tour_price' ); ?></li>
+						<li><?php esc_html_e( 'CSVファイルが正しい場所に配置されているか確認してください', 'ns-tour-price' ); ?></li>
+						<li><?php esc_html_e( 'ツアーIDが存在するか確認してください', 'ns-tour-price' ); ?></li>
+						<li><?php esc_html_e( '月の形式が YYYY-MM になっているか確認してください', 'ns-tour-price' ); ?></li>
+						<li><?php esc_html_e( '管理画面でデータソースの状態を確認してください', 'ns-tour-price' ); ?></li>
 					</ul>
 				</details>
 			</div>
@@ -396,11 +405,13 @@ class NS_Tour_Price_Renderer {
 			 data-month="<?php echo esc_attr( $args['month'] ); ?>">
 			
 			<div class="calendar-header">
-				<h4><?php printf( 
-					esc_html__( '%1$s年%2$s （%3$d日間）', 'ns-tour_price' ),
-					$month_data['year'],
-					$month_data['month_name'],
-					$args['duration']
+				<h4><?php
+				/* translators: 1: year, 2: month name, 3: duration in days */
+				printf(
+					esc_html__( '%1$s年%2$s （%3$d日間）', 'ns-tour-price' ),
+					esc_html( absint( $month_data['year'] ) ),
+					esc_html( $month_data['month_name'] ),
+					esc_html( absint( $args['duration'] ) )
 				); ?></h4>
 			</div>
 
@@ -415,7 +426,7 @@ class NS_Tour_Price_Renderer {
 					<?php foreach ( array_slice( $grid, 0, 3 ) as $week ) : // 最初の3週のみ表示 ?>
 						<div class="calendar-week">
 							<?php foreach ( $week as $day ) : ?>
-								<?php echo $this->renderDay( $day, $calendar_data ); ?>
+								<?php echo wp_kses_post( $this->renderDay( $day, $calendar_data ) ); ?>
 							<?php endforeach; ?>
 						</div>
 					<?php endforeach; ?>
@@ -459,7 +470,7 @@ class NS_Tour_Price_Renderer {
 		
 		ob_start();
 		?>
-		<aside class="tpc-booking-panel" aria-label="<?php esc_attr_e( '予約内容の選択', 'ns-tour_price' ); ?>">
+		<aside class="tpc-booking-panel" aria-label="<?php esc_attr_e( '予約内容の選択', 'ns-tour-price' ); ?>">
 			<div class="calendar-meta">
 				<span class="tour-id"><?php echo esc_html( $args['tour'] ); ?></span>
 				<span class="tour-name"><?php echo esc_html( $this->repo->getTourName( $args['tour'] ) ); ?></span>
@@ -472,26 +483,28 @@ class NS_Tour_Price_Renderer {
 							class="tpc-duration-tab<?php echo $duration === $args['duration'] ? ' is-active' : ''; ?>" 
 							data-duration="<?php echo esc_attr( $duration ); ?>"
 							<?php if ( $duration === $args['duration'] ) echo 'aria-current="page"'; ?>>
-						<?php printf( esc_html__( '%d日間', 'ns-tour_price' ), $duration ); ?>
+						<?php
+						/* translators: %d is the number of days for tour duration */
+						printf( esc_html__( '%d日間', 'ns-tour-price' ), esc_html( absint( $duration ) ) ); ?>
 					</button>
 				<?php endforeach; ?>
 			</div>
 
 			<div class="tpc-booking-date">
-				<div class="tpc-booking-date__label"><?php esc_html_e( '出発日', 'ns-tour_price' ); ?></div>
-				<div class="tpc-booking-date__value" data-tpc-date><?php esc_html_e( '未選択', 'ns-tour_price' ); ?></div>
+				<div class="tpc-booking-date__label"><?php esc_html_e( '出発日', 'ns-tour-price' ); ?></div>
+				<div class="tpc-booking-date__value" data-tpc-date><?php esc_html_e( '未選択', 'ns-tour-price' ); ?></div>
 				<div class="tpc-booking-date__season" data-tpc-season></div>
 			</div>
 
 			<div class="tpc-booking-group">
-				<label for="tpc-pax"><?php esc_html_e( '参加人数', 'ns-tour_price' ); ?></label>
+				<label for="tpc-pax"><?php esc_html_e( '参加人数', 'ns-tour-price' ); ?></label>
 				<select id="tpc-pax" data-tpc-pax>
-					<option value="1"><?php esc_html_e( '1名', 'ns-tour_price' ); ?></option>
-					<option value="2"><?php esc_html_e( '2名', 'ns-tour_price' ); ?></option>
-					<option value="3"><?php esc_html_e( '3名', 'ns-tour_price' ); ?></option>
-					<option value="4"><?php esc_html_e( '4名', 'ns-tour_price' ); ?></option>
-					<option value="5"><?php esc_html_e( '5名', 'ns-tour_price' ); ?></option>
-					<option value="6"><?php esc_html_e( '6名', 'ns-tour_price' ); ?></option>
+					<option value="1"><?php esc_html_e( '1名', 'ns-tour-price' ); ?></option>
+					<option value="2"><?php esc_html_e( '2名', 'ns-tour-price' ); ?></option>
+					<option value="3"><?php esc_html_e( '3名', 'ns-tour-price' ); ?></option>
+					<option value="4"><?php esc_html_e( '4名', 'ns-tour-price' ); ?></option>
+					<option value="5"><?php esc_html_e( '5名', 'ns-tour-price' ); ?></option>
+					<option value="6"><?php esc_html_e( '6名', 'ns-tour-price' ); ?></option>
 				</select>
 			</div>
 			
@@ -508,7 +521,7 @@ class NS_Tour_Price_Renderer {
 			endif;
 			if ( ! empty( $tour_options ) ) : ?>
 			<div class="tpc-booking-options">
-				<div class="tpc-booking-options__label"><?php esc_html_e( 'オプション（任意）', 'ns-tour_price' ); ?></div>
+				<div class="tpc-booking-options__label"><?php esc_html_e( 'オプション（任意）', 'ns-tour-price' ); ?></div>
 				<?php foreach ( $tour_options as $option ) : ?>
 					<label class="tpc-option">
 						<input type="checkbox" 
@@ -536,26 +549,26 @@ class NS_Tour_Price_Renderer {
 
 			<div class="tpc-quote">
 				<div class="tpc-quote__row">
-					<span><?php esc_html_e( '基本料金', 'ns-tour_price' ); ?></span>
+					<span><?php esc_html_e( '基本料金', 'ns-tour-price' ); ?></span>
 					<strong data-tpc-base>—</strong>
 				</div>
 				<div class="tpc-quote__row">
-					<span><?php esc_html_e( 'お一人様参加料金', 'ns-tour_price' ); ?></span>
+					<span><?php esc_html_e( 'お一人様参加料金', 'ns-tour-price' ); ?></span>
 					<strong data-tpc-solo>—</strong>
 				</div>
 				<div class="tpc-quote__row">
-					<span><?php esc_html_e( '参加人数', 'ns-tour_price' ); ?></span>
+					<span><?php esc_html_e( '参加人数', 'ns-tour-price' ); ?></span>
 					<strong data-tpc-pax-view>—</strong>
 				</div>
 				<div class="tpc-quote__total">
-					<span><?php esc_html_e( '合計概算金額', 'ns-tour_price' ); ?></span>
+					<span><?php esc_html_e( '合計概算金額', 'ns-tour-price' ); ?></span>
 					<strong data-tpc-total>—</strong>
 				</div>
-				<small class="tpc-quote__note"><?php esc_html_e( '※運賃変動等により金額は変更になることがあります', 'ns-tour_price' ); ?></small>
+				<small class="tpc-quote__note"><?php esc_html_e( '※運賃変動等により金額は変更になることがあります', 'ns-tour-price' ); ?></small>
 			</div>
 
 			<button class="tpc-submit" data-tpc-submit disabled>
-				<?php esc_html_e( '申込フォームへ', 'ns-tour_price' ); ?>
+				<?php esc_html_e( '申込フォームへ', 'ns-tour-price' ); ?>
 			</button>
 		</aside>
 		<?php

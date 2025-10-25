@@ -7,7 +7,7 @@
  * Author URI: https://netservice.jp/
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: ns-tour_price
+ * Text Domain: ns-tour-price
  * Domain Path: /languages
  * Requires at least: 6.0
  * Tested up to: 6.4
@@ -33,7 +33,7 @@ class NS_Tour_Price {
 	}
 
 	public function init() {
-		load_plugin_textdomain( 'ns-tour_price', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+		load_plugin_textdomain( 'ns-tour-price', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 
 		$this->includes();
 		$this->hooks();

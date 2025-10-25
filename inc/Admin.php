@@ -27,8 +27,8 @@ class NS_Tour_Price_Admin {
 
 	public function addAdminMenu() {
 		add_options_page(
-			__( 'NS Tour Price Settings', 'ns-tour_price' ),
-			__( 'NS Tour Price', 'ns-tour_price' ),
+			__( 'NS Tour Price Settings', 'ns-tour-price' ),
+			__( 'NS Tour Price', 'ns-tour-price' ),
 			'manage_options',
 			'ns-tour-price',
 			array( $this, 'adminPage' )
@@ -41,21 +41,21 @@ class NS_Tour_Price_Admin {
 
 		add_settings_section(
 			'ns_tour_price_general',
-			__( 'General Settings', 'ns-tour_price' ),
+			__( 'General Settings', 'ns-tour-price' ),
 			array( $this, 'generalSectionCallback' ),
 			'ns_tour_price_settings'
 		);
 
 		add_settings_section(
 			'ns_tour_price_annual',
-			__( 'Annual View Settings', 'ns-tour_price' ),
+			__( 'Annual View Settings', 'ns-tour-price' ),
 			array( $this, 'annualSectionCallback' ),
 			'ns_tour_price_settings'
 		);
 
 		add_settings_field(
 			'data_source',
-			__( 'Data Source', 'ns-tour_price' ),
+			__( 'Data Source', 'ns-tour-price' ),
 			array( $this, 'dataSourceFieldCallback' ),
 			'ns_tour_price_settings',
 			'ns_tour_price_general'
@@ -63,7 +63,7 @@ class NS_Tour_Price_Admin {
 
 		add_settings_field(
 			'week_start',
-			__( 'Week Starts On', 'ns-tour_price' ),
+			__( 'Week Starts On', 'ns-tour-price' ),
 			array( $this, 'weekStartFieldCallback' ),
 			'ns_tour_price_settings',
 			'ns_tour_price_general'
@@ -71,7 +71,7 @@ class NS_Tour_Price_Admin {
 
 		add_settings_field(
 			'confirmed_badge_enabled',
-			__( 'Show Confirmed Badges', 'ns-tour_price' ),
+			__( 'Show Confirmed Badges', 'ns-tour-price' ),
 			array( $this, 'confirmedBadgeFieldCallback' ),
 			'ns_tour_price_settings',
 			'ns_tour_price_general'
@@ -79,7 +79,7 @@ class NS_Tour_Price_Admin {
 
 		add_settings_field(
 			'cache_expiry',
-			__( 'Cache Expiry (seconds)', 'ns-tour_price' ),
+			__( 'Cache Expiry (seconds)', 'ns-tour-price' ),
 			array( $this, 'cacheExpiryFieldCallback' ),
 			'ns_tour_price_settings',
 			'ns_tour_price_general'
@@ -87,7 +87,7 @@ class NS_Tour_Price_Admin {
 
 		add_settings_field(
 			'heatmap_bins',
-			__( 'Heatmap Bins', 'ns-tour_price' ),
+			__( 'Heatmap Bins', 'ns-tour-price' ),
 			array( $this, 'heatmapBinsFieldCallback' ),
 			'ns_tour_price_settings',
 			'ns_tour_price_general'
@@ -95,7 +95,7 @@ class NS_Tour_Price_Admin {
 
 		add_settings_field(
 			'heatmap_mode',
-			__( 'Heatmap Mode', 'ns-tour_price' ),
+			__( 'Heatmap Mode', 'ns-tour-price' ),
 			array( $this, 'heatmapModeFieldCallback' ),
 			'ns_tour_price_settings',
 			'ns_tour_price_general'
@@ -103,7 +103,7 @@ class NS_Tour_Price_Admin {
 
 		add_settings_field(
 			'season_colors',
-			__( 'Season Colors', 'ns-tour_price' ),
+			__( 'Season Colors', 'ns-tour-price' ),
 			array( $this, 'seasonColorsFieldCallback' ),
 			'ns_tour_price_settings',
 			'ns_tour_price_annual'
@@ -113,7 +113,7 @@ class NS_Tour_Price_Admin {
 		/*
 		add_settings_field(
 			'heatmap_colors',
-			__( 'Heatmap Color List', 'ns-tour_price' ),
+			__( 'Heatmap Color List', 'ns-tour-price' ),
 			array( $this, 'heatmapColorsFieldCallback' ),
 			'ns_tour_price_settings',
 			'ns_tour_price_general'
@@ -121,7 +121,7 @@ class NS_Tour_Price_Admin {
 
 		add_settings_field(
 			'pricetable_color_mode',
-			__( 'Price Table Color Mode', 'ns-tour_price' ),
+			__( 'Price Table Color Mode', 'ns-tour-price' ),
 			array( $this, 'priceTableColorModeFieldCallback' ),
 			'ns_tour_price_settings',
 			'ns_tour_price_general'
@@ -130,7 +130,7 @@ class NS_Tour_Price_Admin {
 
 		add_settings_field(
 			'season_palette',
-			__( 'Season Palette (15 colors)', 'ns-tour_price' ),
+			__( 'Season Palette (15 colors)', 'ns-tour-price' ),
 			array( $this, 'seasonPaletteFieldCallback' ),
 			'ns_tour_price_settings',
 			'ns_tour_price_general'
@@ -138,7 +138,7 @@ class NS_Tour_Price_Admin {
 
 		add_settings_field(
 			'prune_mode',
-			__( 'Color Pruning Mode', 'ns-tour_price' ),
+			__( 'Color Pruning Mode', 'ns-tour-price' ),
 			array( $this, 'pruneModeFieldCallback' ),
 			'ns_tour_price_settings',
 			'ns_tour_price_general'
@@ -147,7 +147,7 @@ class NS_Tour_Price_Admin {
 		/*
 		add_settings_field(
 			'pricetable_color_bins',
-			__( 'Price Table Color Bins', 'ns-tour_price' ),
+			__( 'Price Table Color Bins', 'ns-tour-price' ),
 			array( $this, 'priceTableColorBinsFieldCallback' ),
 			'ns_tour_price_settings',
 			'ns_tour_price_general'
@@ -173,15 +173,15 @@ class NS_Tour_Price_Admin {
 			add_settings_error(
 				'ns_tour_price_messages',
 				'ns_tour_price_message',
-				__( 'Settings saved.', 'ns-tour_price' ),
+				__( 'Settings saved.', 'ns-tour-price' ),
 				'updated'
 			);
 		}
 
 		$current_tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'settings';
 		$tabs = array(
-			'settings' => __( 'Settings', 'ns-tour_price' ),
-			'csv' => __( 'CSV Management', 'ns-tour_price' )
+			'settings' => __( 'Settings', 'ns-tour-price' ),
+			'csv' => __( 'CSV Management', 'ns-tour-price' )
 		);
 
 		$data_source_info = $this->repo->getDataSourceInfo();
@@ -222,27 +222,29 @@ class NS_Tour_Price_Admin {
 			<?php settings_errors( 'ns_tour_price_messages' ); ?>
 
 			<div class="notice notice-info">
-				<p><strong><?php esc_html_e( 'Data Source Status:', 'ns-tour_price' ); ?></strong></p>
+				<p><strong><?php esc_html_e( 'Data Source Status:', 'ns-tour-price' ); ?></strong></p>
 				<?php if ( $is_data_available ) : ?>
 					<p style="color: green;">
-						✅ <?php printf( esc_html__( 'Active: %s', 'ns-tour_price' ), esc_html( $data_source_info['active'] ) ); ?>
+						✅ <?php
+						/* translators: %s is the active data source name */
+						printf( esc_html__( 'Active: %s', 'ns-tour-price' ), esc_html( $data_source_info['active'] ) ); ?>
 					</p>
 				<?php else : ?>
 					<p style="color: red;">
-						❌ <?php esc_html_e( 'No data source available. Please check CSV files.', 'ns-tour_price' ); ?>
+						❌ <?php esc_html_e( 'No data source available. Please check CSV files.', 'ns-tour-price' ); ?>
 					</p>
 				<?php endif; ?>
 				
 				<details>
-					<summary><?php esc_html_e( 'Show all data sources', 'ns-tour_price' ); ?></summary>
+					<summary><?php esc_html_e( 'Show all data sources', 'ns-tour-price' ); ?></summary>
 					<ul>
 					<?php foreach ( $data_source_info['all'] as $key => $info ) : ?>
 						<li>
 							<?php echo esc_html( $info['name'] ); ?>: 
 							<?php if ( $info['available'] ) : ?>
-								<span style="color: green;"><?php esc_html_e( 'Available', 'ns-tour_price' ); ?></span>
+								<span style="color: green;"><?php esc_html_e( 'Available', 'ns-tour-price' ); ?></span>
 							<?php else : ?>
-								<span style="color: red;"><?php esc_html_e( 'Not available', 'ns-tour_price' ); ?></span>
+								<span style="color: red;"><?php esc_html_e( 'Not available', 'ns-tour-price' ); ?></span>
 							<?php endif; ?>
 						</li>
 					<?php endforeach; ?>
@@ -252,19 +254,19 @@ class NS_Tour_Price_Admin {
 
 			<!-- 開発用クイックキャッシュクリア -->
 			<div class="card" style="background: #f0f8ff; border-left: 4px solid #0073aa; margin: 10px 0;">
-				<h3 style="margin-top: 10px;"><?php esc_html_e( 'Quick Cache Clear', 'ns-tour_price' ); ?></h3>
-				<p style="margin: 5px 0;"><?php esc_html_e( 'Development shortcut - Clear all cached data quickly.', 'ns-tour_price' ); ?></p>
+				<h3 style="margin-top: 10px;"><?php esc_html_e( 'Quick Cache Clear', 'ns-tour-price' ); ?></h3>
+				<p style="margin: 5px 0;"><?php esc_html_e( 'Development shortcut - Clear all cached data quickly.', 'ns-tour-price' ); ?></p>
 				<button type="button" class="button button-primary" id="quick-clear-cache-btn">
-					<?php esc_html_e( 'Clear Cache', 'ns-tour_price' ); ?>
+					<?php esc_html_e( 'Clear Cache', 'ns-tour-price' ); ?>
 				</button>
 				<span id="quick-cache-status" style="margin-left: 10px;"></span>
 			</div>
 
 			<div class="notice notice-warning">
-				<p><strong><?php esc_html_e( 'CSV File Locations:', 'ns-tour_price' ); ?></strong></p>
+				<p><strong><?php esc_html_e( 'CSV File Locations:', 'ns-tour-price' ); ?></strong></p>
 				<ol>
-					<li><code><?php echo esc_html( NS_TOUR_PRICE_PLUGIN_DIR . 'data/' ); ?></code> (<?php esc_html_e( 'Priority', 'ns-tour_price' ); ?>)</li>
-					<li><code><?php echo esc_html( wp_upload_dir()['basedir'] . '/ns-tour_price/' ); ?></code> (<?php esc_html_e( 'Fallback', 'ns-tour_price' ); ?>)</li>
+					<li><code><?php echo esc_html( NS_TOUR_PRICE_PLUGIN_DIR . 'data/' ); ?></code> (<?php esc_html_e( 'Priority', 'ns-tour-price' ); ?>)</li>
+					<li><code><?php echo esc_html( wp_upload_dir()['basedir'] . '/ns-tour_price/' ); ?></code> (<?php esc_html_e( 'Fallback', 'ns-tour-price' ); ?>)</li>
 				</ol>
 			</div>
 
@@ -278,54 +280,56 @@ class NS_Tour_Price_Admin {
 
 			<hr>
 
-			<h2><?php esc_html_e( 'Tools', 'ns-tour_price' ); ?></h2>
+			<h2><?php esc_html_e( 'Tools', 'ns-tour-price' ); ?></h2>
 			
 			<div class="card">
-				<h3><?php esc_html_e( 'Cache Management', 'ns-tour_price' ); ?></h3>
-				<p><?php esc_html_e( 'Clear all cached data to force reload from CSV files.', 'ns-tour_price' ); ?></p>
+				<h3><?php esc_html_e( 'Cache Management', 'ns-tour-price' ); ?></h3>
+				<p><?php esc_html_e( 'Clear all cached data to force reload from CSV files.', 'ns-tour-price' ); ?></p>
 				<button type="button" class="button button-secondary" id="clear-cache-btn">
-					<?php esc_html_e( 'Clear Cache', 'ns-tour_price' ); ?>
+					<?php esc_html_e( 'Clear Cache', 'ns-tour-price' ); ?>
 				</button>
 				<span id="cache-status"></span>
 			</div>
 
 			<div class="card">
-				<h3><?php esc_html_e( 'Data Test', 'ns-tour_price' ); ?></h3>
-				<p><?php esc_html_e( 'Test data loading for a specific tour ID.', 'ns-tour_price' ); ?></p>
+				<h3><?php esc_html_e( 'Data Test', 'ns-tour-price' ); ?></h3>
+				<p><?php esc_html_e( 'Test data loading for a specific tour ID.', 'ns-tour-price' ); ?></p>
 				<input type="text" id="test-tour-id" placeholder="A1" value="A1">
 				<button type="button" class="button button-secondary" id="test-data-btn">
-					<?php esc_html_e( 'Test Data', 'ns-tour_price' ); ?>
+					<?php esc_html_e( 'Test Data', 'ns-tour-price' ); ?>
 				</button>
 				<div id="test-results" style="margin-top: 10px;"></div>
 			</div>
 
 			<hr>
 
-			<h2><?php esc_html_e( 'Usage Examples', 'ns-tour_price' ); ?></h2>
+			<h2><?php esc_html_e( 'Usage Examples', 'ns-tour-price' ); ?></h2>
 			
 			<div class="card">
-				<h3><?php esc_html_e( 'Shortcode', 'ns-tour_price' ); ?></h3>
+				<h3><?php esc_html_e( 'Shortcode', 'ns-tour-price' ); ?></h3>
 				<code>[tour_price tour="A1" month="2024-07" duration="4" heatmap="true" show_legend="true"]</code>
 				
-				<h3><?php esc_html_e( 'Block', 'ns-tour_price' ); ?></h3>
-				<p><?php printf( esc_html__( 'Search for "%s" in the block editor.', 'ns-tour_price' ), 'ツアー価格カレンダー' ); ?></p>
+				<h3><?php esc_html_e( 'Block', 'ns-tour-price' ); ?></h3>
+				<p><?php
+			/* translators: %s is the Japanese name of the block */
+			printf( esc_html__( 'Search for "%s" in the block editor.', 'ns-tour-price' ), 'ツアー価格カレンダー' ); ?></p>
 			</div>
 
 			<hr>
 
-			<h2><?php esc_html_e( 'Solo Fee Settings', 'ns-tour_price' ); ?></h2>
+			<h2><?php esc_html_e( 'Solo Fee Settings', 'ns-tour-price' ); ?></h2>
 
 			<div class="card">
-				<h3><?php esc_html_e( 'About solo_fees.csv', 'ns-tour_price' ); ?></h3>
-				<p><?php esc_html_e( 'This setting is for adding a solo fee to the base tour price. The solo fee is determined by the combination of tour ID and duration.', 'ns-tour_price' ); ?></p>
+				<h3><?php esc_html_e( 'About solo_fees.csv', 'ns-tour-price' ); ?></h3>
+				<p><?php esc_html_e( 'This setting is for adding a solo fee to the base tour price. The solo fee is determined by the combination of tour ID and duration.', 'ns-tour-price' ); ?></p>
 				
-				<p><strong><?php esc_html_e( 'Location:', 'ns-tour_price' ); ?></strong></p>
+				<p><strong><?php esc_html_e( 'Location:', 'ns-tour-price' ); ?></strong></p>
 				<ol>
-					<li><code><?php echo esc_html( NS_TOUR_PRICE_PLUGIN_DIR . 'data/solo_fees.csv' ); ?></code> (<?php esc_html_e( 'Priority', 'ns-tour_price' ); ?>)</li>
-					<li><code><?php echo esc_html( wp_upload_dir()['basedir'] . '/ns-tour_price/solo_fees.csv' ); ?></code> (<?php esc_html_e( 'Fallback', 'ns-tour_price' ); ?>)</li>
+					<li><code><?php echo esc_html( NS_TOUR_PRICE_PLUGIN_DIR . 'data/solo_fees.csv' ); ?></code> (<?php esc_html_e( 'Priority', 'ns-tour-price' ); ?>)</li>
+					<li><code><?php echo esc_html( wp_upload_dir()['basedir'] . '/ns-tour_price/solo_fees.csv' ); ?></code> (<?php esc_html_e( 'Fallback', 'ns-tour-price' ); ?>)</li>
 				</ol>
 
-				<p><strong><?php esc_html_e( 'CSV Schema:', 'ns-tour_price' ); ?></strong></p>
+				<p><strong><?php esc_html_e( 'CSV Schema:', 'ns-tour-price' ); ?></strong></p>
 				<pre style="background: #f1f1f1; padding: 10px; border-radius: 4px;">tour_id,duration_days,solo_fee
 A1,4,18000
 A1,5,22000
@@ -333,69 +337,69 @@ A1,6,26000
 A2,5,22000
 A2,6,26000</pre>
 
-				<p><strong><?php esc_html_e( 'Features:', 'ns-tour_price' ); ?></strong></p>
+				<p><strong><?php esc_html_e( 'Features:', 'ns-tour-price' ); ?></strong></p>
 				<ul>
-					<li><?php esc_html_e( 'Specify solo fee by tour_id and duration_days combination', 'ns-tour_price' ); ?></li>
-					<li><?php esc_html_e( 'The price displayed on the calendar is calculated as "Base Price + Solo Fee"', 'ns-tour_price' ); ?></li>
-					<li><?php esc_html_e( 'Solo fee is not added on dates where the base price is not available', 'ns-tour_price' ); ?></li>
-					<li><?php esc_html_e( 'The solo fee is 0 for combinations not found in solo_fees.csv', 'ns-tour_price' ); ?></li>
+					<li><?php esc_html_e( 'Specify solo fee by tour_id and duration_days combination', 'ns-tour-price' ); ?></li>
+					<li><?php esc_html_e( 'The price displayed on the calendar is calculated as "Base Price + Solo Fee"', 'ns-tour-price' ); ?></li>
+					<li><?php esc_html_e( 'Solo fee is not added on dates where the base price is not available', 'ns-tour-price' ); ?></li>
+					<li><?php esc_html_e( 'The solo fee is 0 for combinations not found in solo_fees.csv', 'ns-tour-price' ); ?></li>
 				</ul>
 			</div>
 
 			<hr>
 
-			<h2><?php esc_html_e( 'CSV Data Format', 'ns-tour_price' ); ?></h2>
+			<h2><?php esc_html_e( 'CSV Data Format', 'ns-tour-price' ); ?></h2>
 
 			<div class="card">
-				<h3><?php esc_html_e( 'Date Format in seasons.csv', 'ns-tour_price' ); ?></h3>
-				<p><?php esc_html_e( 'The following date formats can be used in the date_start and date_end columns.', 'ns-tour_price' ); ?></p>
+				<h3><?php esc_html_e( 'Date Format in seasons.csv', 'ns-tour-price' ); ?></h3>
+				<p><?php esc_html_e( 'The following date formats can be used in the date_start and date_end columns.', 'ns-tour-price' ); ?></p>
 				
-				<p><strong><?php esc_html_e( 'Recommended Format:', 'ns-tour_price' ); ?></strong></p>
+				<p><strong><?php esc_html_e( 'Recommended Format:', 'ns-tour-price' ); ?></strong></p>
 				<ul>
-					<li><code>YYYY-MM-DD</code> <?php esc_html_e( '(e.g., 2025-04-15)', 'ns-tour_price' ); ?></li>
+					<li><code>YYYY-MM-DD</code> <?php esc_html_e( '(e.g., 2025-04-15)', 'ns-tour-price' ); ?></li>
 				</ul>
 
-				<p><strong><?php esc_html_e( 'Accepted Formats:', 'ns-tour_price' ); ?></strong></p>
+				<p><strong><?php esc_html_e( 'Accepted Formats:', 'ns-tour-price' ); ?></strong></p>
 				<ul>
-					<li><code>YYYY/M/D</code> <?php esc_html_e( '(e.g., 2025/4/15)', 'ns-tour_price' ); ?></li>
-					<li><code>YYYY/MM/DD</code> <?php esc_html_e( '(e.g., 2025/04/15)', 'ns-tour_price' ); ?></li>
-					<li><code>YYYY-M-D</code> <?php esc_html_e( '(e.g., 2025-4-15)', 'ns-tour_price' ); ?></li>
-					<li><code>YYYY.M.D</code> <?php esc_html_e( '(e.g., 2025.4.15)', 'ns-tour_price' ); ?></li>
+					<li><code>YYYY/M/D</code> <?php esc_html_e( '(e.g., 2025/4/15)', 'ns-tour-price' ); ?></li>
+					<li><code>YYYY/MM/DD</code> <?php esc_html_e( '(e.g., 2025/04/15)', 'ns-tour-price' ); ?></li>
+					<li><code>YYYY-M-D</code> <?php esc_html_e( '(e.g., 2025-4-15)', 'ns-tour-price' ); ?></li>
+					<li><code>YYYY.M.D</code> <?php esc_html_e( '(e.g., 2025.4.15)', 'ns-tour-price' ); ?></li>
 				</ul>
 
-				<p><strong><?php esc_html_e( 'Auto-Normalization Feature:', 'ns-tour_price' ); ?></strong></p>
+				<p><strong><?php esc_html_e( 'Auto-Normalization Feature:', 'ns-tour-price' ); ?></strong></p>
 				<ul>
-					<li><?php esc_html_e( 'Full-width numbers and symbols are converted to half-width (e.g., ２０２５－０４－１５ → 2025-04-15)', 'ns-tour_price' ); ?></li>
-					<li><?php esc_html_e( 'All dates are processed internally in YYYY-MM-DD format', 'ns-tour_price' ); ?></li>
-					<li><?php esc_html_e( 'Detailed statistics are output to error_log on parsing failure', 'ns-tour_price' ); ?></li>
+					<li><?php esc_html_e( 'Full-width numbers and symbols are converted to half-width (e.g., ２０２５－０４－１５ → 2025-04-15)', 'ns-tour-price' ); ?></li>
+					<li><?php esc_html_e( 'All dates are processed internally in YYYY-MM-DD format', 'ns-tour-price' ); ?></li>
+					<li><?php esc_html_e( 'Detailed statistics are output to error_log on parsing failure', 'ns-tour-price' ); ?></li>
 				</ul>
 			</div>
 
 			<div class="card">
-				<h3><?php esc_html_e( 'Price Range for Heatmap and Legend', 'ns-tour_price' ); ?></h3>
-				<p><?php esc_html_e( 'The calendar heatmap and legend are calculated based on the "entire period (all seasons)".', 'ns-tour_price' ); ?></p>
+				<h3><?php esc_html_e( 'Price Range for Heatmap and Legend', 'ns-tour-price' ); ?></h3>
+				<p><?php esc_html_e( 'The calendar heatmap and legend are calculated based on the "entire period (all seasons)".', 'ns-tour-price' ); ?></p>
 				<ul>
-					<li><?php esc_html_e( 'The price range is determined from all base_prices for the same tour_id × duration_days.', 'ns-tour_price' ); ?></li>
-					<li><?php esc_html_e( 'Color standards and legends are displayed consistently across months.', 'ns-tour_price' ); ?></li>
-					<li><?php esc_html_e( 'Prices not appearing in the current month are also displayed in the legend.', 'ns-tour_price' ); ?></li>
+					<li><?php esc_html_e( 'The price range is determined from all base_prices for the same tour_id × duration_days.', 'ns-tour-price' ); ?></li>
+					<li><?php esc_html_e( 'Color standards and legends are displayed consistently across months.', 'ns-tour-price' ); ?></li>
+					<li><?php esc_html_e( 'Prices not appearing in the current month are also displayed in the legend.', 'ns-tour-price' ); ?></li>
 				</ul>
 			</div>
 
 			<hr>
 
-			<h2><?php esc_html_e( 'Season Code Alias', 'ns-tour_price' ); ?></h2>
+			<h2><?php esc_html_e( 'Season Code Alias', 'ns-tour-price' ); ?></h2>
 
 			<div class="card">
-				<h3><?php esc_html_e( 'About season_aliases.csv', 'ns-tour_price' ); ?></h3>
-				<p><?php esc_html_e( 'If you use different season_code notations in seasons.csv and base_prices.csv (e.g., A/B/C and LOW/MID/HIGH), you can place season_aliases.csv to automatically resolve the differences.', 'ns-tour_price' ); ?></p>
+				<h3><?php esc_html_e( 'About season_aliases.csv', 'ns-tour-price' ); ?></h3>
+				<p><?php esc_html_e( 'If you use different season_code notations in seasons.csv and base_prices.csv (e.g., A/B/C and LOW/MID/HIGH), you can place season_aliases.csv to automatically resolve the differences.', 'ns-tour-price' ); ?></p>
 				
-				<p><strong><?php esc_html_e( 'Location:', 'ns-tour_price' ); ?></strong></p>
+				<p><strong><?php esc_html_e( 'Location:', 'ns-tour-price' ); ?></strong></p>
 				<ol>
-					<li><code><?php echo esc_html( NS_TOUR_PRICE_PLUGIN_DIR . 'data/season_aliases.csv' ); ?></code> (<?php esc_html_e( 'Priority', 'ns-tour_price' ); ?>)</li>
-					<li><code><?php echo esc_html( wp_upload_dir()['basedir'] . '/ns-tour_price/season_aliases.csv' ); ?></code> (<?php esc_html_e( 'Fallback', 'ns-tour_price' ); ?>)</li>
+					<li><code><?php echo esc_html( NS_TOUR_PRICE_PLUGIN_DIR . 'data/season_aliases.csv' ); ?></code> (<?php esc_html_e( 'Priority', 'ns-tour-price' ); ?>)</li>
+					<li><code><?php echo esc_html( wp_upload_dir()['basedir'] . '/ns-tour_price/season_aliases.csv' ); ?></code> (<?php esc_html_e( 'Fallback', 'ns-tour-price' ); ?>)</li>
 				</ol>
 
-				<p><strong><?php esc_html_e( 'CSV Schema:', 'ns-tour_price' ); ?></strong></p>
+				<p><strong><?php esc_html_e( 'CSV Schema:', 'ns-tour-price' ); ?></strong></p>
 				<pre style="background: #f1f1f1; padding: 10px; border-radius: 4px;">tour_id,alias,season_code
 A1,A,LOW
 A1,B,HIGH
@@ -404,12 +408,12 @@ A1,GREEN,LOW
 A1,ハイ,HIGH
 A1,WINTER,WINTER</pre>
 
-				<p><strong><?php esc_html_e( 'Features:', 'ns-tour_price' ); ?></strong></p>
+				<p><strong><?php esc_html_e( 'Features:', 'ns-tour-price' ); ?></strong></p>
 				<ul>
-					<li><?php esc_html_e( 'Maps "A" in base_prices.csv to "LOW" in seasons.csv', 'ns-tour_price' ); ?></li>
-					<li><?php esc_html_e( 'Automatically normalizes differences in case, full/half-width characters, and leading/trailing spaces.', 'ns-tour_price' ); ?></li>
-					<li><?php esc_html_e( 'Even without an alias file, basic differences are absorbed by normalization alone.', 'ns-tour_price' ); ?></li>
-					<li><?php esc_html_e( 'If there are inconsistencies, details are logged to error_log and a warning is displayed on the frontend.', 'ns-tour_price' ); ?></li>
+					<li><?php esc_html_e( 'Maps "A" in base_prices.csv to "LOW" in seasons.csv', 'ns-tour-price' ); ?></li>
+					<li><?php esc_html_e( 'Automatically normalizes differences in case, full/half-width characters, and leading/trailing spaces.', 'ns-tour-price' ); ?></li>
+					<li><?php esc_html_e( 'Even without an alias file, basic differences are absorbed by normalization alone.', 'ns-tour-price' ); ?></li>
+					<li><?php esc_html_e( 'If there are inconsistencies, details are logged to error_log and a warning is displayed on the frontend.', 'ns-tour-price' ); ?></li>
 				</ul>
 			</div>
 		</div>
@@ -430,7 +434,7 @@ A1,WINTER,WINTER</pre>
 				fetch(ajaxurl, {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-					body: 'action=ns_tour_price_clear_cache&nonce=' + encodeURIComponent('<?php echo wp_create_nonce( "ns_tour_price_clear_cache" ); ?>')
+					body: 'action=ns_tour_price_clear_cache&nonce=' + encodeURIComponent('<?php echo esc_js( wp_create_nonce( "ns_tour_price_clear_cache" ) ); ?>')
 				})
 				.then(response => response.json())
 				.then(data => {
@@ -457,7 +461,7 @@ A1,WINTER,WINTER</pre>
 				fetch(ajaxurl, {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-					body: 'action=ns_tour_price_clear_cache&nonce=' + encodeURIComponent('<?php echo wp_create_nonce( "ns_tour_price_clear_cache" ); ?>')
+					body: 'action=ns_tour_price_clear_cache&nonce=' + encodeURIComponent('<?php echo esc_js( wp_create_nonce( "ns_tour_price_clear_cache" ) ); ?>')
 				})
 				.then(response => response.json())
 				.then(data => {
@@ -489,7 +493,7 @@ A1,WINTER,WINTER</pre>
 				fetch(ajaxurl, {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-					body: 'action=ns_tour_price_test_data&tour_id=' + encodeURIComponent(tourId) + '&nonce=' + encodeURIComponent('<?php echo wp_create_nonce( "ns_tour_price_test_data" ); ?>')
+					body: 'action=ns_tour_price_test_data&tour_id=' + encodeURIComponent(tourId) + '&nonce=' + encodeURIComponent('<?php echo esc_js( wp_create_nonce( "ns_tour_price_test_data" ) ); ?>')
 				})
 				.then(response => response.json())
 				.then(data => {
@@ -514,12 +518,12 @@ A1,WINTER,WINTER</pre>
 
 	private function renderCsvManagementTab() {
 		$csv_files = array(
-			'base_prices.csv' => __( 'Base Prices', 'ns-tour_price' ),
-			'seasons.csv' => __( 'Seasons', 'ns-tour_price' ),
-			'daily_flags.csv' => __( 'Daily Flags', 'ns-tour_price' ),
-			'solo_fees.csv' => __( 'Solo Fees', 'ns-tour_price' ),
-			'tour_options.csv' => __( 'Tour Options', 'ns-tour_price' ),
-			'tours.csv' => __( 'Tours', 'ns-tour_price' ),
+			'base_prices.csv' => __( 'Base Prices', 'ns-tour-price' ),
+			'seasons.csv' => __( 'Seasons', 'ns-tour-price' ),
+			'daily_flags.csv' => __( 'Daily Flags', 'ns-tour-price' ),
+			'solo_fees.csv' => __( 'Solo Fees', 'ns-tour-price' ),
+			'tour_options.csv' => __( 'Tour Options', 'ns-tour-price' ),
+			'tours.csv' => __( 'Tours', 'ns-tour-price' ),
 		);
 
 		if ( isset( $_POST['upload_csv'] ) && wp_verify_nonce( $_POST['_wpnonce'], 'ns_tour_price_upload_csv' ) ) {
@@ -531,23 +535,23 @@ A1,WINTER,WINTER</pre>
 		}
 		?>
 		<div class="tab-content">
-			<h2><?php esc_html_e( 'CSV File Management', 'ns-tour_price' ); ?></h2>
+			<h2><?php esc_html_e( 'CSV File Management', 'ns-tour-price' ); ?></h2>
 
 			<div class="notice notice-info">
-				<p><?php esc_html_e( 'Manage CSV data files. Upload new files or delete existing ones. Files are automatically backed up before replacement.', 'ns-tour_price' ); ?></p>
+				<p><?php esc_html_e( 'Manage CSV data files. Upload new files or delete existing ones. Files are automatically backed up before replacement.', 'ns-tour-price' ); ?></p>
 			</div>
 
 			<!-- Current CSV Files Status -->
 			<div class="card">
-				<h3><?php esc_html_e( 'Current CSV Files', 'ns-tour_price' ); ?></h3>
+				<h3><?php esc_html_e( 'Current CSV Files', 'ns-tour-price' ); ?></h3>
 				<table class="widefat fixed">
 					<thead>
 						<tr>
-							<th><?php esc_html_e( 'File', 'ns-tour_price' ); ?></th>
-							<th><?php esc_html_e( 'Status', 'ns-tour_price' ); ?></th>
-							<th><?php esc_html_e( 'Rows', 'ns-tour_price' ); ?></th>
-							<th><?php esc_html_e( 'Last Modified', 'ns-tour_price' ); ?></th>
-							<th><?php esc_html_e( 'Actions', 'ns-tour_price' ); ?></th>
+							<th><?php esc_html_e( 'File', 'ns-tour-price' ); ?></th>
+							<th><?php esc_html_e( 'Status', 'ns-tour-price' ); ?></th>
+							<th><?php esc_html_e( 'Rows', 'ns-tour-price' ); ?></th>
+							<th><?php esc_html_e( 'Last Modified', 'ns-tour-price' ); ?></th>
+							<th><?php esc_html_e( 'Actions', 'ns-tour-price' ); ?></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -567,9 +571,9 @@ A1,WINTER,WINTER</pre>
 								<td><strong><?php echo esc_html( $label ); ?></strong><br><code><?php echo esc_html( $filename ); ?></code></td>
 								<td>
 									<?php if ( $file_exists ) : ?>
-										<span style="color: green;">✅ <?php esc_html_e( 'Exists', 'ns-tour_price' ); ?></span>
+										<span style="color: green;">✅ <?php esc_html_e( 'Exists', 'ns-tour-price' ); ?></span>
 									<?php else : ?>
-										<span style="color: red;">❌ <?php esc_html_e( 'Missing', 'ns-tour_price' ); ?></span>
+										<span style="color: red;">❌ <?php esc_html_e( 'Missing', 'ns-tour-price' ); ?></span>
 									<?php endif; ?>
 								</td>
 								<td><?php echo $file_exists ? esc_html( number_format( $row_count ) ) : '-'; ?></td>
@@ -578,14 +582,14 @@ A1,WINTER,WINTER</pre>
 									<?php if ( $file_exists ) : ?>
 										<a href="<?php echo esc_url( add_query_arg( array( 'tab' => 'csv', 'action' => 'view', 'file' => $filename ), admin_url( 'options-general.php?page=ns-tour-price' ) ) ); ?>"
 										   class="button button-secondary" style="margin-right: 5px;">
-											<?php esc_html_e( 'View', 'ns-tour_price' ); ?>
+											<?php esc_html_e( 'View', 'ns-tour-price' ); ?>
 										</a>
 										<form method="post" style="display: inline;">
 											<?php wp_nonce_field( 'ns_tour_price_delete_csv' ); ?>
 											<input type="hidden" name="filename" value="<?php echo esc_attr( $filename ); ?>">
 											<button type="submit" name="delete_csv" class="button button-secondary"
-													onclick="return confirm('<?php esc_attr_e( 'Are you sure you want to delete this file? This action cannot be undone.', 'ns-tour_price' ); ?>')">
-												<?php esc_html_e( 'Delete', 'ns-tour_price' ); ?>
+													onclick="return confirm('<?php esc_attr_e( 'Are you sure you want to delete this file? This action cannot be undone.', 'ns-tour-price' ); ?>')">
+												<?php esc_html_e( 'Delete', 'ns-tour-price' ); ?>
 											</button>
 										</form>
 									<?php endif; ?>
@@ -598,30 +602,30 @@ A1,WINTER,WINTER</pre>
 
 			<!-- Upload CSV Files -->
 			<div class="card">
-				<h3><?php esc_html_e( 'Upload CSV File', 'ns-tour_price' ); ?></h3>
+				<h3><?php esc_html_e( 'Upload CSV File', 'ns-tour-price' ); ?></h3>
 				<form method="post" enctype="multipart/form-data">
 					<?php wp_nonce_field( 'ns_tour_price_upload_csv' ); ?>
 					<table class="form-table">
 						<tr>
-							<th scope="row"><?php esc_html_e( 'Select CSV File', 'ns-tour_price' ); ?></th>
+							<th scope="row"><?php esc_html_e( 'Select CSV File', 'ns-tour-price' ); ?></th>
 							<td>
 								<input type="file" name="csv_file" accept=".csv" required>
-								<p class="description"><?php esc_html_e( 'Select a CSV file to upload. The filename will determine which data it replaces.', 'ns-tour_price' ); ?></p>
+								<p class="description"><?php esc_html_e( 'Select a CSV file to upload. The filename will determine which data it replaces.', 'ns-tour-price' ); ?></p>
 							</td>
 						</tr>
 						<tr>
-							<th scope="row"><?php esc_html_e( 'Backup Option', 'ns-tour_price' ); ?></th>
+							<th scope="row"><?php esc_html_e( 'Backup Option', 'ns-tour-price' ); ?></th>
 							<td>
 								<label>
 									<input type="checkbox" name="create_backup" value="1" checked>
-									<?php esc_html_e( 'Create backup of existing file before replacement', 'ns-tour_price' ); ?>
+									<?php esc_html_e( 'Create backup of existing file before replacement', 'ns-tour-price' ); ?>
 								</label>
 							</td>
 						</tr>
 					</table>
 					<p class="submit">
 						<button type="submit" name="upload_csv" class="button button-primary">
-							<?php esc_html_e( 'Upload CSV', 'ns-tour_price' ); ?>
+							<?php esc_html_e( 'Upload CSV', 'ns-tour-price' ); ?>
 						</button>
 					</p>
 				</form>
@@ -629,9 +633,9 @@ A1,WINTER,WINTER</pre>
 
 			<!-- CSV Format Information -->
 			<div class="card">
-				<h3><?php esc_html_e( 'CSV Format Requirements', 'ns-tour_price' ); ?></h3>
+				<h3><?php esc_html_e( 'CSV Format Requirements', 'ns-tour-price' ); ?></h3>
 				<details>
-					<summary><?php esc_html_e( 'Click to view required formats for each CSV file', 'ns-tour_price' ); ?></summary>
+					<summary><?php esc_html_e( 'Click to view required formats for each CSV file', 'ns-tour-price' ); ?></summary>
 					<div style="margin-top: 10px;">
 						<?php foreach ( $csv_files as $filename => $label ) : ?>
 							<h4><?php echo esc_html( $label ); ?> (<?php echo esc_html( $filename ); ?>)</h4>
@@ -646,7 +650,7 @@ A1,WINTER,WINTER</pre>
 
 	private function handleCsvUpload() {
 		if ( ! isset( $_FILES['csv_file'] ) || $_FILES['csv_file']['error'] !== UPLOAD_ERR_OK ) {
-			add_settings_error( 'ns_tour_price_messages', 'upload_error', __( 'File upload failed.', 'ns-tour_price' ), 'error' );
+			add_settings_error( 'ns_tour_price_messages', 'upload_error', __( 'File upload failed.', 'ns-tour-price' ), 'error' );
 			return;
 		}
 
@@ -655,7 +659,7 @@ A1,WINTER,WINTER</pre>
 
 		// Check if it's a valid CSV file
 		if ( pathinfo( $filename, PATHINFO_EXTENSION ) !== 'csv' ) {
-			add_settings_error( 'ns_tour_price_messages', 'invalid_file', __( 'Please upload a CSV file.', 'ns-tour_price' ), 'error' );
+			add_settings_error( 'ns_tour_price_messages', 'invalid_file', __( 'Please upload a CSV file.', 'ns-tour-price' ), 'error' );
 			return;
 		}
 
@@ -665,7 +669,7 @@ A1,WINTER,WINTER</pre>
 		if ( ! empty( $_POST['create_backup'] ) && file_exists( $target_path ) ) {
 			$backup_path = $target_path . '.backup.' . date( 'Y-m-d-H-i-s' );
 			if ( ! copy( $target_path, $backup_path ) ) {
-				add_settings_error( 'ns_tour_price_messages', 'backup_failed', __( 'Failed to create backup.', 'ns-tour_price' ), 'error' );
+				add_settings_error( 'ns_tour_price_messages', 'backup_failed', __( 'Failed to create backup.', 'ns-tour-price' ), 'error' );
 				return;
 			}
 		}
@@ -675,9 +679,10 @@ A1,WINTER,WINTER</pre>
 			// Clear cache after successful upload
 			$this->repo->clearCache();
 			add_settings_error( 'ns_tour_price_messages', 'upload_success',
-				sprintf( __( 'CSV file %s uploaded successfully.', 'ns-tour_price' ), $filename ), 'updated' );
+				/* translators: %s is the filename of the uploaded CSV file */
+				sprintf( __( 'CSV file %s uploaded successfully.', 'ns-tour-price' ), $filename ), 'updated' );
 		} else {
-			add_settings_error( 'ns_tour_price_messages', 'upload_failed', __( 'Failed to save uploaded file.', 'ns-tour_price' ), 'error' );
+			add_settings_error( 'ns_tour_price_messages', 'upload_failed', __( 'Failed to save uploaded file.', 'ns-tour-price' ), 'error' );
 		}
 	}
 
@@ -686,16 +691,17 @@ A1,WINTER,WINTER</pre>
 		$file_path = NS_TOUR_PRICE_PLUGIN_DIR . 'data/' . $filename;
 
 		if ( ! file_exists( $file_path ) ) {
-			add_settings_error( 'ns_tour_price_messages', 'file_not_found', __( 'File not found.', 'ns-tour_price' ), 'error' );
+			add_settings_error( 'ns_tour_price_messages', 'file_not_found', __( 'File not found.', 'ns-tour-price' ), 'error' );
 			return;
 		}
 
 		if ( unlink( $file_path ) ) {
 			$this->repo->clearCache();
 			add_settings_error( 'ns_tour_price_messages', 'delete_success',
-				sprintf( __( 'CSV file %s deleted successfully.', 'ns-tour_price' ), $filename ), 'updated' );
+				/* translators: %s is the filename of the deleted CSV file */
+				sprintf( __( 'CSV file %s deleted successfully.', 'ns-tour-price' ), $filename ), 'updated' );
 		} else {
-			add_settings_error( 'ns_tour_price_messages', 'delete_failed', __( 'Failed to delete file.', 'ns-tour_price' ), 'error' );
+			add_settings_error( 'ns_tour_price_messages', 'delete_failed', __( 'Failed to delete file.', 'ns-tour-price' ), 'error' );
 		}
 	}
 
@@ -726,10 +732,10 @@ A1,WINTER,WINTER</pre>
 			?>
 			<div class="tab-content">
 				<div class="notice notice-error">
-					<p><?php esc_html_e( 'Invalid file specified.', 'ns-tour_price' ); ?></p>
+					<p><?php esc_html_e( 'Invalid file specified.', 'ns-tour-price' ); ?></p>
 				</div>
 				<a href="<?php echo esc_url( admin_url( 'options-general.php?page=ns-tour-price&tab=csv' ) ); ?>" class="button">
-					<?php esc_html_e( '← Back to CSV Management', 'ns-tour_price' ); ?>
+					<?php esc_html_e( '← Back to CSV Management', 'ns-tour-price' ); ?>
 				</a>
 			</div>
 			<?php
@@ -742,10 +748,10 @@ A1,WINTER,WINTER</pre>
 			?>
 			<div class="tab-content">
 				<div class="notice notice-error">
-					<p><?php esc_html_e( 'File not found.', 'ns-tour_price' ); ?></p>
+					<p><?php esc_html_e( 'File not found.', 'ns-tour-price' ); ?></p>
 				</div>
 				<a href="<?php echo esc_url( admin_url( 'options-general.php?page=ns-tour-price&tab=csv' ) ); ?>" class="button">
-					<?php esc_html_e( '← Back to CSV Management', 'ns-tour_price' ); ?>
+					<?php esc_html_e( '← Back to CSV Management', 'ns-tour-price' ); ?>
 				</a>
 			</div>
 			<?php
@@ -770,12 +776,12 @@ A1,WINTER,WINTER</pre>
 		}
 
 		$file_labels = array(
-			'base_prices.csv' => __( 'Base Prices', 'ns-tour_price' ),
-			'seasons.csv' => __( 'Seasons', 'ns-tour_price' ),
-			'daily_flags.csv' => __( 'Daily Flags', 'ns-tour_price' ),
-			'solo_fees.csv' => __( 'Solo Fees', 'ns-tour_price' ),
-			'tour_options.csv' => __( 'Tour Options', 'ns-tour_price' ),
-			'tours.csv' => __( 'Tours', 'ns-tour_price' ),
+			'base_prices.csv' => __( 'Base Prices', 'ns-tour-price' ),
+			'seasons.csv' => __( 'Seasons', 'ns-tour-price' ),
+			'daily_flags.csv' => __( 'Daily Flags', 'ns-tour-price' ),
+			'solo_fees.csv' => __( 'Solo Fees', 'ns-tour-price' ),
+			'tour_options.csv' => __( 'Tour Options', 'ns-tour-price' ),
+			'tours.csv' => __( 'Tours', 'ns-tour-price' ),
 		);
 
 		$file_label = isset( $file_labels[ $filename ] ) ? $file_labels[ $filename ] : $filename;
@@ -783,19 +789,23 @@ A1,WINTER,WINTER</pre>
 		?>
 		<div class="tab-content">
 			<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-				<h2><?php printf( esc_html__( 'Viewing: %s', 'ns-tour_price' ), esc_html( $file_label ) ); ?></h2>
+				<h2><?php
+			/* translators: %s is the name of the CSV file being viewed */
+			printf( esc_html__( 'Viewing: %s', 'ns-tour-price' ), esc_html( $file_label ) ); ?></h2>
 				<a href="<?php echo esc_url( admin_url( 'options-general.php?page=ns-tour-price&tab=csv' ) ); ?>" class="button">
-					<?php esc_html_e( '← Back to CSV Management', 'ns-tour_price' ); ?>
+					<?php esc_html_e( '← Back to CSV Management', 'ns-tour-price' ); ?>
 				</a>
 			</div>
 
 			<div class="notice notice-info">
 				<p>
-					<strong><?php esc_html_e( 'File:', 'ns-tour_price' ); ?></strong> <?php echo esc_html( $filename ); ?><br>
-					<strong><?php esc_html_e( 'Total Rows:', 'ns-tour_price' ); ?></strong> <?php echo esc_html( number_format( $total_file_rows ) ); ?>
+					<strong><?php esc_html_e( 'File:', 'ns-tour-price' ); ?></strong> <?php echo esc_html( $filename ); ?><br>
+					<strong><?php esc_html_e( 'Total Rows:', 'ns-tour-price' ); ?></strong> <?php echo esc_html( number_format( $total_file_rows ) ); ?>
 					<?php if ( $total_file_rows > $max_rows ) : ?>
-						<br><strong><?php esc_html_e( 'Note:', 'ns-tour_price' ); ?></strong>
-						<?php printf( esc_html__( 'Showing first %d rows only.', 'ns-tour_price' ), $max_rows ); ?>
+						<br><strong><?php esc_html_e( 'Note:', 'ns-tour-price' ); ?></strong>
+						<?php
+					/* translators: %d is the number of rows shown */
+					printf( esc_html__( 'Showing first %d rows only.', 'ns-tour-price' ), esc_html( absint( $max_rows ) ) ); ?>
 					<?php endif; ?>
 				</p>
 			</div>
@@ -805,7 +815,7 @@ A1,WINTER,WINTER</pre>
 					<table class="widefat fixed" style="table-layout: auto;">
 						<thead>
 							<tr>
-								<th style="width: 50px;"><?php esc_html_e( 'Row', 'ns-tour_price' ); ?></th>
+								<th style="width: 50px;"><?php esc_html_e( 'Row', 'ns-tour-price' ); ?></th>
 								<?php if ( ! empty( $csv_data[0] ) ) : ?>
 									<?php foreach ( $csv_data[0] as $index => $header ) : ?>
 										<th style="font-weight: bold; background-color: #f9f9f9;">
@@ -825,12 +835,12 @@ A1,WINTER,WINTER</pre>
 									<?php foreach ( $row_data as $cell_data ) : ?>
 										<td style="border: 1px solid #ddd; padding: 8px;">
 											<?php
-											$cell_value = esc_html( $cell_data );
-											// 長いテキストの場合は省略表示
-											if ( strlen( $cell_value ) > 100 ) {
-												$cell_value = substr( $cell_value, 0, 100 ) . '...';
+											// 長いテキストの場合は省略表示（エスケープ前に処理）
+											$cell_raw = (string) $cell_data;
+											if ( strlen( $cell_raw ) > 100 ) {
+												$cell_raw = substr( $cell_raw, 0, 100 ) . '...';
 											}
-											echo $cell_value;
+											echo esc_html( $cell_raw );
 											?>
 										</td>
 									<?php endforeach; ?>
@@ -841,13 +851,13 @@ A1,WINTER,WINTER</pre>
 				</div>
 			<?php else : ?>
 				<div class="notice notice-warning">
-					<p><?php esc_html_e( 'No data found in this CSV file.', 'ns-tour_price' ); ?></p>
+					<p><?php esc_html_e( 'No data found in this CSV file.', 'ns-tour-price' ); ?></p>
 				</div>
 			<?php endif; ?>
 
 			<div style="margin-top: 20px;">
 				<a href="<?php echo esc_url( admin_url( 'options-general.php?page=ns-tour-price&tab=csv' ) ); ?>" class="button button-primary">
-					<?php esc_html_e( '← Back to CSV Management', 'ns-tour_price' ); ?>
+					<?php esc_html_e( '← Back to CSV Management', 'ns-tour-price' ); ?>
 				</a>
 			</div>
 		</div>
@@ -855,7 +865,7 @@ A1,WINTER,WINTER</pre>
 	}
 
 	public function generalSectionCallback() {
-		echo '<p>' . esc_html__( 'Color settings are unified in the Season Palette. Heatmap-related settings have been deprecated.', 'ns-tour_price' ) . '</p>';
+		echo '<p>' . esc_html__( 'Color settings are unified in the Season Palette. Heatmap-related settings have been deprecated.', 'ns-tour-price' ) . '</p>';
 	}
 
 	public function dataSourceFieldCallback() {
@@ -868,7 +878,7 @@ A1,WINTER,WINTER</pre>
 				<option value="<?php echo esc_attr( $key ); ?>" <?php selected( $current, $key ); ?>>
 					<?php echo esc_html( $info['name'] ); ?>
 					<?php if ( ! $info['available'] ) : ?>
-						(<?php esc_html_e( 'Not Available', 'ns-tour_price' ); ?>)
+						(<?php esc_html_e( 'Not Available', 'ns-tour-price' ); ?>)
 					<?php endif; ?>
 				</option>
 			<?php endforeach; ?>
@@ -881,8 +891,8 @@ A1,WINTER,WINTER</pre>
 		$current = $options['week_start'] ?? 'sunday';
 		?>
 		<select name="ns_tour_price_options[week_start]">
-			<option value="sunday" <?php selected( $current, 'sunday' ); ?>><?php esc_html_e( 'Sunday', 'ns-tour_price' ); ?></option>
-			<option value="monday" <?php selected( $current, 'monday' ); ?>><?php esc_html_e( 'Monday', 'ns-tour_price' ); ?></option>
+			<option value="sunday" <?php selected( $current, 'sunday' ); ?>><?php esc_html_e( 'Sunday', 'ns-tour-price' ); ?></option>
+			<option value="monday" <?php selected( $current, 'monday' ); ?>><?php esc_html_e( 'Monday', 'ns-tour-price' ); ?></option>
 		</select>
 		<?php
 	}
@@ -892,7 +902,7 @@ A1,WINTER,WINTER</pre>
 		$current = $options['confirmed_badge_enabled'] ?? false;
 		?>
 		<input type="checkbox" name="ns_tour_price_options[confirmed_badge_enabled]" value="1" <?php checked( $current ); ?>>
-		<span><?php esc_html_e( 'Show confirmed booking badges when daily_flags.csv is available', 'ns-tour_price' ); ?></span>
+		<span><?php esc_html_e( 'Show confirmed booking badges when daily_flags.csv is available', 'ns-tour-price' ); ?></span>
 		<?php
 	}
 
@@ -901,7 +911,7 @@ A1,WINTER,WINTER</pre>
 		$current = $options['cache_expiry'] ?? 3600;
 		?>
 		<input type="number" name="ns_tour_price_options[cache_expiry]" value="<?php echo esc_attr( $current ); ?>" min="300" max="86400">
-		<span><?php esc_html_e( '(300-86400 seconds)', 'ns-tour_price' ); ?></span>
+		<span><?php esc_html_e( '(300-86400 seconds)', 'ns-tour-price' ); ?></span>
 		<?php
 	}
 
@@ -910,11 +920,11 @@ A1,WINTER,WINTER</pre>
 		$current = intval( $options['heatmap_bins'] ?? 7 );
 		?>
 		<select name="ns_tour_price_options[heatmap_bins]">
-			<option value="5" <?php selected( $current, 5 ); ?>>5 <?php esc_html_e( 'bins', 'ns-tour_price' ); ?></option>
-			<option value="7" <?php selected( $current, 7 ); ?>>7 <?php esc_html_e( 'bins', 'ns-tour_price' ); ?></option>
-			<option value="10" <?php selected( $current, 10 ); ?>>10 <?php esc_html_e( 'bins', 'ns-tour_price' ); ?></option>
+			<option value="5" <?php selected( $current, 5 ); ?>>5 <?php esc_html_e( 'bins', 'ns-tour-price' ); ?></option>
+			<option value="7" <?php selected( $current, 7 ); ?>>7 <?php esc_html_e( 'bins', 'ns-tour-price' ); ?></option>
+			<option value="10" <?php selected( $current, 10 ); ?>>10 <?php esc_html_e( 'bins', 'ns-tour-price' ); ?></option>
 		</select>
-		<span><?php esc_html_e( 'Number of heatmap color levels', 'ns-tour_price' ); ?></span>
+		<span><?php esc_html_e( 'Number of heatmap color levels', 'ns-tour-price' ); ?></span>
 		<?php
 	}
 
@@ -923,11 +933,11 @@ A1,WINTER,WINTER</pre>
 		$current = sanitize_text_field( $options['heatmap_mode'] ?? 'quantile' );
 		?>
 		<select name="ns_tour_price_options[heatmap_mode]">
-			<option value="quantile" <?php selected( $current, 'quantile' ); ?>><?php esc_html_e( 'Quantile (Recommended)', 'ns-tour_price' ); ?></option>
-			<option value="linear" <?php selected( $current, 'linear' ); ?>><?php esc_html_e( 'Linear', 'ns-tour_price' ); ?></option>
+			<option value="quantile" <?php selected( $current, 'quantile' ); ?>><?php esc_html_e( 'Quantile (Recommended)', 'ns-tour-price' ); ?></option>
+			<option value="linear" <?php selected( $current, 'linear' ); ?>><?php esc_html_e( 'Linear', 'ns-tour-price' ); ?></option>
 		</select>
 		<p class="description">
-			<?php esc_html_e( 'Quantile mode distributes colors more evenly across price ranges, avoiding blue bias.', 'ns-tour_price' ); ?>
+			<?php esc_html_e( 'Quantile mode distributes colors more evenly across price ranges, avoiding blue bias.', 'ns-tour-price' ); ?>
 		</p>
 		<?php
 	}
@@ -943,8 +953,8 @@ A1,WINTER,WINTER</pre>
 		?>
 		<textarea id="heatmap_colors" name="ns_tour_price_options[heatmap_colors]" rows="13" cols="50"><?php echo esc_textarea( $colors_text ); ?></textarea>
 		<p class="description">
-			<?php esc_html_e( 'ヒートマップの色を1行1色で指定してください（#RRGGBB形式）。色数がビン数と異なる場合は自動的に調整されます。', 'ns-tour_price' ); ?><br>
-			<?php esc_html_e( '空の場合はデフォルトの13色パレット（安→高：寒色→暖色）が使用されます。', 'ns-tour_price' ); ?>
+			<?php esc_html_e( 'ヒートマップの色を1行1色で指定してください（#RRGGBB形式）。色数がビン数と異なる場合は自動的に調整されます。', 'ns-tour-price' ); ?><br>
+			<?php esc_html_e( '空の場合はデフォルトの13色パレット（安→高：寒色→暖色）が使用されます。', 'ns-tour-price' ); ?>
 		</p>
 		<div id="heatmap-color-preview" style="margin-top: 10px;"></div>
 		<script>
@@ -1149,46 +1159,46 @@ A1,WINTER,WINTER</pre>
 	public function renderAnnualViewHelpSection() {
 		?>
 		<div class="postbox">
-			<h2 class="hndle"><?php esc_html_e( '年間価格概要機能', 'ns-tour_price' ); ?></h2>
+			<h2 class="hndle"><?php esc_html_e( '年間価格概要機能', 'ns-tour-price' ); ?></h2>
 			<div class="inside">
-				<p><?php esc_html_e( 'メインカレンダーの下に「年間価格概要を表示」チェックボックスが表示されます。これを有効にすると：', 'ns-tour_price' ); ?></p>
+				<p><?php esc_html_e( 'メインカレンダーの下に「年間価格概要を表示」チェックボックスが表示されます。これを有効にすると：', 'ns-tour-price' ); ?></p>
 				
-				<h4><?php esc_html_e( '12ヶ月ミニカレンダー', 'ns-tour_price' ); ?></h4>
+				<h4><?php esc_html_e( '12ヶ月ミニカレンダー', 'ns-tour-price' ); ?></h4>
 				<ul>
-					<li><?php esc_html_e( '1年間の全日がシーズン色で表示されます', 'ns-tour_price' ); ?></li>
-					<li><?php esc_html_e( '価格テキストは表示せず、色のみでシーズンを識別', 'ns-tour_price' ); ?></li>
-					<li><?php esc_html_e( '4〜10月運用でも1〜12月すべてを表示（該当なし日はグレー）', 'ns-tour_price' ); ?></li>
-					<li><?php esc_html_e( 'ホバー時に日付とシーズンコードがツールチップで表示', 'ns-tour_price' ); ?></li>
+					<li><?php esc_html_e( '1年間の全日がシーズン色で表示されます', 'ns-tour-price' ); ?></li>
+					<li><?php esc_html_e( '価格テキストは表示せず、色のみでシーズンを識別', 'ns-tour-price' ); ?></li>
+					<li><?php esc_html_e( '4〜10月運用でも1〜12月すべてを表示（該当なし日はグレー）', 'ns-tour-price' ); ?></li>
+					<li><?php esc_html_e( 'ホバー時に日付とシーズンコードがツールチップで表示', 'ns-tour-price' ); ?></li>
 				</ul>
 
-				<h4><?php esc_html_e( 'シーズン料金まとめ表', 'ns-tour_price' ); ?></h4>
+				<h4><?php esc_html_e( 'シーズン料金まとめ表', 'ns-tour-price' ); ?></h4>
 				<ul>
-					<li><?php esc_html_e( 'シーズンコード、期間、料金を一覧表示', 'ns-tour_price' ); ?></li>
-					<li><?php esc_html_e( '年跨ぎ期間は当年分にトリミング', 'ns-tour_price' ); ?></li>
-					<li><?php esc_html_e( '複数期間がある場合はカンマ区切りで結合（例: 4/1–5/31, 6/15–6/30）', 'ns-tour_price' ); ?></li>
-					<li><?php esc_html_e( '料金順で自動ソート', 'ns-tour_price' ); ?></li>
+					<li><?php esc_html_e( 'シーズンコード、期間、料金を一覧表示', 'ns-tour-price' ); ?></li>
+					<li><?php esc_html_e( '年跨ぎ期間は当年分にトリミング', 'ns-tour-price' ); ?></li>
+					<li><?php esc_html_e( '複数期間がある場合はカンマ区切りで結合（例: 4/1–5/31, 6/15–6/30）', 'ns-tour-price' ); ?></li>
+					<li><?php esc_html_e( '料金順で自動ソート', 'ns-tour-price' ); ?></li>
 				</ul>
 
-				<h4><?php esc_html_e( '動作仕様', 'ns-tour_price' ); ?></h4>
+				<h4><?php esc_html_e( '動作仕様', 'ns-tour-price' ); ?></h4>
 				<ul>
-					<li><?php esc_html_e( 'Ajax部分差し替えに対応（JS無効時は通常遷移）', 'ns-tour_price' ); ?></li>
-					<li><?php esc_html_e( '月送り・日数タブ切替で自動更新（年が変わった場合）', 'ns-tour_price' ); ?></li>
-					<li><?php esc_html_e( 'メモリキャッシュとTransientキャッシュで高速化', 'ns-tour_price' ); ?></li>
-					<li><?php esc_html_e( '「Clear Cache」で年間ビューのキャッシュも削除', 'ns-tour_price' ); ?></li>
+					<li><?php esc_html_e( 'Ajax部分差し替えに対応（JS無効時は通常遷移）', 'ns-tour-price' ); ?></li>
+					<li><?php esc_html_e( '月送り・日数タブ切替で自動更新（年が変わった場合）', 'ns-tour-price' ); ?></li>
+					<li><?php esc_html_e( 'メモリキャッシュとTransientキャッシュで高速化', 'ns-tour-price' ); ?></li>
+					<li><?php esc_html_e( '「Clear Cache」で年間ビューのキャッシュも削除', 'ns-tour-price' ); ?></li>
 				</ul>
 
-				<h4><?php esc_html_e( 'シーズン色の設定', 'ns-tour_price' ); ?></h4>
-				<p><?php esc_html_e( '上記「ヒートマップ色パレット」設定が年間ビューのシーズン色にも使用されます。', 'ns-tour_price' ); ?></p>
-				<p><?php esc_html_e( 'シーズンコード別の色マッピングを変更したい場合は、inc/AnnualBuilder.phpのgetSeasonColor()メソッドを修正してください。', 'ns-tour_price' ); ?></p>
+				<h4><?php esc_html_e( 'シーズン色の設定', 'ns-tour-price' ); ?></h4>
+				<p><?php esc_html_e( '上記「ヒートマップ色パレット」設定が年間ビューのシーズン色にも使用されます。', 'ns-tour-price' ); ?></p>
+				<p><?php esc_html_e( 'シーズンコード別の色マッピングを変更したい場合は、inc/AnnualBuilder.phpのgetSeasonColor()メソッドを修正してください。', 'ns-tour-price' ); ?></p>
 
 				<div style="background: #f1f1f1; padding: 10px; margin: 10px 0; border-left: 4px solid #0073aa;">
-					<strong><?php esc_html_e( 'レスポンシブ対応', 'ns-tour_price' ); ?>:</strong><br>
-					<?php esc_html_e( 'スマホ（480px以下）では、12ヶ月カレンダーは1列表示、シーズン表はカード型表示に切り替わります。', 'ns-tour_price' ); ?>
+					<strong><?php esc_html_e( 'レスポンシブ対応', 'ns-tour-price' ); ?>:</strong><br>
+					<?php esc_html_e( 'スマホ（480px以下）では、12ヶ月カレンダーは1列表示、シーズン表はカード型表示に切り替わります。', 'ns-tour-price' ); ?>
 				</div>
 
 				<div style="background: #fff3cd; padding: 10px; margin: 10px 0; border-left: 4px solid #ffc107;">
-					<strong><?php esc_html_e( '注意', 'ns-tour_price' ); ?>:</strong><br>
-					<?php esc_html_e( '年間ビューはCSVデータを基準とします。seasons.csvやbase_prices.csvが正しく設定されていることを確認してください。', 'ns-tour_price' ); ?>
+					<strong><?php esc_html_e( '注意', 'ns-tour-price' ); ?>:</strong><br>
+					<?php esc_html_e( '年間ビューはCSVデータを基準とします。seasons.csvやbase_prices.csvが正しく設定されていることを確認してください。', 'ns-tour-price' ); ?>
 				</div>
 			</div>
 		</div>
@@ -1199,7 +1209,7 @@ A1,WINTER,WINTER</pre>
 	 * 年間ビューセクションコールバック
 	 */
 	public function annualSectionCallback() {
-		echo '<p>' . esc_html__( 'Settings for the Annual Price Overview feature.', 'ns-tour_price' ) . '</p>';
+		echo '<p>' . esc_html__( 'Settings for the Annual Price Overview feature.', 'ns-tour-price' ) . '</p>';
 	}
 
 	/**
@@ -1210,12 +1220,12 @@ A1,WINTER,WINTER</pre>
 		$season_codes = $this->repo->getDistinctSeasonCodes();
 		
 		if ( empty( $season_codes ) ) {
-			echo '<p>' . esc_html__( 'There are currently no season records in seasons.csv. Please upload the CSV file.', 'ns-tour_price' ) . '</p>';
+			echo '<p>' . esc_html__( 'There are currently no season records in seasons.csv. Please upload the CSV file.', 'ns-tour-price' ) . '</p>';
 			return;
 		}
 
 		echo '<table class="widefat">';
-		echo '<thead><tr><th>' . esc_html__( 'Season Code', 'ns-tour_price' ) . '</th><th>' . esc_html__( 'Color', 'ns-tour_price' ) . '</th></tr></thead>';
+		echo '<thead><tr><th>' . esc_html__( 'Season Code', 'ns-tour-price' ) . '</th><th>' . esc_html__( 'Color', 'ns-tour-price' ) . '</th></tr></thead>';
 		echo '<tbody>';
 		
 		foreach ( $season_codes as $code ) {
@@ -1231,7 +1241,7 @@ A1,WINTER,WINTER</pre>
 		}
 		
 		echo '</tbody></table>';
-		echo '<p class="description">' . esc_html__( 'Set the display colors for seasons in the annual view. If not set, default colors will be used.', 'ns-tour_price' ) . '</p>';
+		echo '<p class="description">' . esc_html__( 'Set the display colors for seasons in the annual view. If not set, default colors will be used.', 'ns-tour-price' ) . '</p>';
 	}
 
 	/**
@@ -1282,7 +1292,7 @@ A1,WINTER,WINTER</pre>
 			<option value="quantile" <?php selected( $value, 'quantile' ); ?>>Quantile</option>
 		</select>
 		<p class="description">
-			<?php esc_html_e( 'Color binning method for price table. Linear provides more even price distribution, useful for distinguishing close prices like I/J/K seasons.', 'ns-tour_price' ); ?>
+			<?php esc_html_e( 'Color binning method for price table. Linear provides more even price distribution, useful for distinguishing close prices like I/J/K seasons.', 'ns-tour-price' ); ?>
 		</p>
 		<?php
 	}
@@ -1302,8 +1312,8 @@ A1,WINTER,WINTER</pre>
 		?>
 		<textarea id="season_palette" name="ns_tour_price_options[season_palette]" rows="15" cols="50"><?php echo esc_textarea( $colors_text ); ?></textarea>
 		<p class="description">
-			<?php esc_html_e( 'A fixed palette for seasons (15 colors recommended). Used for a unified color display across legends, calendars, and season tables. Colors are assigned based on price order: the cheapest season gets the first color, and the most expensive gets the last.', 'ns-tour_price' ); ?><br>
-			<?php esc_html_e( 'Specify one color per line in #RRGGBB format. If empty, the default 15-color palette is used.', 'ns-tour_price' ); ?>
+			<?php esc_html_e( 'A fixed palette for seasons (15 colors recommended). Used for a unified color display across legends, calendars, and season tables. Colors are assigned based on price order: the cheapest season gets the first color, and the most expensive gets the last.', 'ns-tour-price' ); ?><br>
+			<?php esc_html_e( 'Specify one color per line in #RRGGBB format. If empty, the default 15-color palette is used.', 'ns-tour-price' ); ?>
 		</p>
 		<div id="season-palette-preview" style="margin-top: 10px;"></div>
 		<script>
@@ -1340,12 +1350,12 @@ A1,WINTER,WINTER</pre>
 		$current = sanitize_text_field( $options['prune_mode'] ?? 'tail' );
 		?>
 		<select name="ns_tour_price_options[prune_mode]">
-			<option value="tail" <?php selected( $current, 'tail' ); ?>><?php esc_html_e( 'Tail Pruning', 'ns-tour_price' ); ?></option>
-			<option value="balanced" <?php selected( $current, 'balanced' ); ?>><?php esc_html_e( 'Balanced Pruning', 'ns-tour_price' ); ?></option>
+			<option value="tail" <?php selected( $current, 'tail' ); ?>><?php esc_html_e( 'Tail Pruning', 'ns-tour-price' ); ?></option>
+			<option value="balanced" <?php selected( $current, 'balanced' ); ?>><?php esc_html_e( 'Balanced Pruning', 'ns-tour-price' ); ?></option>
 		</select>
 		<p class="description">
-			<?php esc_html_e( 'Method for pruning colors when the number of seasons exceeds the number of palette colors. "Tail Pruning" removes colors from the right side (higher prices) first. "Balanced Pruning" distributes removal evenly.', 'ns-tour_price' ); ?><br>
-			<?php esc_html_e( 'The colors for the cheapest and most expensive seasons are always fixed at the ends of the palette.', 'ns-tour_price' ); ?>
+			<?php esc_html_e( 'Method for pruning colors when the number of seasons exceeds the number of palette colors. "Tail Pruning" removes colors from the right side (higher prices) first. "Balanced Pruning" distributes removal evenly.', 'ns-tour-price' ); ?><br>
+			<?php esc_html_e( 'The colors for the cheapest and most expensive seasons are always fixed at the ends of the palette.', 'ns-tour-price' ); ?>
 		</p>
 		<?php
 	}
@@ -1378,10 +1388,10 @@ A1,WINTER,WINTER</pre>
 		}
 		?>
 		<div class="notice notice-info inline">
-			<p><?php esc_html_e( 'Color settings are now unified in the Season Palette. Heatmap-related settings are deprecated.', 'ns-tour_price' ); ?></p>
+			<p><?php esc_html_e( 'Color settings are now unified in the Season Palette. Heatmap-related settings are deprecated.', 'ns-tour-price' ); ?></p>
 			<?php if ( WP_DEBUG && $has_deprecated ) : ?>
 				<p class="description" style="color: #666;">
-					<?php esc_html_e( '[For Developers] Deprecated options remain (internal data is retained).', 'ns-tour_price' ); ?>
+					<?php esc_html_e( '[For Developers] Deprecated options remain (internal data is retained).', 'ns-tour-price' ); ?>
 				</p>
 			<?php endif; ?>
 		</div>
@@ -1396,7 +1406,7 @@ A1,WINTER,WINTER</pre>
 		?>
 		<input type="number" name="ns_tour_price_options[pricetable_color_bins]" value="<?php echo esc_attr( $value ); ?>" min="5" max="20" />
 		<p class="description">
-			<?php esc_html_e( 'Number of color bins for price table. Higher values show more fine price gradations. Default: 10', 'ns-tour_price' ); ?>
+			<?php esc_html_e( 'Number of color bins for price table. Higher values show more fine price gradations. Default: 10', 'ns-tour-price' ); ?>
 		</p>
 		<?php
 	}

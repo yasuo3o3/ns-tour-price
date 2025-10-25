@@ -26,7 +26,7 @@ if ( ! $calendar_data || isset( $calendar_data['error'] ) ) {
 	?>
 	<div class="ns-tour-price-calendar error">
 		<div class="error-message">
-			<p><?php echo esc_html( $calendar_data['message'] ?? __( 'エラーが発生しました', 'ns-tour_price' ) ); ?></p>
+			<p><?php echo esc_html( $calendar_data['message'] ?? __( 'エラーが発生しました', 'ns-tour-price' ) ); ?></p>
 		</div>
 	</div>
 	<?php
@@ -43,18 +43,22 @@ if ( ! $calendar_data || isset( $calendar_data['error'] ) ) {
 	
 	<div class="calendar-header">
 		<h3 class="calendar-title">
-			<?php printf( 
-				esc_html__( '%1$s年%2$s （%3$d日間）', 'ns-tour_price' ),
-				$month_data['year'],
-				$month_data['month_name'],
-				$calendar_args['duration']
+			<?php
+			/* translators: 1: year, 2: month name, 3: duration in days */
+			printf(
+				esc_html__( '%1$s年%2$s （%3$d日間）', 'ns-tour-price' ),
+				esc_html( absint( $month_data['year'] ) ),
+				esc_html( $month_data['month_name'] ),
+				esc_html( absint( $calendar_args['duration'] ) )
 			); ?>
 		</h3>
 		<div class="calendar-meta">
 			<span class="tour-id">
-				<?php printf( 
-					esc_html__( 'ツアー: %s', 'ns-tour_price' ), 
-					esc_html( $calendar_args['tour'] ) 
+				<?php
+				/* translators: %s is the tour ID or name */
+				printf(
+					esc_html__( 'ツアー: %s', 'ns-tour-price' ),
+					esc_html( $calendar_args['tour'] )
 				); ?>
 			</span>
 		</div>
@@ -84,7 +88,7 @@ if ( ! $calendar_data || isset( $calendar_data['error'] ) ) {
 							include $day_template;
 						} else {
 							// デフォルトの日付セル表示
-							echo $this->renderDay( $day, $calendar_data );
+							echo wp_kses_post( $this->renderDay( $day, $calendar_data ) );
 						}
 						
 						do_action( 'ns_tour_price_after_calendar_day', $day, $day_index, $week_index, $calendar_data );
@@ -103,7 +107,7 @@ if ( ! $calendar_data || isset( $calendar_data['error'] ) ) {
 		<?php do_action( 'ns_tour_price_before_calendar_legend', $calendar_data ); ?>
 		
 		<div class="calendar-legend">
-			<h4><?php esc_html_e( '価格区分', 'ns-tour_price' ); ?></h4>
+			<h4><?php esc_html_e( '価格区分', 'ns-tour-price' ); ?></h4>
 			<div class="legend-items">
 				<?php foreach ( $calendar_data['legend'] as $legend_index => $legend_item ) : ?>
 					<?php do_action( 'ns_tour_price_before_legend_item', $legend_item, $legend_index, $calendar_data ); ?>
@@ -125,7 +129,7 @@ if ( ! $calendar_data || isset( $calendar_data['error'] ) ) {
 
 	<div class="tpc-annual-toggle">
 		<label>
-			<input type="checkbox" id="tpc-annual-checkbox"> <?php esc_html_e( '年間価格概要を表示する', 'ns-tour_price' ); ?>
+			<input type="checkbox" id="tpc-annual-checkbox"> <?php esc_html_e( '年間価格概要を表示する', 'ns-tour-price' ); ?>
 		</label>
 	</div>
 
