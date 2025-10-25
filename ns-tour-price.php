@@ -18,10 +18,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'NS_TOUR_PRICE_VERSION', '1.0.0' );
-define( 'NS_TOUR_PRICE_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
-define( 'NS_TOUR_PRICE_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
-define( 'NS_TOUR_PRICE_PLUGIN_FILE', __FILE__ );
+if ( ! defined( 'NS_TOUR_PRICE_VERSION' ) ) {
+	define( 'NS_TOUR_PRICE_VERSION', '1.0.0' );
+}
+if ( ! defined( 'NS_TOUR_PRICE_PLUGIN_DIR' ) ) {
+	define( 'NS_TOUR_PRICE_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+}
+if ( ! defined( 'NS_TOUR_PRICE_PLUGIN_URL' ) ) {
+	define( 'NS_TOUR_PRICE_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+}
+if ( ! defined( 'NS_TOUR_PRICE_PLUGIN_FILE' ) ) {
+	define( 'NS_TOUR_PRICE_PLUGIN_FILE', __FILE__ );
+}
+
+if ( ! class_exists( 'NS_Tour_Price' ) ) {
 
 class NS_Tour_Price {
 
@@ -195,8 +205,12 @@ class NS_Tour_Price {
 	}
 }
 
-// プラグイン初期化
-new NS_Tour_Price();
+} // end class_exists check
+
+// プラグイン初期化（重複防止）
+if ( ! class_exists( 'NS_Tour_Price' ) || ! isset( $GLOBALS['ns_tour_price_instance'] ) ) {
+	$GLOBALS['ns_tour_price_instance'] = new NS_Tour_Price();
+}
 
 // WordPress REST API の追加登録（クラス外）
 add_action( 'rest_api_init', function() {
