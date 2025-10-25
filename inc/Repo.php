@@ -451,10 +451,10 @@ class NS_Tour_Price_Repo {
 
 		$aliases = array();
 
-		// CSV探索順: /plugins/.../data → /uploads/ns-tour_price/
+		// CSV探索順: /plugins/.../data → /uploads/ns-tour-price/
 		$data_paths = array(
 			NS_TOUR_PRICE_PLUGIN_DIR . 'data/',
-			wp_upload_dir()['basedir'] . '/ns-tour_price/',
+			wp_upload_dir()['basedir'] . '/ns-tour-price/',
 		);
 
 		$aliases_file = null;

@@ -57,6 +57,6 @@ class NS_Tour_Price_DataSourceSheets implements NS_Tour_Price_DataSourceInterfac
 	}
 
 	public function getName() {
-		return __( 'Google Sheets', 'ns-tour_price' );
+		return __( 'Google Sheets', 'ns-tour-price' );
 	}
 }

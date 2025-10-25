@@ -69,20 +69,20 @@ A1,2024-07-15,1,催行確定
 
 == Installation ==
 
-1. プラグインファイルを `/wp-content/plugins/ns-tour_price/` ディレクトリにアップロード
+1. プラグインファイルを `/wp-content/plugins/ns-tour-price/` ディレクトリにアップロード
 2. WordPressの管理画面で「プラグイン」メニューからプラグインを有効化
 3. 「ツール」→「NS Tour Price」で設定を行う
 4. CSVファイルを以下のいずれかに配置：
-   - `/wp-content/plugins/ns-tour_price/data/` （開発用）
-   - `/wp-content/uploads/ns-tour_price/` （本番用）
+   - `/wp-content/plugins/ns-tour-price/data/` （開発用）
+   - `/wp-content/uploads/ns-tour-price/` （本番用）
 
 == Frequently Asked Questions ==
 
 = CSVファイルはどこに配置すればよいですか？ =
 
 以下の順序で探索されます：
-1. `/wp-content/plugins/ns-tour_price/data/` （優先）
-2. `/wp-content/uploads/ns-tour_price/` （フォールバック）
+1. `/wp-content/plugins/ns-tour-price/data/` （優先）
+2. `/wp-content/uploads/ns-tour-price/` （フォールバック）
 
 = 価格の色分けはどのように決まりますか？ =
 

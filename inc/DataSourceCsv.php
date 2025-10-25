@@ -24,7 +24,7 @@ class NS_Tour_Price_DataSourceCsv implements NS_Tour_Price_DataSourceInterface {
 		// 優先順位: プラグインディレクトリ → アップロードディレクトリ
 		$this->data_paths = array(
 			NS_TOUR_PRICE_PLUGIN_DIR . 'data/',
-			wp_upload_dir()['basedir'] . '/ns-tour_price/',
+			wp_upload_dir()['basedir'] . '/ns-tour-price/',
 		);
 	}
 
@@ -450,7 +450,7 @@ class NS_Tour_Price_DataSourceCsv implements NS_Tour_Price_DataSourceInterface {
 	}
 
 	public function getName() {
-		return __( 'CSV Files', 'ns-tour_price' );
+		return __( 'CSV Files', 'ns-tour-price' );
 	}
 
 	private function readCsvFile( $filename ) {

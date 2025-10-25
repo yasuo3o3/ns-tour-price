@@ -34,21 +34,21 @@ $selected_options = (array) ( $args['options'] ?? array() );
 	
 	<div class="tpc-booking-header">
 		<h3 class="tpc-booking-title">
-			<?php esc_html_e( '旅行内容選択', 'ns-tour_price' ); ?>
+			<?php esc_html_e( '旅行内容選択', 'ns-tour-price' ); ?>
 		</h3>
 		<p class="tpc-booking-subtitle">
-			<?php esc_html_e( '下記内容を確認・変更し、申込フォームへお進みください', 'ns-tour_price' ); ?>
+			<?php esc_html_e( '下記内容を確認・変更し、申込フォームへお進みください', 'ns-tour-price' ); ?>
 		</p>
 	</div>
 
 	<form class="tpc-booking-form" id="tpc-booking-form">
 		<!-- 選択済み情報 -->
 		<div class="tpc-booking-section tpc-selected-info">
-			<h4 class="tpc-section-title"><?php esc_html_e( '選択済み情報', 'ns-tour_price' ); ?></h4>
+			<h4 class="tpc-section-title"><?php esc_html_e( '選択済み情報', 'ns-tour-price' ); ?></h4>
 			
 			<div class="tpc-info-grid">
 				<div class="tpc-info-item">
-					<label><?php esc_html_e( '旅行日付', 'ns-tour_price' ); ?></label>
+					<label><?php esc_html_e( '旅行日付', 'ns-tour-price' ); ?></label>
 					<div class="tpc-info-value">
 						<strong><?php echo esc_html( date_i18n( 'Y年n月j日', strtotime( $date ) ) ); ?></strong>
 						<span class="tpc-weekday">(<?php echo esc_html( date_i18n( 'l', strtotime( $date ) ) ); ?>)</span>
@@ -57,7 +57,7 @@ $selected_options = (array) ( $args['options'] ?? array() );
 
 				<?php if ( ! empty( $season_info['season_code'] ) ) : ?>
 				<div class="tpc-info-item">
-					<label><?php esc_html_e( 'シーズン', 'ns-tour_price' ); ?></label>
+					<label><?php esc_html_e( 'シーズン', 'ns-tour-price' ); ?></label>
 					<div class="tpc-info-value">
 						<span class="tpc-season-badge" 
 							  data-season="<?php echo esc_attr( $season_info['season_code'] ); ?>">
@@ -72,7 +72,7 @@ $selected_options = (array) ( $args['options'] ?? array() );
 		<!-- 日数選択 -->
 		<?php if ( ! empty( $available_durations ) && count( $available_durations ) > 1 ) : ?>
 		<div class="tpc-booking-section tpc-duration-section">
-			<h4 class="tpc-section-title"><?php esc_html_e( '日数選択', 'ns-tour_price' ); ?></h4>
+			<h4 class="tpc-section-title"><?php esc_html_e( '日数選択', 'ns-tour-price' ); ?></h4>
 			
 			<div class="tpc-duration-tabs">
 				<?php foreach ( $available_durations as $dur ) : ?>
@@ -92,7 +92,7 @@ $selected_options = (array) ( $args['options'] ?? array() );
 
 		<!-- 出発地選択 -->
 		<div class="tpc-booking-section tpc-departure-section">
-			<h4 class="tpc-section-title"><?php esc_html_e( '出発地・帰着地', 'ns-tour_price' ); ?></h4>
+			<h4 class="tpc-section-title"><?php esc_html_e( '出発地・帰着地', 'ns-tour-price' ); ?></h4>
 			
 			<select name="departure" class="tpc-departure-select">
 				<?php foreach ( $departure_options as $code => $label ) : ?>
@@ -106,7 +106,7 @@ $selected_options = (array) ( $args['options'] ?? array() );
 
 		<!-- 人数選択 -->
 		<div class="tpc-booking-section tpc-pax-section">
-			<h4 class="tpc-section-title"><?php esc_html_e( '人数（ご本人含む）', 'ns-tour_price' ); ?></h4>
+			<h4 class="tpc-section-title"><?php esc_html_e( '人数（ご本人含む）', 'ns-tour-price' ); ?></h4>
 			
 			<div class="tpc-pax-controls">
 				<button type="button" class="tpc-pax-btn tpc-pax-minus" data-action="minus">−</button>
@@ -122,7 +122,7 @@ $selected_options = (array) ( $args['options'] ?? array() );
 			
 			<?php if ( $pax === 1 ) : ?>
 				<p class="tpc-pax-notice">
-					<small><?php esc_html_e( 'お一人様参加の場合は追加料金が発生します', 'ns-tour_price' ); ?></small>
+					<small><?php esc_html_e( 'お一人様参加の場合は追加料金が発生します', 'ns-tour-price' ); ?></small>
 				</p>
 			<?php endif; ?>
 		</div>
@@ -130,7 +130,7 @@ $selected_options = (array) ( $args['options'] ?? array() );
 		<!-- オプション選択 -->
 		<?php if ( ! empty( $tour_options ) ) : ?>
 		<div class="tpc-booking-section tpc-options-section">
-			<h4 class="tpc-section-title"><?php esc_html_e( 'オプション', 'ns-tour_price' ); ?></h4>
+			<h4 class="tpc-section-title"><?php esc_html_e( 'オプション', 'ns-tour-price' ); ?></h4>
 			
 			<div class="tpc-options-list">
 				<?php foreach ( $tour_options as $option ) : ?>
@@ -168,12 +168,12 @@ $selected_options = (array) ( $args['options'] ?? array() );
 
 		<!-- 料金表示 -->
 		<div class="tpc-booking-section tpc-pricing-section">
-			<h4 class="tpc-section-title"><?php esc_html_e( '料金概算', 'ns-tour_price' ); ?></h4>
+			<h4 class="tpc-section-title"><?php esc_html_e( '料金概算', 'ns-tour-price' ); ?></h4>
 			
 			<div class="tpc-pricing-breakdown" id="tpc-pricing-breakdown">
 				<div class="tpc-price-row">
 					<span class="tpc-price-label">
-						<?php esc_html_e( '基本料金', 'ns-tour_price' ); ?>
+						<?php esc_html_e( '基本料金', 'ns-tour-price' ); ?>
 						<small>(<?php echo esc_html( $pax ); ?>名 × <?php echo esc_html( $duration ); ?>日間)</small>
 					</span>
 					<span class="tpc-price-value" id="tpc-base-total">
@@ -183,7 +183,7 @@ $selected_options = (array) ( $args['options'] ?? array() );
 
 				<div class="tpc-price-row" id="tpc-solo-fee-row" style="display: <?php echo $pax === 1 ? 'flex' : 'none'; ?>;">
 					<span class="tpc-price-label">
-						<?php esc_html_e( 'お一人様参加料金', 'ns-tour_price' ); ?>
+						<?php esc_html_e( 'お一人様参加料金', 'ns-tour-price' ); ?>
 					</span>
 					<span class="tpc-price-value" id="tpc-solo-fee">
 						<?php echo esc_html( $price_calculation['formatted']['solo_fee'] ); ?>
@@ -192,7 +192,7 @@ $selected_options = (array) ( $args['options'] ?? array() );
 
 				<div class="tpc-price-row" id="tpc-option-total-row" style="display: <?php echo $price_calculation['option_total'] > 0 ? 'flex' : 'none'; ?>;">
 					<span class="tpc-price-label">
-						<?php esc_html_e( 'オプション料金', 'ns-tour_price' ); ?>
+						<?php esc_html_e( 'オプション料金', 'ns-tour-price' ); ?>
 					</span>
 					<span class="tpc-price-value" id="tpc-option-total">
 						<?php echo esc_html( $price_calculation['formatted']['option_total'] ); ?>
@@ -201,7 +201,7 @@ $selected_options = (array) ( $args['options'] ?? array() );
 
 				<div class="tpc-price-row tpc-total-row">
 					<span class="tpc-price-label">
-						<?php esc_html_e( '合計金額', 'ns-tour_price' ); ?>
+						<?php esc_html_e( '合計金額', 'ns-tour-price' ); ?>
 					</span>
 					<span class="tpc-price-value tpc-total-price" id="tpc-total-price">
 						<?php echo esc_html( $price_calculation['formatted']['total'] ); ?>
@@ -210,19 +210,19 @@ $selected_options = (array) ( $args['options'] ?? array() );
 			</div>
 
 			<p class="tpc-pricing-note">
-				<small><?php esc_html_e( '※ 概算金額です。正確な料金は申込フォームで確認いただけます。', 'ns-tour_price' ); ?></small>
+				<small><?php esc_html_e( '※ 概算金額です。正確な料金は申込フォームで確認いただけます。', 'ns-tour-price' ); ?></small>
 			</p>
 		</div>
 
 		<!-- 申込ボタン -->
 		<div class="tpc-booking-section tpc-submit-section">
 			<button type="submit" class="tpc-submit-btn">
-				<span class="tpc-submit-text"><?php esc_html_e( '申込フォームへ', 'ns-tour_price' ); ?></span>
+				<span class="tpc-submit-text"><?php esc_html_e( '申込フォームへ', 'ns-tour-price' ); ?></span>
 				<span class="tpc-submit-arrow">→</span>
 			</button>
 			
 			<p class="tpc-submit-note">
-				<small><?php esc_html_e( '次の画面で詳細情報をご入力いただきます', 'ns-tour_price' ); ?></small>
+				<small><?php esc_html_e( '次の画面で詳細情報をご入力いただきます', 'ns-tour-price' ); ?></small>
 			</p>
 		</div>
 

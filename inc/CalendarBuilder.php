@@ -37,7 +37,7 @@ class NS_Tour_Price_CalendarBuilder {
 		$args = apply_filters( 'ns_tour_price_calendar_args', $args );
 
 		if ( ! $this->repo->isDataAvailable() ) {
-			return $this->buildErrorCalendar( __( 'データが見つかりません', 'ns-tour_price' ) );
+			return $this->buildErrorCalendar( __( 'データが見つかりません', 'ns-tour-price' ) );
 		}
 
 		// season_code の整合性をチェック
@@ -45,7 +45,7 @@ class NS_Tour_Price_CalendarBuilder {
 
 		$month_data = $this->generateMonthData( $args['month'] );
 		if ( ! $month_data ) {
-			return $this->buildErrorCalendar( __( '無効な月が指定されました', 'ns-tour_price' ) );
+			return $this->buildErrorCalendar( __( '無効な月が指定されました', 'ns-tour-price' ) );
 		}
 
 		$calendar_days = $this->buildCalendarDays( $month_data, $args );
@@ -172,18 +172,18 @@ class NS_Tour_Price_CalendarBuilder {
 
 	private function getMonthName( $month ) {
 		$names = array(
-			1 => __( '1月', 'ns-tour_price' ),
-			2 => __( '2月', 'ns-tour_price' ),
-			3 => __( '3月', 'ns-tour_price' ),
-			4 => __( '4月', 'ns-tour_price' ),
-			5 => __( '5月', 'ns-tour_price' ),
-			6 => __( '6月', 'ns-tour_price' ),
-			7 => __( '7月', 'ns-tour_price' ),
-			8 => __( '8月', 'ns-tour_price' ),
-			9 => __( '9月', 'ns-tour_price' ),
-			10 => __( '10月', 'ns-tour_price' ),
-			11 => __( '11月', 'ns-tour_price' ),
-			12 => __( '12月', 'ns-tour_price' ),
+			1 => __( '1月', 'ns-tour-price' ),
+			2 => __( '2月', 'ns-tour-price' ),
+			3 => __( '3月', 'ns-tour-price' ),
+			4 => __( '4月', 'ns-tour-price' ),
+			5 => __( '5月', 'ns-tour-price' ),
+			6 => __( '6月', 'ns-tour-price' ),
+			7 => __( '7月', 'ns-tour-price' ),
+			8 => __( '8月', 'ns-tour-price' ),
+			9 => __( '9月', 'ns-tour-price' ),
+			10 => __( '10月', 'ns-tour-price' ),
+			11 => __( '11月', 'ns-tour-price' ),
+			12 => __( '12月', 'ns-tour-price' ),
 		);
 
 		return $names[ $month ] ?? (string) $month;
@@ -458,13 +458,13 @@ class NS_Tour_Price_CalendarBuilder {
 
 	public function getWeekdayHeaders( $week_start = 0 ) {
 		$days = array(
-			__( '日', 'ns-tour_price' ),
-			__( '月', 'ns-tour_price' ),
-			__( '火', 'ns-tour_price' ),
-			__( '水', 'ns-tour_price' ),
-			__( '木', 'ns-tour_price' ),
-			__( '金', 'ns-tour_price' ),
-			__( '土', 'ns-tour_price' ),
+			__( '日', 'ns-tour-price' ),
+			__( '月', 'ns-tour-price' ),
+			__( '火', 'ns-tour-price' ),
+			__( '水', 'ns-tour-price' ),
+			__( '木', 'ns-tour-price' ),
+			__( '金', 'ns-tour-price' ),
+			__( '土', 'ns-tour-price' ),
 		);
 
 		if ( 1 === $week_start ) {

@@ -17,7 +17,7 @@ export default function Edit({ attributes, setAttributes }) {
 
     // 月のオプションを生成
     const generateMonthOptions = () => {
-        const options = [{ label: __('現在月を使用', 'ns-tour_price'), value: '' }];
+        const options = [{ label: __('現在月を使用', 'ns-tour-price'), value: '' }];
         const currentDate = new Date();
         
         // 過去6ヶ月
@@ -64,57 +64,57 @@ export default function Edit({ attributes, setAttributes }) {
 
     const inspectorControls = el(InspectorControls, {},
         el(PanelBody, {
-            title: __('ツアー設定', 'ns-tour_price'),
+            title: __('ツアー設定', 'ns-tour-price'),
             initialOpen: true
         },
             el(SelectControl, {
-                label: __('ツアーID', 'ns-tour_price'),
+                label: __('ツアーID', 'ns-tour-price'),
                 value: tour,
                 options: tourOptions,
                 onChange: (value) => setAttributes({ tour: value }),
-                help: __('表示するツアーを選択してください', 'ns-tour_price')
+                help: __('表示するツアーを選択してください', 'ns-tour-price')
             }),
 
             el(SelectControl, {
-                label: __('表示月', 'ns-tour_price'),
+                label: __('表示月', 'ns-tour-price'),
                 value: month,
                 options: generateMonthOptions(),
                 onChange: (value) => setAttributes({ month: value }),
-                help: __('カレンダーを表示する月を選択してください', 'ns-tour_price')
+                help: __('カレンダーを表示する月を選択してください', 'ns-tour-price')
             }),
 
             el(SelectControl, {
-                label: __('ツアー日数', 'ns-tour_price'),
+                label: __('ツアー日数', 'ns-tour-price'),
                 value: duration,
                 options: durationOptions,
                 onChange: (value) => setAttributes({ duration: parseInt(value) }),
-                help: __('ツアーの日数を選択してください', 'ns-tour_price')
+                help: __('ツアーの日数を選択してください', 'ns-tour-price')
             })
         ),
 
         el(PanelBody, {
-            title: __('表示設定', 'ns-tour_price'),
+            title: __('表示設定', 'ns-tour-price'),
             initialOpen: false
         },
             el(ToggleControl, {
-                label: __('ヒートマップを表示', 'ns-tour_price'),
+                label: __('ヒートマップを表示', 'ns-tour-price'),
                 checked: heatmap,
                 onChange: (value) => setAttributes({ heatmap: value }),
-                help: __('価格の高低を色で表示します', 'ns-tour_price')
+                help: __('価格の高低を色で表示します', 'ns-tour-price')
             }),
 
             el(ToggleControl, {
-                label: __('凡例を表示', 'ns-tour_price'),
+                label: __('凡例を表示', 'ns-tour-price'),
                 checked: showLegend,
                 onChange: (value) => setAttributes({ showLegend: value }),
-                help: __('ヒートマップの色分け凡例を表示します', 'ns-tour_price')
+                help: __('ヒートマップの色分け凡例を表示します', 'ns-tour-price')
             }),
 
             el(ToggleControl, {
-                label: __('催行確定日のみ表示', 'ns-tour_price'),
+                label: __('催行確定日のみ表示', 'ns-tour-price'),
                 checked: confirmedOnly,
                 onChange: (value) => setAttributes({ confirmedOnly: value }),
-                help: __('催行が確定している日付のみ表示します', 'ns-tour_price')
+                help: __('催行が確定している日付のみ表示します', 'ns-tour-price')
             })
         )
     );
@@ -125,34 +125,34 @@ export default function Edit({ attributes, setAttributes }) {
         el('div', {
             className: 'block-editor-header'
         },
-            el('h4', {}, __('ツアー価格カレンダー', 'ns-tour_price')),
+            el('h4', {}, __('ツアー価格カレンダー', 'ns-tour-price')),
             el('p', {},
-                __('ツアー: ', 'ns-tour_price') + tour + ' | ' +
-                __('月: ', 'ns-tour_price') + (month || getCurrentMonth()) + ' | ' +
-                __('日数: ', 'ns-tour_price') + duration + __('日', 'ns-tour_price')
+                __('ツアー: ', 'ns-tour-price') + tour + ' | ' +
+                __('月: ', 'ns-tour-price') + (month || getCurrentMonth()) + ' | ' +
+                __('日数: ', 'ns-tour-price') + duration + __('日', 'ns-tour-price')
             )
         ),
 
         el(ServerSideRender, {
-            block: 'ns-tour_price/price-calendar',
+            block: 'ns-tour-price/price-calendar',
             attributes: attributes,
             EmptyResponsePlaceholder: () => el('div', {
                 className: 'block-editor-placeholder'
             },
                 el('div', {
                     className: 'block-editor-placeholder__label'
-                }, __('データを読み込み中...', 'ns-tour_price')),
+                }, __('データを読み込み中...', 'ns-tour-price')),
                 el('div', {
                     className: 'block-editor-placeholder__instructions'
-                }, __('CSVファイルが正しく配置されていることを確認してください', 'ns-tour_price'))
+                }, __('CSVファイルが正しく配置されていることを確認してください', 'ns-tour-price'))
             ),
             ErrorResponsePlaceholder: ({ response }) => el('div', {
                 className: 'block-editor-error'
             },
-                el('h5', {}, __('エラーが発生しました', 'ns-tour_price')),
-                el('p', {}, response.message || __('不明なエラーです', 'ns-tour_price')),
+                el('h5', {}, __('エラーが発生しました', 'ns-tour-price')),
+                el('p', {}, response.message || __('不明なエラーです', 'ns-tour-price')),
                 el('details', {},
-                    el('summary', {}, __('詳細', 'ns-tour_price')),
+                    el('summary', {}, __('詳細', 'ns-tour-price')),
                     el('pre', {}, JSON.stringify(response, null, 2))
                 )
             ),
@@ -160,7 +160,7 @@ export default function Edit({ attributes, setAttributes }) {
                 className: 'block-editor-loading'
             },
                 el('div', { className: 'spinner' }),
-                el('p', {}, __('カレンダーを読み込み中...', 'ns-tour_price'))
+                el('p', {}, __('カレンダーを読み込み中...', 'ns-tour-price'))
             )
         })
     );
@@ -171,7 +171,7 @@ export default function Edit({ attributes, setAttributes }) {
     );
 }
 
-wp.blocks.registerBlockType('ns-tour_price/price-calendar', {
+wp.blocks.registerBlockType('ns-tour-price/price-calendar', {
     edit: Edit,
     save: () => null // Server-side renderingなのでnull
 });

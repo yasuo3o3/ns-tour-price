@@ -266,7 +266,7 @@ class NS_Tour_Price_Admin {
 				<p><strong><?php esc_html_e( 'CSV File Locations:', 'ns-tour-price' ); ?></strong></p>
 				<ol>
 					<li><code><?php echo esc_html( NS_TOUR_PRICE_PLUGIN_DIR . 'data/' ); ?></code> (<?php esc_html_e( 'Priority', 'ns-tour-price' ); ?>)</li>
-					<li><code><?php echo esc_html( wp_upload_dir()['basedir'] . '/ns-tour_price/' ); ?></code> (<?php esc_html_e( 'Fallback', 'ns-tour-price' ); ?>)</li>
+					<li><code><?php echo esc_html( wp_upload_dir()['basedir'] . '/ns-tour-price/' ); ?></code> (<?php esc_html_e( 'Fallback', 'ns-tour-price' ); ?>)</li>
 				</ol>
 			</div>
 
@@ -326,7 +326,7 @@ class NS_Tour_Price_Admin {
 				<p><strong><?php esc_html_e( 'Location:', 'ns-tour-price' ); ?></strong></p>
 				<ol>
 					<li><code><?php echo esc_html( NS_TOUR_PRICE_PLUGIN_DIR . 'data/solo_fees.csv' ); ?></code> (<?php esc_html_e( 'Priority', 'ns-tour-price' ); ?>)</li>
-					<li><code><?php echo esc_html( wp_upload_dir()['basedir'] . '/ns-tour_price/solo_fees.csv' ); ?></code> (<?php esc_html_e( 'Fallback', 'ns-tour-price' ); ?>)</li>
+					<li><code><?php echo esc_html( wp_upload_dir()['basedir'] . '/ns-tour-price/solo_fees.csv' ); ?></code> (<?php esc_html_e( 'Fallback', 'ns-tour-price' ); ?>)</li>
 				</ol>
 
 				<p><strong><?php esc_html_e( 'CSV Schema:', 'ns-tour-price' ); ?></strong></p>
@@ -396,7 +396,7 @@ A2,6,26000</pre>
 				<p><strong><?php esc_html_e( 'Location:', 'ns-tour-price' ); ?></strong></p>
 				<ol>
 					<li><code><?php echo esc_html( NS_TOUR_PRICE_PLUGIN_DIR . 'data/season_aliases.csv' ); ?></code> (<?php esc_html_e( 'Priority', 'ns-tour-price' ); ?>)</li>
-					<li><code><?php echo esc_html( wp_upload_dir()['basedir'] . '/ns-tour_price/season_aliases.csv' ); ?></code> (<?php esc_html_e( 'Fallback', 'ns-tour-price' ); ?>)</li>
+					<li><code><?php echo esc_html( wp_upload_dir()['basedir'] . '/ns-tour-price/season_aliases.csv' ); ?></code> (<?php esc_html_e( 'Fallback', 'ns-tour-price' ); ?>)</li>
 				</ol>
 
 				<p><strong><?php esc_html_e( 'CSV Schema:', 'ns-tour-price' ); ?></strong></p>

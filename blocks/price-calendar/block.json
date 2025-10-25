@@ -5,7 +5,7 @@
   "category": "widgets",
   "icon": "calendar",
   "description": "ツアーID・月・日数に応じた価格カレンダーを表示します。",
-  "textdomain": "ns-tour_price",
+  "textdomain": "ns-tour-price",
   "supports": { 
     "html": false,
     "anchor": true,
