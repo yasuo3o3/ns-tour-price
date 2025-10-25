@@ -55,8 +55,19 @@ class NS_Tour_Price {
 		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Renderer.php';
 		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/AnnualBuilder.php';
 		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Admin.php';
-		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Rest.php';
-		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Migration.php';
+
+		// Rest.php の存在確認
+		$rest_file = NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Rest.php';
+		if ( file_exists( $rest_file ) ) {
+			require_once $rest_file;
+		}
+
+		// Migration.php の存在確認
+		$migration_file = NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Migration.php';
+		if ( file_exists( $migration_file ) ) {
+			require_once $migration_file;
+		}
+
 		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'blocks/price-calendar/index.php';
 	}
 
@@ -64,7 +75,11 @@ class NS_Tour_Price {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_frontend_assets' ) );
 		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_editor_assets' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_assets' ) );
-		add_action( 'rest_api_init', array( 'NS_Tour_Price_Rest', 'register_routes' ) );
+
+		// REST API クラスが存在する場合のみ登録
+		if ( class_exists( 'NS_Tour_Price_Rest' ) ) {
+			add_action( 'rest_api_init', array( 'NS_Tour_Price_Rest', 'register_routes' ) );
+		}
 		add_action( 'wp_ajax_ns_tour_price_clear_cache', array( 'NS_Tour_Price_Admin', 'ajax_clear_cache' ) );
 		add_action( 'wp_ajax_ns_tour_price_test_data', array( 'NS_Tour_Price_Admin', 'ajax_test_data' ) );
 		add_action( 'wp_ajax_ns_tour_price_upload_csv', array( 'NS_Tour_Price_Admin', 'ajax_upload_csv' ) );
@@ -190,18 +205,24 @@ class NS_Tour_Price {
 	public function activate() {
 		// アクティベーション時の処理
 		// 必要なクラスファイルを読み込み
-		if ( ! class_exists( 'NS_Tour_Price_Migration' ) ) {
-			require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Migration.php';
+		$migration_file = NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Migration.php';
+		if ( file_exists( $migration_file ) && ! class_exists( 'NS_Tour_Price_Migration' ) ) {
+			require_once $migration_file;
 		}
 		if ( ! class_exists( 'NS_Tour_Price_Repo' ) ) {
 			require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Repo.php';
 		}
 
-		$migration = new NS_Tour_Price_Migration();
-		$migration->check_and_migrate();
+		// マイグレーション実行（ファイルが存在する場合のみ）
+		if ( class_exists( 'NS_Tour_Price_Migration' ) ) {
+			$migration = new NS_Tour_Price_Migration();
+			$migration->check_and_migrate();
+		}
 
 		// キャッシュクリア
-		NS_Tour_Price_Repo::clear_cache();
+		if ( class_exists( 'NS_Tour_Price_Repo' ) ) {
+			NS_Tour_Price_Repo::clear_cache();
+		}
 
 		flush_rewrite_rules();
 	}
