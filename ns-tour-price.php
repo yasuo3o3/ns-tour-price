@@ -57,6 +57,10 @@ class NS_Tour_Price {
 		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Loader.php';
 		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Helpers.php';
 		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Repo.php';
+		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Heatmap.php';
+		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/SeasonColorMap.php';
+		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/CalendarBuilder.php';
+		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/BookingPreview.php';
 		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Renderer.php';
 		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/AnnualBuilder.php';
 		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Admin.php';
