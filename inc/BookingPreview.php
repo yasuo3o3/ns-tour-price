@@ -2,19 +2,19 @@
 /**
  * Booking Preview Builder - 旅行内容選択フォーム
  *
- * @package NS_Tour_Price
+ * @package Andw_Tour_Price
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class NS_Tour_Price_BookingPreview {
+class Andw_Tour_Price_BookingPreview {
 
 	private $repo;
 
 	public function __construct() {
-		$this->repo = NS_Tour_Price_Repo::getInstance();
+		$this->repo = Andw_Tour_Price_Repo::getInstance();
 	}
 
 	/**
@@ -241,7 +241,7 @@ class NS_Tour_Price_BookingPreview {
 	 * テンプレート読み込み
 	 */
 	private function loadTemplate( $template_name, $vars = array() ) {
-		$template_path = NS_TOUR_PRICE_PLUGIN_DIR . 'templates/' . $template_name;
+		$template_path = ANDW_TOUR_PRICE_PLUGIN_DIR . 'templates/' . $template_name;
 		
 		if ( ! file_exists( $template_path ) ) {
 			return '<div class="tpc-error">テンプレートが見つかりません: ' . esc_html( $template_name ) . '</div>';

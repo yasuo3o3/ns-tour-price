@@ -2,9 +2,9 @@
 /**
  * Quote Controller - 見積API
  * 
- * /wp-json/ns-tour-price/v1/quote で日付選択時の料金計算
+ * /wp-json/andw/v1/quote で日付選択時の料金計算
  *
- * @package NS_Tour_Price
+ * @package Andw_Tour_Price
  * @version 1.0.0
  */
 
@@ -12,14 +12,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class NS_Tour_Price_Quote_Controller extends WP_REST_Controller {
+class Andw_Tour_Price_Quote_Controller extends WP_REST_Controller {
 
 	private $repo;
 
 	public function __construct() {
-		$this->namespace = 'ns-tour-price/v1';
+		$this->namespace = 'andw/v1';
 		$this->rest_base = 'quote';
-		$this->repo = NS_Tour_Price_Repo::getInstance();
+		$this->repo = Andw_Tour_Price_Repo::getInstance();
 	}
 
 	public function register_routes() {

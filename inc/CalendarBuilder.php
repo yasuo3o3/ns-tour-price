@@ -2,21 +2,21 @@
 /**
  * Calendar Builder
  *
- * @package NS_Tour_Price
+ * @package Andw_Tour_Price
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class NS_Tour_Price_CalendarBuilder {
+class Andw_Tour_Price_CalendarBuilder {
 
 	private $repo;
 	private $heatmap;
 
 	public function __construct() {
-		$this->repo = NS_Tour_Price_Repo::getInstance();
-		$this->heatmap = new NS_Tour_Price_Heatmap();
+		$this->repo = Andw_Tour_Price_Repo::getInstance();
+		$this->heatmap = new Andw_Tour_Price_Heatmap();
 	}
 
 	public function buildCalendar( $args ) {
@@ -32,12 +32,12 @@ class NS_Tour_Price_CalendarBuilder {
 		$args = wp_parse_args( $args, $defaults );
 		
 		// 月を解決（QueryString > 属性 > スマートデフォルト月の優先順位）
-		$args['month'] = NS_Tour_Price_Helpers::resolve_month( $args['month'], $args['tour'] );
+		$args['month'] = Andw_Tour_Price_Helpers::resolve_month( $args['month'], $args['tour'] );
 		
-		$args = apply_filters( 'ns_tour_price_calendar_args', $args );
+		$args = apply_filters( 'andw_tour_price_calendar_args', $args );
 
 		if ( ! $this->repo->isDataAvailable() ) {
-			return $this->buildErrorCalendar( __( 'データが見つかりません', 'ns-tour-price' ) );
+			return $this->buildErrorCalendar( __( 'データが見つかりません', 'andw-tour-price' ) );
 		}
 
 		// season_code の整合性をチェック
@@ -45,7 +45,7 @@ class NS_Tour_Price_CalendarBuilder {
 
 		$month_data = $this->generateMonthData( $args['month'] );
 		if ( ! $month_data ) {
-			return $this->buildErrorCalendar( __( '無効な月が指定されました', 'ns-tour-price' ) );
+			return $this->buildErrorCalendar( __( '無効な月が指定されました', 'andw-tour-price' ) );
 		}
 
 		$calendar_days = $this->buildCalendarDays( $month_data, $args );
@@ -54,7 +54,7 @@ class NS_Tour_Price_CalendarBuilder {
 		
 		if ( $args['heatmap'] ) {
 			// 統一シーズンカラーマップを使用
-			$season_map = NS_Tour_Price_SeasonColorMap::map( $args['tour'], $args['month'], $args['duration'] );
+			$season_map = Andw_Tour_Price_SeasonColorMap::map( $args['tour'], $args['month'], $args['duration'] );
 			
 			// 凡例を生成
 			$legend = $this->buildLegendFromMap( $season_map );
@@ -86,7 +86,7 @@ class NS_Tour_Price_CalendarBuilder {
 		$last_day = clone $first_day;
 		$last_day->modify( 'last day of this month' );
 
-		$options = get_option( 'ns_tour_price_options', array() );
+		$options = get_option( 'andw_tour_price_options', array() );
 		$week_start = $options['week_start'] ?? 'sunday';
 		$week_start_num = ( 'monday' === $week_start ) ? 1 : 0;
 
@@ -105,7 +105,7 @@ class NS_Tour_Price_CalendarBuilder {
 	private function buildCalendarDays( $month_data, $args ) {
 		$days = array();
 		$current_date = clone $month_data['first_day'];
-		$options = get_option( 'ns_tour_price_options', array() );
+		$options = get_option( 'andw_tour_price_options', array() );
 		$confirmed_badge_enabled = $options['confirmed_badge_enabled'] ?? false;
 
 		for ( $day = 1; $day <= $month_data['days_in_month']; $day++ ) {
@@ -167,23 +167,23 @@ class NS_Tour_Price_CalendarBuilder {
 		}
 
 		$formatted = number_format( $price );
-		return apply_filters( 'ns_tour_price_price_format', '¥' . $formatted, $price );
+		return apply_filters( 'andw_tour_price_price_format', '¥' . $formatted, $price );
 	}
 
 	private function getMonthName( $month ) {
 		$names = array(
-			1 => __( '1月', 'ns-tour-price' ),
-			2 => __( '2月', 'ns-tour-price' ),
-			3 => __( '3月', 'ns-tour-price' ),
-			4 => __( '4月', 'ns-tour-price' ),
-			5 => __( '5月', 'ns-tour-price' ),
-			6 => __( '6月', 'ns-tour-price' ),
-			7 => __( '7月', 'ns-tour-price' ),
-			8 => __( '8月', 'ns-tour-price' ),
-			9 => __( '9月', 'ns-tour-price' ),
-			10 => __( '10月', 'ns-tour-price' ),
-			11 => __( '11月', 'ns-tour-price' ),
-			12 => __( '12月', 'ns-tour-price' ),
+			1 => __( '1月', 'andw-tour-price' ),
+			2 => __( '2月', 'andw-tour-price' ),
+			3 => __( '3月', 'andw-tour-price' ),
+			4 => __( '4月', 'andw-tour-price' ),
+			5 => __( '5月', 'andw-tour-price' ),
+			6 => __( '6月', 'andw-tour-price' ),
+			7 => __( '7月', 'andw-tour-price' ),
+			8 => __( '8月', 'andw-tour-price' ),
+			9 => __( '9月', 'andw-tour-price' ),
+			10 => __( '10月', 'andw-tour-price' ),
+			11 => __( '11月', 'andw-tour-price' ),
+			12 => __( '12月', 'andw-tour-price' ),
 		);
 
 		return $names[ $month ] ?? (string) $month;
@@ -268,7 +268,7 @@ class NS_Tour_Price_CalendarBuilder {
 
 		// 管理画面設定の色リストから指定ビン数の色を取得
 		$colors = $this->heatmap->getHeatmapColors();
-		$adjusted_colors = NS_Tour_Price_Heatmap::adjustColorsForBins( $colors, $bins );
+		$adjusted_colors = Andw_Tour_Price_Heatmap::adjustColorsForBins( $colors, $bins );
 
 		$legend = array();
 		for ( $i = 0; $i <= 9; $i++ ) {
@@ -372,7 +372,7 @@ class NS_Tour_Price_CalendarBuilder {
 	private function getSeasonPrice( $season_code ) {
 		// 簡易実装：先ほど読み込んだbase_pricesから取得
 		// 本来はSeasonColorMapから取得すべきだが、今回は簡単に
-		$csv_path = NS_TOUR_PRICE_PLUGIN_DIR . 'data/base_prices.csv';
+		$csv_path = ANDW_TOUR_PRICE_PLUGIN_DIR . 'data/base_prices.csv';
 		
 		if ( ! file_exists( $csv_path ) ) {
 			return 0;
@@ -423,7 +423,7 @@ class NS_Tour_Price_CalendarBuilder {
 	
 	private function loadBasePricesDirectly( $tour_id, $duration ) {
 		$prices = array();
-		$csv_path = NS_TOUR_PRICE_PLUGIN_DIR . 'data/base_prices.csv';
+		$csv_path = ANDW_TOUR_PRICE_PLUGIN_DIR . 'data/base_prices.csv';
 		
 		if ( ! file_exists( $csv_path ) ) {
 			error_log( "buildSeasonBasedLegend: CSV not found: $csv_path" );
@@ -458,13 +458,13 @@ class NS_Tour_Price_CalendarBuilder {
 
 	public function getWeekdayHeaders( $week_start = 0 ) {
 		$days = array(
-			__( '日', 'ns-tour-price' ),
-			__( '月', 'ns-tour-price' ),
-			__( '火', 'ns-tour-price' ),
-			__( '水', 'ns-tour-price' ),
-			__( '木', 'ns-tour-price' ),
-			__( '金', 'ns-tour-price' ),
-			__( '土', 'ns-tour-price' ),
+			__( '日', 'andw-tour-price' ),
+			__( '月', 'andw-tour-price' ),
+			__( '火', 'andw-tour-price' ),
+			__( '水', 'andw-tour-price' ),
+			__( '木', 'andw-tour-price' ),
+			__( '金', 'andw-tour-price' ),
+			__( '土', 'andw-tour-price' ),
 		);
 
 		if ( 1 === $week_start ) {

@@ -2,14 +2,14 @@
 /**
  * Google Sheets Data Source Implementation (Stub)
  *
- * @package NS_Tour_Price
+ * @package Andw_Tour_Price
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class NS_Tour_Price_DataSourceSheets implements NS_Tour_Price_DataSourceInterface {
+class Andw_Tour_Price_DataSourceSheets implements Andw_Tour_Price_DataSourceInterface {
 
 	public function load(): void {
 		// このデータソースは現在スタブであり、将来のバージョンで実装予定です。
@@ -57,6 +57,6 @@ class NS_Tour_Price_DataSourceSheets implements NS_Tour_Price_DataSourceInterfac
 	}
 
 	public function getName() {
-		return __( 'Google Sheets', 'ns-tour-price' );
+		return __( 'Google Sheets', 'andw-tour-price' );
 	}
 }

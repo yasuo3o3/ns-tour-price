@@ -1,5 +1,5 @@
 /**
- * NS Tour Price - Booking Preview JavaScript
+ * andW Tour Price - Booking Preview JavaScript
  * 
  * 旅行内容選択フォームの即時計算とUI制御
  */
@@ -23,7 +23,7 @@
             active: 'active',
         },
         API: {
-            endpoint: '/wp-json/ns-tour-price/v1/quote',
+            endpoint: '/wp-json/andw/v1/quote',
             timeout: 10000,
         },
         LIMITS: {

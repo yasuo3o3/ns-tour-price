@@ -2,10 +2,10 @@
 /**
  * Annual Controller - 年間価格概要RESTコントローラー
  * 
- * /wp-json/ns-tour-price/v1/annual の GET/POST 対応
+ * /wp-json/andw/v1/annual の GET/POST 対応
  * 包括的なエラーハンドリングとデバッグログを提供
  *
- * @package NS_Tour_Price
+ * @package Andw_Tour_Price
  * @version 1.0.0
  */
 
@@ -13,10 +13,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class NS_Tour_Price_Annual_Controller extends WP_REST_Controller {
+class Andw_Tour_Price_Annual_Controller extends WP_REST_Controller {
 
 	public function __construct() {
-		$this->namespace = 'ns-tour-price/v1';
+		$this->namespace = 'andw/v1';
 		$this->rest_base = 'annual';
 	}
 
@@ -87,7 +87,7 @@ class NS_Tour_Price_Annual_Controller extends WP_REST_Controller {
 			}
 
 			// AnnualBuilderでデータ構築
-			$builder = new NS_Tour_Price_Annual_Builder();
+			$builder = new Andw_Tour_Price_Annual_Builder();
 			$annual_data = $builder->build( $params['tour'], $params['duration'], $params['year'] );
 
 			$this->log_debug( "年間データ構築完了 - HTML長: " . strlen( $annual_data['html'] ) );

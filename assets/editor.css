@@ -1,10 +1,10 @@
 /**
- * NS Tour Price Calendar - Editor Styles
+ * andW Tour Price Calendar - Editor Styles
  * Gutenbergエディタ用のスタイル
  */
 
 /* ==== ブロックエディタ全体 ==== */
-.ns-tour-price-block-editor {
+.andw-tour-price-block-editor {
     border: 1px solid #e2e8f0;
     border-radius: 8px;
     overflow: hidden;
@@ -152,12 +152,12 @@
 }
 
 /* ==== カレンダープレビュー（エディタ内） ==== */
-.wp-block-ns-tour-price-price-calendar {
+.wp-block-andw-price-calendar {
     margin: 16px 0;
 }
 
 /* エディタ内でのカレンダー表示調整 */
-.block-editor-block-list__layout .ns-tour-price-calendar {
+.block-editor-block-list__layout .andw-tour-price-calendar {
     max-width: 100%;
 }
 
@@ -170,11 +170,11 @@
 }
 
 /* ==== 選択状態のスタイル ==== */
-.wp-block-ns-tour-price-price-calendar.is-selected {
+.wp-block-andw-price-calendar.is-selected {
     box-shadow: 0 0 0 1px #007cba;
 }
 
-.wp-block-ns-tour-price-price-calendar.is-hovered {
+.wp-block-andw-price-calendar.is-hovered {
     box-shadow: 0 0 0 1px #007cba;
 }
 
@@ -223,15 +223,15 @@
 }
 
 /* ==== カスタムセクション ==== */
-.ns-tour-price-inspector-section {
+.andw-tour-price-inspector-section {
     padding: 16px 0;
 }
 
-.ns-tour-price-inspector-section:not(:last-child) {
+.andw-tour-price-inspector-section:not(:last-child) {
     border-bottom: 1px solid #e2e8f0;
 }
 
-.ns-tour-price-inspector-title {
+.andw-tour-price-inspector-title {
     font-size: 13px;
     font-weight: 600;
     color: #1e293b;

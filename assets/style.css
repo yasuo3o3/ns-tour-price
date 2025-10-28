@@ -1,5 +1,5 @@
 /**
- * NS Tour Price Calendar - Frontend Styles
+ * andW Tour Price Calendar - Frontend Styles
  */
 
 /* ==== 年間価格概要 ==== */
@@ -186,57 +186,57 @@
 
 /* 価格表用のCSSカスタムプロパティ（ブルー系グラデーション） */
 :root {
-    --ns-pricetable-color-0: #e3f2fd;
-    --ns-pricetable-color-1: #bbdefb;
-    --ns-pricetable-color-2: #90caf9;
-    --ns-pricetable-color-3: #64b5f6;
-    --ns-pricetable-color-4: #42a5f5;
-    --ns-pricetable-color-5: #2196f3;
-    --ns-pricetable-color-6: #1e88e5;
-    --ns-pricetable-color-7: #1976d2;
-    --ns-pricetable-color-8: #1565c0;
-    --ns-pricetable-color-9: #0d47a1;
+    --andw-pricetable-color-0: #e3f2fd;
+    --andw-pricetable-color-1: #bbdefb;
+    --andw-pricetable-color-2: #90caf9;
+    --andw-pricetable-color-3: #64b5f6;
+    --andw-pricetable-color-4: #42a5f5;
+    --andw-pricetable-color-5: #2196f3;
+    --andw-pricetable-color-6: #1e88e5;
+    --andw-pricetable-color-7: #1976d2;
+    --andw-pricetable-color-8: #1565c0;
+    --andw-pricetable-color-9: #0d47a1;
 }
 
 /* 価格ベースヒートマップクラス */
 .tpc-season-table tr.hp-pricetable-0 {
-    background: var(--ns-pricetable-color-0);
+    background: var(--andw-pricetable-color-0);
     color: #333;
 }
 .tpc-season-table tr.hp-pricetable-1 {
-    background: var(--ns-pricetable-color-1);
+    background: var(--andw-pricetable-color-1);
     color: #333;
 }
 .tpc-season-table tr.hp-pricetable-2 {
-    background: var(--ns-pricetable-color-2);
+    background: var(--andw-pricetable-color-2);
     color: #333;
 }
 .tpc-season-table tr.hp-pricetable-3 {
-    background: var(--ns-pricetable-color-3);
+    background: var(--andw-pricetable-color-3);
     color: #fff;
 }
 .tpc-season-table tr.hp-pricetable-4 {
-    background: var(--ns-pricetable-color-4);
+    background: var(--andw-pricetable-color-4);
     color: #fff;
 }
 .tpc-season-table tr.hp-pricetable-5 {
-    background: var(--ns-pricetable-color-5);
+    background: var(--andw-pricetable-color-5);
     color: #fff;
 }
 .tpc-season-table tr.hp-pricetable-6 {
-    background: var(--ns-pricetable-color-6);
+    background: var(--andw-pricetable-color-6);
     color: #fff;
 }
 .tpc-season-table tr.hp-pricetable-7 {
-    background: var(--ns-pricetable-color-7);
+    background: var(--andw-pricetable-color-7);
     color: #fff;
 }
 .tpc-season-table tr.hp-pricetable-8 {
-    background: var(--ns-pricetable-color-8);
+    background: var(--andw-pricetable-color-8);
     color: #fff;
 }
 .tpc-season-table tr.hp-pricetable-9 {
-    background: var(--ns-pricetable-color-9);
+    background: var(--andw-pricetable-color-9);
     color: #fff;
 }
 
@@ -937,7 +937,7 @@ input[type="number"].tpc-pax-input {
 }
 
 /* ==== カレンダー全体 ==== */
-.ns-tour-price-calendar {
+.andw-tour-price-calendar {
     max-width: 800px;
     margin: 20px 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -947,34 +947,34 @@ input[type="number"].tpc-pax-input {
 }
 
 /* エラー表示 */
-.ns-tour-price-calendar.error {
+.andw-tour-price-calendar.error {
     padding: 20px;
     background: #fff5f5;
     border: 1px solid #feb2b2;
     color: #c53030;
 }
 
-.ns-tour-price-calendar .error-message h3 {
+.andw-tour-price-calendar .error-message h3 {
     margin-top: 0;
     color: #c53030;
 }
 
-.ns-tour-price-calendar .error-message details {
+.andw-tour-price-calendar .error-message details {
     margin-top: 15px;
 }
 
-.ns-tour-price-calendar .error-message summary {
+.andw-tour-price-calendar .error-message summary {
     cursor: pointer;
     font-weight: 600;
     color: #2d3748;
 }
 
-.ns-tour-price-calendar .error-message ul {
+.andw-tour-price-calendar .error-message ul {
     margin-top: 10px;
     padding-left: 20px;
 }
 
-.ns-tour-price-calendar .error-message li {
+.andw-tour-price-calendar .error-message li {
     margin-bottom: 5px;
     color: #4a5568;
 }
@@ -1154,57 +1154,57 @@ input[type="number"].tpc-pax-input {
     --hp-10: #d32f2f;
 }
 
-.ns-tour-price-calendar .hp-0 {
+.andw-tour-price-calendar .hp-0 {
     background-color: var(--hp-0);
     color: #ffffff;
 }
 
-.ns-tour-price-calendar .hp-1 {
+.andw-tour-price-calendar .hp-1 {
     background-color: var(--hp-1);
     color: #ffffff;
 }
 
-.ns-tour-price-calendar .hp-2 {
+.andw-tour-price-calendar .hp-2 {
     background-color: var(--hp-2);
     color: #ffffff;
 }
 
-.ns-tour-price-calendar .hp-3 {
+.andw-tour-price-calendar .hp-3 {
     background-color: var(--hp-3);
     color: #ffffff;
 }
 
-.ns-tour-price-calendar .hp-4 {
+.andw-tour-price-calendar .hp-4 {
     background-color: var(--hp-4);
     color: #ffffff;
 }
 
-.ns-tour-price-calendar .hp-5 {
+.andw-tour-price-calendar .hp-5 {
     background-color: var(--hp-5);
     color: #000000;
 }
 
-.ns-tour-price-calendar .hp-6 {
+.andw-tour-price-calendar .hp-6 {
     background-color: var(--hp-6);
     color: #000000;
 }
 
-.ns-tour-price-calendar .hp-7 {
+.andw-tour-price-calendar .hp-7 {
     background-color: var(--hp-7);
     color: #000000;
 }
 
-.ns-tour-price-calendar .hp-8 {
+.andw-tour-price-calendar .hp-8 {
     background-color: var(--hp-8);
     color: #ffffff;
 }
 
-.ns-tour-price-calendar .hp-9 {
+.andw-tour-price-calendar .hp-9 {
     background-color: var(--hp-9);
     color: #ffffff;
 }
 
-.ns-tour-price-calendar .hp-10 {
+.andw-tour-price-calendar .hp-10 {
     background-color: var(--hp-10);
     color: #ffffff;
 }
@@ -1274,7 +1274,7 @@ input[type="number"].tpc-pax-input {
 
 /* ==== レスポンシブデザイン ==== */
 @media (max-width: 768px) {
-    .ns-tour-price-calendar {
+    .andw-tour-price-calendar {
         margin: 10px 0;
         border-radius: 8px;
     }
@@ -1374,24 +1374,24 @@ input[type="number"].tpc-pax-input {
 }
 
 /* ==== プレビュー表示用 ==== */
-.ns-tour-price-calendar.preview {
+.andw-tour-price-calendar.preview {
     max-width: 400px;
     box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
 }
 
-.ns-tour-price-calendar.preview .calendar-header {
+.andw-tour-price-calendar.preview .calendar-header {
     padding: 12px 16px;
 }
 
-.ns-tour-price-calendar.preview .calendar-title {
+.andw-tour-price-calendar.preview .calendar-title {
     font-size: 16px;
 }
 
-.ns-tour-price-calendar.preview .calendar-day {
+.andw-tour-price-calendar.preview .calendar-day {
     min-height: 50px;
 }
 
-.ns-tour-price-calendar.preview .day-content {
+.andw-tour-price-calendar.preview .day-content {
     padding: 6px 4px;
 }
 
@@ -1475,7 +1475,7 @@ input[type="number"].tpc-pax-input {
 
 /* 印刷用スタイル */
 @media print {
-    .ns-tour-price-calendar {
+    .andw-tour-price-calendar {
         box-shadow: none;
         border: 1px solid #e2e8f0;
     }
@@ -1931,7 +1931,7 @@ input[type="number"].tpc-pax-input {
       margin: 0 auto;
   }
 
-  .ns-tour-price-calendar {
+  .andw-tour-price-calendar {
       flex: 1;
       min-width: 800px;
   }
@@ -1946,7 +1946,7 @@ input[type="number"].tpc-pax-input {
           max-width: 1200px;
       }
       
-      .ns-tour-price-calendar {
+      .andw-tour-price-calendar {
           min-width: 600px;
       }
   }
@@ -1958,7 +1958,7 @@ input[type="number"].tpc-pax-input {
           margin: 10px;
       }
       
-      .ns-tour-price-calendar {
+      .andw-tour-price-calendar {
           min-width: unset;
       }
       

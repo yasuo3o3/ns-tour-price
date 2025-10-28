@@ -4,7 +4,7 @@
  * 
  * 12ヶ月のミニカレンダーとシーズン料金まとめを表示
  *
- * @package NS_Tour_Price
+ * @package Andw_Tour_Price
  * @version 1.0.0
  */
 
@@ -31,7 +31,7 @@ $year = $year ?? gmdate( 'Y' );
 			<?php
 			/* translators: 1: year, 2: tour name, 3: duration in days */
 			printf(
-				esc_html__( '%1$d年 年間価格概要 - %2$s（%3$d日間）', 'ns-tour-price' ),
+				esc_html__( '%1$d年 年間価格概要 - %2$s（%3$d日間）', 'andw-tour-price' ),
 				esc_html( absint( $year ) ),
 				esc_html( $tour ),
 				esc_html( absint( $duration ) )
@@ -58,11 +58,11 @@ $year = $year ?? gmdate( 'Y' );
 
 	<?php if ( ! empty( $annual_calendar['months'] ) ) : ?>
 	<div class="tpc-annual-calendars">
-		<h4 class="tpc-section-title"><?php esc_html_e( '月別価格ヒートマップ', 'ns-tour-price' ); ?></h4>
+		<h4 class="tpc-section-title"><?php esc_html_e( '月別価格ヒートマップ', 'andw-tour-price' ); ?></h4>
 		
 		<?php if ( ! empty( $annual_calendar['heatmap']['colors'] ) ) : ?>
 		<div class="tpc-heatmap-legend">
-			<span class="legend-label"><?php esc_html_e( '価格帯:', 'ns-tour-price' ); ?></span>
+			<span class="legend-label"><?php esc_html_e( '価格帯:', 'andw-tour-price' ); ?></span>
 			<?php foreach ( $annual_calendar['heatmap']['colors'] as $i => $color ) : 
 				$bin = $annual_calendar['heatmap']['bins'][$i] ?? null;
 				if ( $bin ) :
@@ -141,9 +141,9 @@ $year = $year ?? gmdate( 'Y' );
 			<table class="tpc-season-table">
 				<thead>
 					<tr>
-						<th><?php esc_html_e( 'シーズン', 'ns-tour-price' ); ?></th>
-						<th><?php esc_html_e( '期間', 'ns-tour-price' ); ?></th>
-						<th><?php esc_html_e( '料金', 'ns-tour-price' ); ?></th>
+						<th><?php esc_html_e( 'シーズン', 'andw-tour-price' ); ?></th>
+						<th><?php esc_html_e( '期間', 'andw-tour-price' ); ?></th>
+						<th><?php esc_html_e( '料金', 'andw-tour-price' ); ?></th>
 					</tr>
 				</thead>
 				<tbody>

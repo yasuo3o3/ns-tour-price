@@ -2,7 +2,7 @@
 /**
  * Season Color Map - シーズン色マップ統一管理
  *
- * @package NS_Tour_Price
+ * @package Andw_Tour_Price
  * @version 1.0.0
  */
 
@@ -10,12 +10,12 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-class NS_Tour_Price_SeasonColorMap {
+class Andw_Tour_Price_SeasonColorMap {
 
     private $repo;
 
     public function __construct() {
-        $this->repo = NS_Tour_Price_Repo::getInstance();
+        $this->repo = Andw_Tour_Price_Repo::getInstance();
     }
 
     /**
@@ -88,7 +88,7 @@ class NS_Tour_Price_SeasonColorMap {
      */
     private function loadBasePricesDirectly( $tour_id, $duration ) {
         $prices = array();
-        $csv_path = NS_TOUR_PRICE_PLUGIN_DIR . 'data/base_prices.csv';
+        $csv_path = ANDW_TOUR_PRICE_PLUGIN_DIR . 'data/base_prices.csv';
         
         if ( ! file_exists( $csv_path ) ) {
             return $prices;
@@ -131,7 +131,7 @@ class NS_Tour_Price_SeasonColorMap {
 	 * @return array 色の配列
 	 */
 	public static function get_palette() {
-		$options = get_option( 'ns_tour_price_options', array() );
+		$options = get_option( 'andw_tour_price_options', array() );
 
 		// 管理画面で設定されたシーズンパレットを使用
 		if ( ! empty( $options['season_palette'] ) && is_array( $options['season_palette'] ) ) {

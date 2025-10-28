@@ -2,14 +2,14 @@
 /**
  * Data Repository
  *
- * @package NS_Tour_Price
+ * @package Andw_Tour_Price
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class NS_Tour_Price_Repo {
+class Andw_Tour_Price_Repo {
 
 	private $loader;
 	private static $instance = null;
@@ -18,7 +18,7 @@ class NS_Tour_Price_Repo {
 	private $tours_cache = null;
 
 	public function __construct() {
-		$this->loader = new NS_Tour_Price_Loader();
+		$this->loader = new Andw_Tour_Price_Loader();
 	}
 
 	/**
@@ -55,14 +55,14 @@ class NS_Tour_Price_Repo {
 		// seasons の正規化後 season_code セット
 		$season_codes = array();
 		foreach ( $seasons as $season ) {
-			$normalized = NS_Tour_Price_Helpers::normalize_season_code( $season['season_code'] );
+			$normalized = Andw_Tour_Price_Helpers::normalize_season_code( $season['season_code'] );
 			$season_codes[ $normalized ] = true;
 		}
 
 		// base_prices の正規化後 season_code セット
 		$price_codes = array();
 		foreach ( $prices as $price ) {
-			$normalized = NS_Tour_Price_Helpers::normalize_season_code( $price['season_code'] );
+			$normalized = Andw_Tour_Price_Helpers::normalize_season_code( $price['season_code'] );
 			$price_codes[ $normalized ] = true;
 		}
 
@@ -339,7 +339,7 @@ class NS_Tour_Price_Repo {
 		}
 
 		// seasons.csvのseason_codeを正規化
-		$normalized_season_code = NS_Tour_Price_Helpers::normalize_season_code( $season_code );
+		$normalized_season_code = Andw_Tour_Price_Helpers::normalize_season_code( $season_code );
 
 		// シーズンコードと日数に一致する価格を見つける（正規化＆エイリアス対応）
 		$matching_durations = array();
@@ -353,11 +353,11 @@ class NS_Tour_Price_Repo {
 			}
 
 			$price_season_code = $price['season_code'];
-			$normalized_price_code = NS_Tour_Price_Helpers::normalize_season_code( $price_season_code );
+			$normalized_price_code = Andw_Tour_Price_Helpers::normalize_season_code( $price_season_code );
 
 			// エイリアス解決を試行
 			if ( ! empty( $aliases ) && isset( $aliases[ $normalized_price_code ] ) ) {
-				$resolved_code = NS_Tour_Price_Helpers::normalize_season_code( $aliases[ $normalized_price_code ] );
+				$resolved_code = Andw_Tour_Price_Helpers::normalize_season_code( $aliases[ $normalized_price_code ] );
 				if ( $resolved_code === $normalized_season_code ) {
 					return $price['price'];
 				}
@@ -441,7 +441,7 @@ class NS_Tour_Price_Repo {
 			return $this->aliases_cache[ $tour_id ];
 		}
 
-		$cache_key = 'ns_tour_price_season_aliases_' . $tour_id;
+		$cache_key = 'andw_tour_price_season_aliases_' . $tour_id;
 		$cached = get_transient( $cache_key );
 		
 		if ( false !== $cached ) {
@@ -453,7 +453,7 @@ class NS_Tour_Price_Repo {
 
 		// CSV探索順: /plugins/.../data → /uploads/ns-tour-price/
 		$data_paths = array(
-			NS_TOUR_PRICE_PLUGIN_DIR . 'data/',
+			ANDW_TOUR_PRICE_PLUGIN_DIR . 'data/',
 			wp_upload_dir()['basedir'] . '/ns-tour-price/',
 		);
 
@@ -516,7 +516,7 @@ class NS_Tour_Price_Repo {
 
 			if ( ! empty( $alias ) && ! empty( $season_code ) ) {
 				// エイリアスも正規化
-				$normalized_alias = NS_Tour_Price_Helpers::normalize_season_code( $alias );
+				$normalized_alias = Andw_Tour_Price_Helpers::normalize_season_code( $alias );
 				$aliases[ $normalized_alias ] = $season_code;
 			}
 		}
@@ -538,7 +538,7 @@ class NS_Tour_Price_Repo {
 	 * @return string 解決後のseason_code
 	 */
 	private function resolveSeasonCodeAlias( $season_code, $aliases ) {
-		$normalized = NS_Tour_Price_Helpers::normalize_season_code( $season_code );
+		$normalized = Andw_Tour_Price_Helpers::normalize_season_code( $season_code );
 		return $aliases[ $normalized ] ?? $season_code;
 	}
 
@@ -551,7 +551,7 @@ class NS_Tour_Price_Repo {
 	 */
 	public function validateSeasonCodes( $tour_id ) {
 		// キャッシュキーを生成
-		$cache_key = 'ns_tour_price_season_validation_' . $tour_id;
+		$cache_key = 'andw_tour_price_season_validation_' . $tour_id;
 		$cached = get_transient( $cache_key );
 		
 		if ( false !== $cached ) {
@@ -575,7 +575,7 @@ class NS_Tour_Price_Repo {
 		// seasons.csv から有効な season_code を取得（正規化済み）
 		$valid_season_codes = array();
 		foreach ( $seasons as $season ) {
-			$normalized = NS_Tour_Price_Helpers::normalize_season_code( $season['season_code'] );
+			$normalized = Andw_Tour_Price_Helpers::normalize_season_code( $season['season_code'] );
 			$valid_season_codes[] = $normalized;
 		}
 		$valid_season_codes = array_unique( $valid_season_codes );
@@ -587,12 +587,12 @@ class NS_Tour_Price_Repo {
 		
 		foreach ( $prices as $price ) {
 			$original_code = $price['season_code'];
-			$normalized = NS_Tour_Price_Helpers::normalize_season_code( $original_code );
+			$normalized = Andw_Tour_Price_Helpers::normalize_season_code( $original_code );
 			
 			// エイリアス解決を試行
 			if ( ! empty( $aliases ) && isset( $aliases[ $normalized ] ) ) {
 				// エイリアス経由で解決
-				$resolved_code = NS_Tour_Price_Helpers::normalize_season_code( $aliases[ $normalized ] );
+				$resolved_code = Andw_Tour_Price_Helpers::normalize_season_code( $aliases[ $normalized ] );
 				$used_season_codes[] = $resolved_code;
 				$resolved_count++;
 			} else {
@@ -653,7 +653,7 @@ class NS_Tour_Price_Repo {
 	 */
 	public function getAllPricesFor( $tour_id, $duration ) {
 		// transientキャッシュを確認
-		$cache_key = sprintf( 'ns_tour_price_all_prices_%s_%d', $tour_id, $duration );
+		$cache_key = sprintf( 'andw_tour_price_all_prices_%s_%d', $tour_id, $duration );
 		$cached = get_transient( $cache_key );
 		
 		if ( false !== $cached ) {
@@ -684,13 +684,13 @@ class NS_Tour_Price_Repo {
 			}
 
 			// base_pricesのseason_codeを正規化・エイリアス解決
-			$normalized_price_code = NS_Tour_Price_Helpers::normalize_season_code( $price['season_code'] );
+			$normalized_price_code = Andw_Tour_Price_Helpers::normalize_season_code( $price['season_code'] );
 			$resolved_price_code = $this->resolveSeasonCodeAlias( $normalized_price_code, $aliases );
 
 			// 対応するシーズンを検索
 			$season_matched = false;
 			foreach ( $seasons as $season ) {
-				$normalized_season_code = NS_Tour_Price_Helpers::normalize_season_code( $season['season_code'] );
+				$normalized_season_code = Andw_Tour_Price_Helpers::normalize_season_code( $season['season_code'] );
 				
 				if ( $resolved_price_code === $normalized_season_code ) {
 					// ベース価格とソロ料金を加算
@@ -758,7 +758,7 @@ class NS_Tour_Price_Repo {
 
 	public function clearCache() {
 		// CSV データソースのキャッシュをクリア
-		$csv_source = new NS_Tour_Price_DataSourceCsv();
+		$csv_source = new Andw_Tour_Price_DataSourceCsv();
 		$csv_source->clearCache();
 
 		// season_code 整合性チェックのキャッシュもクリア
@@ -766,14 +766,14 @@ class NS_Tour_Price_Repo {
 		$wpdb->query(
 			$wpdb->prepare(
 				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
-				$wpdb->esc_like( '_transient_ns_tour_price_season_validation_' ) . '%'
+				$wpdb->esc_like( '_transient_andw_tour_price_season_validation_' ) . '%'
 			)
 		);
 
 		$wpdb->query(
 			$wpdb->prepare(
 				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
-				$wpdb->esc_like( '_transient_timeout_ns_tour_price_season_validation_' ) . '%'
+				$wpdb->esc_like( '_transient_timeout_andw_tour_price_season_validation_' ) . '%'
 			)
 		);
 
@@ -781,14 +781,14 @@ class NS_Tour_Price_Repo {
 		$wpdb->query(
 			$wpdb->prepare(
 				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
-				$wpdb->esc_like( '_transient_ns_tour_price_season_aliases_' ) . '%'
+				$wpdb->esc_like( '_transient_andw_tour_price_season_aliases_' ) . '%'
 			)
 		);
 
 		$wpdb->query(
 			$wpdb->prepare(
 				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
-				$wpdb->esc_like( '_transient_timeout_ns_tour_price_season_aliases_' ) . '%'
+				$wpdb->esc_like( '_transient_timeout_andw_tour_price_season_aliases_' ) . '%'
 			)
 		);
 
@@ -797,10 +797,10 @@ class NS_Tour_Price_Repo {
 		$this->statistics_logged = array(); // 統計ログも再出力可能にリセット
 
 		// スマートデフォルト月のキャッシュもクリア
-		NS_Tour_Price_Helpers::clearAvailableMonthsCache();
+		Andw_Tour_Price_Helpers::clearAvailableMonthsCache();
 
 		// 他のキャッシュもクリア
-		delete_transient( 'ns_tour_price_calendar_cache' );
+		delete_transient( 'andw_tour_price_calendar_cache' );
 		
 		// HTMLキャッシュもクリア
 		$wpdb->query(
@@ -820,13 +820,13 @@ class NS_Tour_Price_Repo {
 		$wpdb->query(
 			$wpdb->prepare(
 				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
-				$wpdb->esc_like( '_transient_ns_tour_price_all_prices_' ) . '%'
+				$wpdb->esc_like( '_transient_andw_tour_price_all_prices_' ) . '%'
 			)
 		);
 		$wpdb->query(
 			$wpdb->prepare(
 				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
-				$wpdb->esc_like( '_transient_timeout_ns_tour_price_all_prices_' ) . '%'
+				$wpdb->esc_like( '_transient_timeout_andw_tour_price_all_prices_' ) . '%'
 			)
 		);
 
@@ -861,7 +861,7 @@ class NS_Tour_Price_Repo {
 		// キャッシュクリア実行をログ出力
 		$this->log( 'NS Tour Price: All caches cleared, next CSV access will trigger fresh logs', 'info' );
 		
-		do_action( 'ns_tour_price_cache_cleared' );
+		do_action( 'andw_tour_price_cache_cleared' );
 	}
 
 	/**
@@ -878,12 +878,12 @@ class NS_Tour_Price_Repo {
 		}
 
 		foreach ( $seasons as $season ) {
-			$start_date = NS_Tour_Price_Helpers::normalize_date( $season['date_start'] );
-			$end_date = NS_Tour_Price_Helpers::normalize_date( $season['date_end'] );
+			$start_date = Andw_Tour_Price_Helpers::normalize_date( $season['date_start'] );
+			$end_date = Andw_Tour_Price_Helpers::normalize_date( $season['date_end'] );
 
 			if ( false !== $start_date && false !== $end_date ) {
 				if ( $date >= $start_date && $date <= $end_date ) {
-					return NS_Tour_Price_Helpers::normalize_season_code( $season['season_code'] );
+					return Andw_Tour_Price_Helpers::normalize_season_code( $season['season_code'] );
 				}
 			}
 		}
@@ -905,7 +905,7 @@ class NS_Tour_Price_Repo {
 
 		$result = array();
 		foreach ( $seasons as $season ) {
-			$season_code = NS_Tour_Price_Helpers::normalize_season_code( $season['season_code'] );
+			$season_code = Andw_Tour_Price_Helpers::normalize_season_code( $season['season_code'] );
 			$result[] = array(
 				'season_code' => $season_code,
 				'season_label' => $season['season_label'] ?? $season_code,
@@ -931,10 +931,10 @@ class NS_Tour_Price_Repo {
 			return null;
 		}
 
-		$normalized_season = NS_Tour_Price_Helpers::normalize_season_code( $season_code );
+		$normalized_season = Andw_Tour_Price_Helpers::normalize_season_code( $season_code );
 
 		foreach ( $prices as $price_row ) {
-			$row_season = NS_Tour_Price_Helpers::normalize_season_code( $price_row['season_code'] );
+			$row_season = Andw_Tour_Price_Helpers::normalize_season_code( $price_row['season_code'] );
 			$row_duration = intval( $price_row['duration_days'] );
 
 			if ( $row_season === $normalized_season && $row_duration === $duration ) {
@@ -964,7 +964,7 @@ class NS_Tour_Price_Repo {
 
 		foreach ( $seasons as $season ) {
 			// 正規化
-			$code = isset( $season['season_code'] ) ? NS_Tour_Price_Helpers::normalize_season_code( $season['season_code'] ) : '';
+			$code = isset( $season['season_code'] ) ? Andw_Tour_Price_Helpers::normalize_season_code( $season['season_code'] ) : '';
 			if ( $code === '' ) {
 				continue;
 			}
@@ -1039,7 +1039,7 @@ class NS_Tour_Price_Repo {
 
 		foreach ( $prices as $price_row ) {
 			$row_tour = trim( $price_row['tour_id'] ?? '' );
-			$row_season = NS_Tour_Price_Helpers::normalize_season_code( $price_row['season_code'] ?? '' );
+			$row_season = Andw_Tour_Price_Helpers::normalize_season_code( $price_row['season_code'] ?? '' );
 			$row_duration = intval( $price_row['duration_days'] ?? 0 );
 
 			if ( $row_tour === $tour_id && $row_season === $code && $row_duration === $duration ) {
@@ -1057,7 +1057,7 @@ class NS_Tour_Price_Repo {
 		$codes = array();
 		
 		foreach ( $rows as $r ) {
-			$code = isset( $r['season_code'] ) ? NS_Tour_Price_Helpers::normalize_season_code( $r['season_code'] ) : '';
+			$code = isset( $r['season_code'] ) ? Andw_Tour_Price_Helpers::normalize_season_code( $r['season_code'] ) : '';
 			if ( $code !== '' ) {
 				$codes[ $code ] = true;
 			}

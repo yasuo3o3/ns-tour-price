@@ -2,14 +2,14 @@
 /**
  * Season Color Service - 端点固定シーズン色割当
  *
- * @package NS_Tour_Price
+ * @package Andw_Tour_Price
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class NS_Tour_Price_SeasonColorService {
+class Andw_Tour_Price_SeasonColorService {
 
 	/**
 	 * シーズンに色を割り当て（フェーズ1：末尾間引き）

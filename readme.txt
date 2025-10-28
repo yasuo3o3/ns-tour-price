@@ -1,7 +1,8 @@
-=== NS Tour Price Calendar ===
-Author: Netservice
-Author URI: https://netservice.jp/
-Tags: tour, price, calendar, travel, booking, heatmap
+=== andW Tour Price Calendar ===
+Author: yasuo3o3
+Author URI: https://yasuo-o.xyz/
+Contributors: yasuo3o3
+Tags: tour, price, calendar, travel, booking
 Requires at least: 6.0
 Tested up to: 6.4
 Stable tag: 1.0.1
@@ -13,7 +14,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 == Description ==
 
-NS Tour Price Calendarは、ツアーの価格情報をカレンダー形式で美しく表示するWordPressプラグインです。ヒートマップ表示によって価格の高低を視覚的に表現します。
+andW Tour Price Calendarは、ツアーの価格情報をカレンダー形式で美しく表示するWordPressプラグインです。ヒートマップ表示によって価格の高低を視覚的に表現します。
 
 = 主要機能 =
 
@@ -69,20 +70,20 @@ A1,2024-07-15,1,催行確定
 
 == Installation ==
 
-1. プラグインファイルを `/wp-content/plugins/ns-tour-price/` ディレクトリにアップロード
+1. プラグインファイルを `/wp-content/plugins/andw-tour-price/` ディレクトリにアップロード
 2. WordPressの管理画面で「プラグイン」メニューからプラグインを有効化
-3. 「ツール」→「NS Tour Price」で設定を行う
+3. 「ツール」→「andW Tour Price」で設定を行う
 4. CSVファイルを以下のいずれかに配置：
-   - `/wp-content/plugins/ns-tour-price/data/` （開発用）
-   - `/wp-content/uploads/ns-tour-price/` （本番用）
+   - `/wp-content/plugins/andw-tour-price/data/` （開発用）
+   - `/wp-content/uploads/andw-tour-price/` （本番用）
 
 == Frequently Asked Questions ==
 
 = CSVファイルはどこに配置すればよいですか？ =
 
 以下の順序で探索されます：
-1. `/wp-content/plugins/ns-tour-price/data/` （優先）
-2. `/wp-content/uploads/ns-tour-price/` （フォールバック）
+1. `/wp-content/plugins/andw-tour-price/data/` （優先）
+2. `/wp-content/uploads/andw-tour-price/` （フォールバック）
 
 = 価格の色分けはどのように決まりますか？ =
 
@@ -93,11 +94,11 @@ A1,2024-07-15,1,催行確定
 
 = 催行確定バッジが表示されません =
 
-「ツール」→「NS Tour Price」の設定で「催行確定バッジ機能」を有効にしてください。また、daily_flags.csvファイルが正しく配置されているか確認してください。
+「ツール」→「andW Tour Price」の設定で「催行確定バッジ機能」を有効にしてください。また、daily_flags.csvファイルが正しく配置されているか確認してください。
 
 = キャッシュをクリアしたい =
 
-管理画面の「ツール」→「NS Tour Price」にある「キャッシュ削除」ボタンをクリックしてください。
+管理画面の「ツール」→「andW Tour Price」にある「キャッシュ削除」ボタンをクリックしてください。
 
 == Screenshots ==
 
@@ -128,19 +129,19 @@ A1,2024-07-15,1,催行確定
 
 = アクションフック =
 
-* `ns_tour_price_before_calendar` - カレンダー表示前
-* `ns_tour_price_after_calendar` - カレンダー表示後
-* `ns_tour_price_cache_cleared` - キャッシュクリア時
+* `andw_tour_price_before_calendar` - カレンダー表示前
+* `andw_tour_price_after_calendar` - カレンダー表示後
+* `andw_tour_price_cache_cleared` - キャッシュクリア時
 
 = フィルターフック =
 
-* `ns_tour_price_data_sources` - データソース配列
-* `ns_tour_price_calendar_args` - カレンダー引数
-* `ns_tour_price_price_format` - 価格フォーマット
+* `andw_tour_price_data_sources` - データソース配列
+* `andw_tour_price_calendar_args` - カレンダー引数
+* `andw_tour_price_price_format` - 価格フォーマット
 
 = カスタムCSS =
 
 カスタムCSSを追加する場合は、以下のクラスを使用してください：
-- `.ns-tour-price-calendar` - カレンダー全体
-- `.ns-tour-price-day` - 各日付セル
+- `.andw-tour-price-calendar` - カレンダー全体
+- `.andw-tour-price-day` - 各日付セル
 - `.hp-0` から `.hp-9` - ヒートマップクラス

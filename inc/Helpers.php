@@ -2,14 +2,14 @@
 /**
  * Helper Functions
  *
- * @package NS_Tour_Price
+ * @package Andw_Tour_Price
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class NS_Tour_Price_Helpers {
+class Andw_Tour_Price_Helpers {
 
 	public static function sanitizeCalendarArgs( $args ) {
 		$defaults = array(
@@ -94,7 +94,7 @@ class NS_Tour_Price_Helpers {
 		// 現在月を追加
 		$options[] = array(
 			'value' => $current->format( 'Y-m' ),
-			'label' => $current->format( 'Y年n月' ) . __( '（今月）', 'ns-tour-price' ),
+			'label' => $current->format( 'Y年n月' ) . __( '（今月）', 'andw-tour-price' ),
 			'is_current' => true,
 		);
 
@@ -113,7 +113,7 @@ class NS_Tour_Price_Helpers {
 	}
 
 	public static function generateTourOptions() {
-		$repo = NS_Tour_Price_Repo::getInstance();
+		$repo = Andw_Tour_Price_Repo::getInstance();
 		
 		if ( ! $repo->isDataAvailable() ) {
 			return array();
@@ -121,10 +121,10 @@ class NS_Tour_Price_Helpers {
 
 		// とりあえず基本的なツアーIDリストを提供
 		// 実際の実装では、CSVから動的に取得するか設定で管理
-		$tour_ids = apply_filters( 'ns_tour_price_available_tours', array(
-			'A1' => __( 'ツアーA1', 'ns-tour-price' ),
-			'B2' => __( 'ツアーB2', 'ns-tour-price' ),
-			'C3' => __( 'ツアーC3', 'ns-tour-price' ),
+		$tour_ids = apply_filters( 'andw_tour_price_available_tours', array(
+			'A1' => __( 'ツアーA1', 'andw-tour-price' ),
+			'B2' => __( 'ツアーB2', 'andw-tour-price' ),
+			'C3' => __( 'ツアーC3', 'andw-tour-price' ),
 		) );
 
 		$options = array();
@@ -144,7 +144,7 @@ class NS_Tour_Price_Helpers {
 			$options[] = array(
 				'value' => $i,
 				/* translators: %d is the number of days for tour duration */
-				'label' => sprintf( __( '%d日間', 'ns-tour-price' ), $i ),
+				'label' => sprintf( __( '%d日間', 'andw-tour-price' ), $i ),
 			);
 		}
 		return $options;
@@ -152,17 +152,17 @@ class NS_Tour_Price_Helpers {
 
 	public static function formatPrice( $price, $include_tax = true ) {
 		if ( null === $price || $price < 0 ) {
-			return __( '設定なし', 'ns-tour-price' );
+			return __( '設定なし', 'andw-tour-price' );
 		}
 
 		$formatted = number_format( $price );
 		$result = '¥' . $formatted;
 
 		if ( $include_tax && $price > 0 ) {
-			$result .= __( '（税込）', 'ns-tour-price' );
+			$result .= __( '（税込）', 'andw-tour-price' );
 		}
 
-		return apply_filters( 'ns_tour_price_price_format', $result, $price );
+		return apply_filters( 'andw_tour_price_price_format', $result, $price );
 	}
 
 	public static function getPriceColor( $price, $min_price, $max_price ) {
@@ -253,12 +253,12 @@ class NS_Tour_Price_Helpers {
 	}
 
 	public static function getCurrentWeekStart() {
-		$options = get_option( 'ns_tour_price_options', array() );
+		$options = get_option( 'andw_tour_price_options', array() );
 		return ( 'monday' === ( $options['week_start'] ?? 'sunday' ) ) ? 1 : 0;
 	}
 
 	public static function isConfirmedBadgeEnabled() {
-		$options = get_option( 'ns_tour_price_options', array() );
+		$options = get_option( 'andw_tour_price_options', array() );
 		return ! empty( $options['confirmed_badge_enabled'] );
 	}
 
@@ -553,7 +553,7 @@ class NS_Tour_Price_Helpers {
 			return $cache[ $tour_id ];
 		}
 
-		$repo = NS_Tour_Price_Repo::getInstance();
+		$repo = Andw_Tour_Price_Repo::getInstance();
 		$seasons = $repo->getSeasons( $tour_id );
 
 		$months = array();

@@ -1,6 +1,6 @@
 /**
- * NS Tour Price Calendar - Navigation JavaScript
- * 
+ * andW Tour Price Calendar - Navigation JavaScript
+ *
  * 月送りナビゲーションの部分更新機能
  */
 (function() {
@@ -19,7 +19,7 @@
     // 設定
     const CONFIG = {
         SELECTORS: {
-            calendar: '.ns-tour-price-calendar',
+            calendar: '.andw-tour-price-calendar',
             navButton: '.tpc-nav__btn',
             navLink: '.tpc-nav-link', // durationタブも含む汎用セレクター
             loading: '.tpc-loading',
@@ -31,8 +31,8 @@
             error: 'tpc-error',
         },
         API: {
-            endpoint: '/wp-json/ns-tour-price/v1/calendar',
-            annualEndpoint: '/wp-json/ns-tour-price/v1/annual',
+            endpoint: '/wp-json/andw/v1/calendar',
+            annualEndpoint: '/wp-json/andw/v1/annual',
             timeout: 10000,
         }
     };
@@ -563,7 +563,7 @@
          * Ajax で年間データを取得
          */
         fetchAnnualData: function(tour, duration, year) {
-            const apiUrl = new URL('/wp-json/ns-tour-price/v1/annual', window.location.origin);
+            const apiUrl = new URL('/wp-json/andw/v1/annual', window.location.origin);
             
             fetch(apiUrl, {
                 method: 'POST',
@@ -686,7 +686,7 @@
                 submit: document.querySelector('[data-tpc-submit]'),
                 paxSelect: document.querySelector('[data-tpc-pax]'),
                 durationTabs: document.querySelectorAll('[data-tpc-duration-tabs] button'),
-                calendar: document.querySelector('.ns-tour-price-calendar')
+                calendar: document.querySelector('.andw-tour-price-calendar')
             };
         },
         
@@ -726,7 +726,7 @@
         
         handleDateClick: function(e) {
             // カレンダー内のクリックのみ処理
-            if (!e.target.closest('.ns-tour-price-calendar')) {
+            if (!e.target.closest('.andw-tour-price-calendar')) {
                 return;
             }
             

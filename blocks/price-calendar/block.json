@@ -1,11 +1,11 @@
 {
   "apiVersion": 3,
-  "name": "ns-tour-price/price-calendar",
+  "name": "andw/price-calendar",
   "title": "ツアー価格カレンダー",
   "category": "widgets",
   "icon": "calendar",
   "description": "ツアーID・月・日数に応じた価格カレンダーを表示します。",
-  "textdomain": "ns-tour-price",
+  "textdomain": "andw-tour-price",
   "supports": { 
     "html": false,
     "anchor": true,
@@ -40,5 +40,5 @@
   "editorScript": "file:./edit.js",
   "style": "file:../../assets/style.css",
   "editorStyle": "file:../../assets/editor.css",
-  "render": "ns_tour_price_render_block"
+  "render": "andw_tour_price_render_block"
 }

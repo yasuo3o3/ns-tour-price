@@ -2,32 +2,32 @@
 /**
  * Calendar Renderer
  *
- * @package NS_Tour_Price
+ * @package Andw_Tour_Price
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class NS_Tour_Price_Renderer {
+class Andw_Tour_Price_Renderer {
 
 	private $builder;
 	private $repo;
 	private $booking_preview;
 
 	public function __construct() {
-		$this->builder = new NS_Tour_Price_CalendarBuilder();
-		$this->repo = NS_Tour_Price_Repo::getInstance();
-		$this->booking_preview = new NS_Tour_Price_BookingPreview();
+		$this->builder = new Andw_Tour_Price_CalendarBuilder();
+		$this->repo = Andw_Tour_Price_Repo::getInstance();
+		$this->booking_preview = new Andw_Tour_Price_BookingPreview();
 	}
 
 	public function render( $args ) {
-		do_action( 'ns_tour_price_before_calendar', $args );
+		do_action( 'andw_tour_price_before_calendar', $args );
 
 		// HTMLキャッシュを試行
 		$cached_html = $this->getCachedHtml( $args );
 		if ( false !== $cached_html ) {
-			do_action( 'ns_tour_price_after_calendar', $args );
+			do_action( 'andw_tour_price_after_calendar', $args );
 			return $cached_html;
 		}
 
@@ -41,7 +41,7 @@ class NS_Tour_Price_Renderer {
 			$this->setCachedHtml( $args, $output );
 		}
 
-		do_action( 'ns_tour_price_after_calendar', $args );
+		do_action( 'andw_tour_price_after_calendar', $args );
 
 		return $output;
 	}
@@ -65,7 +65,7 @@ class NS_Tour_Price_Renderer {
 	 */
 	private function setCachedHtml( $args, $html ) {
 		$cache_key = $this->buildCacheKey( $args );
-		$options = get_option( 'ns_tour_price_options', array() );
+		$options = get_option( 'andw_tour_price_options', array() );
 		$expiry = intval( $options['cache_expiry'] ?? 3600 );
 		
 		set_transient( $cache_key, $html, $expiry );
@@ -78,7 +78,7 @@ class NS_Tour_Price_Renderer {
 	 * @return string キャッシュキー
 	 */
 	private function buildCacheKey( $args ) {
-		$options = get_option( 'ns_tour_price_options', array() );
+		$options = get_option( 'andw_tour_price_options', array() );
 		
 		$key_components = array(
 			'tpc_html',
@@ -109,7 +109,7 @@ class NS_Tour_Price_Renderer {
 	private function getCsvMtimeHash() {
 		$csv_files = array( 'seasons.csv', 'base_prices.csv', 'solo_fees.csv', 'daily_flags.csv' );
 		$data_paths = array(
-			NS_TOUR_PRICE_PLUGIN_DIR . 'data/',
+			ANDW_TOUR_PRICE_PLUGIN_DIR . 'data/',
 			wp_upload_dir()['basedir'] . '/ns-tour-price/',
 		);
 
@@ -160,11 +160,11 @@ class NS_Tour_Price_Renderer {
 			<div class="calendar-header">
 				<div class="calendar-title-row">
 					<?php 
-					$month_nav = NS_Tour_Price_Helpers::month_prev_next( $args['month'] );
+					$month_nav = Andw_Tour_Price_Helpers::month_prev_next( $args['month'] );
 					
 					// 相対クエリ専用ヘルパーで月ナビURLを生成
-					$prev_href = NS_Tour_Price_Helpers::build_relative_query( array( 'tpc_month' => $month_nav['prev'] ) );
-					$next_href = NS_Tour_Price_Helpers::build_relative_query( array( 'tpc_month' => $month_nav['next'] ) );
+					$prev_href = Andw_Tour_Price_Helpers::build_relative_query( array( 'tpc_month' => $month_nav['prev'] ) );
+					$next_href = Andw_Tour_Price_Helpers::build_relative_query( array( 'tpc_month' => $month_nav['next'] ) );
 					?>
 					<a href="<?php echo esc_attr( $prev_href ); ?>"
 					   class="tpc-nav__btn tpc-nav__btn--prev tpc-nav-link"
@@ -174,14 +174,14 @@ class NS_Tour_Price_Renderer {
 					   data-heatmap="<?php echo esc_attr( $args['heatmap'] ? '1' : '0' ); ?>"
 					   data-show-legend="<?php echo esc_attr( $args['show_legend'] ? '1' : '0' ); ?>"
 					   data-confirmed-only="<?php echo esc_attr( $args['confirmed_only'] ? '1' : '0' ); ?>"
-					   aria-label="<?php esc_attr_e( '前月', 'ns-tour-price' ); ?>">
+					   aria-label="<?php esc_attr_e( '前月', 'andw-tour-price' ); ?>">
 						<span class="tpc-nav__arrow">◀</span>
 					</a>
 					<h3 class="calendar-title">
 						<?php
 						/* translators: 1: year, 2: month name, 3: duration in days */
 						printf(
-							esc_html__( '%1$s年%2$s （%3$d日間）', 'ns-tour-price' ),
+							esc_html__( '%1$s年%2$s （%3$d日間）', 'andw-tour-price' ),
 							esc_html( absint( $month_data['year'] ) ),
 							esc_html( $month_data['month_name'] ),
 							esc_html( absint( $args['duration'] ) )
@@ -195,14 +195,14 @@ class NS_Tour_Price_Renderer {
 					   data-heatmap="<?php echo esc_attr( $args['heatmap'] ? '1' : '0' ); ?>"
 					   data-show-legend="<?php echo esc_attr( $args['show_legend'] ? '1' : '0' ); ?>"
 					   data-confirmed-only="<?php echo esc_attr( $args['confirmed_only'] ? '1' : '0' ); ?>"
-					   aria-label="<?php esc_attr_e( '翌月', 'ns-tour-price' ); ?>">
+					   aria-label="<?php esc_attr_e( '翌月', 'andw-tour-price' ); ?>">
 						<span class="tpc-nav__arrow">▶</span>
 					</a>
 				</div>
 				
 				<?php
 				// durationタブの表示
-				$repo = NS_Tour_Price_Repo::getInstance();
+				$repo = Andw_Tour_Price_Repo::getInstance();
 				$available_durations = $repo->getAvailableDurations( $args['tour'] );
 				$current_duration = intval( $args['duration'] );
 				
@@ -212,7 +212,7 @@ class NS_Tour_Price_Renderer {
 						<?php foreach ( $available_durations as $duration ) : 
 							$is_active = ( $duration === $current_duration );
 							// 相対クエリ専用ヘルパーでdurationタブURLを生成
-							$tab_href = NS_Tour_Price_Helpers::build_relative_query( array( 'tpc_duration' => $duration ) );
+							$tab_href = Andw_Tour_Price_Helpers::build_relative_query( array( 'tpc_duration' => $duration ) );
 							
 							$tab_classes = array( 'tpc-duration-tab', 'tpc-nav-link' );
 							if ( $is_active ) {
@@ -230,10 +230,10 @@ class NS_Tour_Price_Renderer {
 							   <?php if ( $is_active ) : ?>aria-current="page"<?php endif; ?>
 							   aria-label="<?php
 							   /* translators: %d is the number of days for tour duration */
-							   printf( esc_attr__( '%d日間に切替', 'ns-tour-price' ), $duration ); ?>">
+							   printf( esc_attr__( '%d日間に切替', 'andw-tour-price' ), $duration ); ?>">
 								<?php
 								/* translators: %d is the number of days for tour duration */
-								printf( esc_html__( '%d日間', 'ns-tour-price' ), esc_html( absint( $duration ) ) ); ?>
+								printf( esc_html__( '%d日間', 'andw-tour-price' ), esc_html( absint( $duration ) ) ); ?>
 							</a>
 						<?php endforeach; ?>
 					</div>
@@ -245,7 +245,7 @@ class NS_Tour_Price_Renderer {
 					<?php
 					/* translators: %s is a comma-separated list of invalid season codes */
 					printf(
-						esc_html__( '一部の season_code（%s）が seasons.csv に存在しません。価格表示が不完全になる可能性があります。', 'ns-tour-price' ),
+						esc_html__( '一部の season_code（%s）が seasons.csv に存在しません。価格表示が不完全になる可能性があります。', 'andw-tour-price' ),
 						esc_html( implode( ', ', $calendar_data['invalid_season_codes'] ) )
 					); ?>
 				</div>
@@ -271,7 +271,7 @@ class NS_Tour_Price_Renderer {
 
 			<?php if ( $args['show_legend'] && ! empty( $calendar_data['legend'] ) ) : ?>
 				<div class="calendar-legend">
-					<h4><?php esc_html_e( '価格区分', 'ns-tour-price' ); ?></h4>
+					<h4><?php esc_html_e( '価格区分', 'andw-tour-price' ); ?></h4>
 					<div class="legend-items">
 						<?php foreach ( $calendar_data['legend'] as $legend_item ) : ?>
 							<div class="legend-item">
@@ -349,11 +349,11 @@ class NS_Tour_Price_Renderer {
 				<?php if ( $day['should_display'] && $day['has_price'] ) : ?>
 					<div class="day-price"><?php echo esc_html( $day['formatted_price'] ); ?></div>
 				<?php elseif ( $day['should_display'] && ! $day['has_price'] ) : ?>
-					<div class="day-price no-data"><?php esc_html_e( '設定なし', 'ns-tour-price' ); ?></div>
+					<div class="day-price no-data"><?php esc_html_e( '設定なし', 'andw-tour-price' ); ?></div>
 				<?php endif; ?>
 
 				<?php if ( $day['is_confirmed'] ) : ?>
-					<div class="confirmed-badge" title="<?php esc_attr_e( '催行確定', 'ns-tour-price' ); ?>">
+					<div class="confirmed-badge" title="<?php esc_attr_e( '催行確定', 'andw-tour-price' ); ?>">
 						<span class="badge-text">✓</span>
 					</div>
 				<?php endif; ?>
@@ -371,12 +371,12 @@ class NS_Tour_Price_Renderer {
 			<div class="error-message">
 				<p><?php echo esc_html( $message ); ?></p>
 				<details>
-					<summary><?php esc_html_e( 'トラブルシューティング', 'ns-tour-price' ); ?></summary>
+					<summary><?php esc_html_e( 'トラブルシューティング', 'andw-tour-price' ); ?></summary>
 					<ul>
-						<li><?php esc_html_e( 'CSVファイルが正しい場所に配置されているか確認してください', 'ns-tour-price' ); ?></li>
-						<li><?php esc_html_e( 'ツアーIDが存在するか確認してください', 'ns-tour-price' ); ?></li>
-						<li><?php esc_html_e( '月の形式が YYYY-MM になっているか確認してください', 'ns-tour-price' ); ?></li>
-						<li><?php esc_html_e( '管理画面でデータソースの状態を確認してください', 'ns-tour-price' ); ?></li>
+						<li><?php esc_html_e( 'CSVファイルが正しい場所に配置されているか確認してください', 'andw-tour-price' ); ?></li>
+						<li><?php esc_html_e( 'ツアーIDが存在するか確認してください', 'andw-tour-price' ); ?></li>
+						<li><?php esc_html_e( '月の形式が YYYY-MM になっているか確認してください', 'andw-tour-price' ); ?></li>
+						<li><?php esc_html_e( '管理画面でデータソースの状態を確認してください', 'andw-tour-price' ); ?></li>
 					</ul>
 				</details>
 			</div>
@@ -408,7 +408,7 @@ class NS_Tour_Price_Renderer {
 				<h4><?php
 				/* translators: 1: year, 2: month name, 3: duration in days */
 				printf(
-					esc_html__( '%1$s年%2$s （%3$d日間）', 'ns-tour-price' ),
+					esc_html__( '%1$s年%2$s （%3$d日間）', 'andw-tour-price' ),
 					esc_html( absint( $month_data['year'] ) ),
 					esc_html( $month_data['month_name'] ),
 					esc_html( absint( $args['duration'] ) )
@@ -470,7 +470,7 @@ class NS_Tour_Price_Renderer {
 		
 		ob_start();
 		?>
-		<aside class="tpc-booking-panel" aria-label="<?php esc_attr_e( '予約内容の選択', 'ns-tour-price' ); ?>">
+		<aside class="tpc-booking-panel" aria-label="<?php esc_attr_e( '予約内容の選択', 'andw-tour-price' ); ?>">
 			<div class="calendar-meta">
 				<span class="tour-id"><?php echo esc_html( $args['tour'] ); ?></span>
 				<span class="tour-name"><?php echo esc_html( $this->repo->getTourName( $args['tour'] ) ); ?></span>
@@ -485,26 +485,26 @@ class NS_Tour_Price_Renderer {
 							<?php if ( $duration === $args['duration'] ) echo 'aria-current="page"'; ?>>
 						<?php
 						/* translators: %d is the number of days for tour duration */
-						printf( esc_html__( '%d日間', 'ns-tour-price' ), esc_html( absint( $duration ) ) ); ?>
+						printf( esc_html__( '%d日間', 'andw-tour-price' ), esc_html( absint( $duration ) ) ); ?>
 					</button>
 				<?php endforeach; ?>
 			</div>
 
 			<div class="tpc-booking-date">
-				<div class="tpc-booking-date__label"><?php esc_html_e( '出発日', 'ns-tour-price' ); ?></div>
-				<div class="tpc-booking-date__value" data-tpc-date><?php esc_html_e( '未選択', 'ns-tour-price' ); ?></div>
+				<div class="tpc-booking-date__label"><?php esc_html_e( '出発日', 'andw-tour-price' ); ?></div>
+				<div class="tpc-booking-date__value" data-tpc-date><?php esc_html_e( '未選択', 'andw-tour-price' ); ?></div>
 				<div class="tpc-booking-date__season" data-tpc-season></div>
 			</div>
 
 			<div class="tpc-booking-group">
-				<label for="tpc-pax"><?php esc_html_e( '参加人数', 'ns-tour-price' ); ?></label>
+				<label for="tpc-pax"><?php esc_html_e( '参加人数', 'andw-tour-price' ); ?></label>
 				<select id="tpc-pax" data-tpc-pax>
-					<option value="1"><?php esc_html_e( '1名', 'ns-tour-price' ); ?></option>
-					<option value="2"><?php esc_html_e( '2名', 'ns-tour-price' ); ?></option>
-					<option value="3"><?php esc_html_e( '3名', 'ns-tour-price' ); ?></option>
-					<option value="4"><?php esc_html_e( '4名', 'ns-tour-price' ); ?></option>
-					<option value="5"><?php esc_html_e( '5名', 'ns-tour-price' ); ?></option>
-					<option value="6"><?php esc_html_e( '6名', 'ns-tour-price' ); ?></option>
+					<option value="1"><?php esc_html_e( '1名', 'andw-tour-price' ); ?></option>
+					<option value="2"><?php esc_html_e( '2名', 'andw-tour-price' ); ?></option>
+					<option value="3"><?php esc_html_e( '3名', 'andw-tour-price' ); ?></option>
+					<option value="4"><?php esc_html_e( '4名', 'andw-tour-price' ); ?></option>
+					<option value="5"><?php esc_html_e( '5名', 'andw-tour-price' ); ?></option>
+					<option value="6"><?php esc_html_e( '6名', 'andw-tour-price' ); ?></option>
 				</select>
 			</div>
 			
@@ -521,7 +521,7 @@ class NS_Tour_Price_Renderer {
 			endif;
 			if ( ! empty( $tour_options ) ) : ?>
 			<div class="tpc-booking-options">
-				<div class="tpc-booking-options__label"><?php esc_html_e( 'オプション（任意）', 'ns-tour-price' ); ?></div>
+				<div class="tpc-booking-options__label"><?php esc_html_e( 'オプション（任意）', 'andw-tour-price' ); ?></div>
 				<?php foreach ( $tour_options as $option ) : ?>
 					<label class="tpc-option">
 						<input type="checkbox" 
@@ -549,26 +549,26 @@ class NS_Tour_Price_Renderer {
 
 			<div class="tpc-quote">
 				<div class="tpc-quote__row">
-					<span><?php esc_html_e( '基本料金', 'ns-tour-price' ); ?></span>
+					<span><?php esc_html_e( '基本料金', 'andw-tour-price' ); ?></span>
 					<strong data-tpc-base>—</strong>
 				</div>
 				<div class="tpc-quote__row">
-					<span><?php esc_html_e( 'お一人様参加料金', 'ns-tour-price' ); ?></span>
+					<span><?php esc_html_e( 'お一人様参加料金', 'andw-tour-price' ); ?></span>
 					<strong data-tpc-solo>—</strong>
 				</div>
 				<div class="tpc-quote__row">
-					<span><?php esc_html_e( '参加人数', 'ns-tour-price' ); ?></span>
+					<span><?php esc_html_e( '参加人数', 'andw-tour-price' ); ?></span>
 					<strong data-tpc-pax-view>—</strong>
 				</div>
 				<div class="tpc-quote__total">
-					<span><?php esc_html_e( '合計概算金額', 'ns-tour-price' ); ?></span>
+					<span><?php esc_html_e( '合計概算金額', 'andw-tour-price' ); ?></span>
 					<strong data-tpc-total>—</strong>
 				</div>
-				<small class="tpc-quote__note"><?php esc_html_e( '※運賃変動等により金額は変更になることがあります', 'ns-tour-price' ); ?></small>
+				<small class="tpc-quote__note"><?php esc_html_e( '※運賃変動等により金額は変更になることがあります', 'andw-tour-price' ); ?></small>
 			</div>
 
 			<button class="tpc-submit" data-tpc-submit disabled>
-				<?php esc_html_e( '申込フォームへ', 'ns-tour-price' ); ?>
+				<?php esc_html_e( '申込フォームへ', 'andw-tour-price' ); ?>
 			</button>
 		</aside>
 		<?php

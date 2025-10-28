@@ -2,17 +2,17 @@
 /**
  * CSV Data Source Implementation
  *
- * @package NS_Tour_Price
+ * @package Andw_Tour_Price
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class NS_Tour_Price_DataSourceCsv implements NS_Tour_Price_DataSourceInterface {
+class Andw_Tour_Price_DataSourceCsv implements Andw_Tour_Price_DataSourceInterface {
 
 	private $data_paths = array();
-	private $cache_prefix = 'ns_tour_price_csv_';
+	private $cache_prefix = 'andw_tour_price_csv_';
 	private $cache_expiry = 3600; // 1時間
 	private $loaded_files_log = array(); // ロード済みファイル情報
 
@@ -23,7 +23,7 @@ class NS_Tour_Price_DataSourceCsv implements NS_Tour_Price_DataSourceInterface {
 	private function setupDataPaths() {
 		// 優先順位: プラグインディレクトリ → アップロードディレクトリ
 		$this->data_paths = array(
-			NS_TOUR_PRICE_PLUGIN_DIR . 'data/',
+			ANDW_TOUR_PRICE_PLUGIN_DIR . 'data/',
 			wp_upload_dir()['basedir'] . '/ns-tour-price/',
 		);
 	}
@@ -122,8 +122,8 @@ class NS_Tour_Price_DataSourceCsv implements NS_Tour_Price_DataSourceInterface {
 			$raw_end = $row['date_end'] ?? '';
 
 			// 日付正規化を実行
-			$normalized_start = NS_Tour_Price_Helpers::normalize_date( $raw_start );
-			$normalized_end = NS_Tour_Price_Helpers::normalize_date( $raw_end );
+			$normalized_start = Andw_Tour_Price_Helpers::normalize_date( $raw_start );
+			$normalized_end = Andw_Tour_Price_Helpers::normalize_date( $raw_end );
 
 			$season = array(
 				'tour_id' => sanitize_text_field( $row['tour_id'] ),
@@ -149,7 +149,7 @@ class NS_Tour_Price_DataSourceCsv implements NS_Tour_Price_DataSourceInterface {
 			}
 
 			// 日付範囲の妥当性チェック
-			if ( ! NS_Tour_Price_Helpers::validate_date_range( $normalized_start, $normalized_end ) ) {
+			if ( ! Andw_Tour_Price_Helpers::validate_date_range( $normalized_start, $normalized_end ) ) {
 				$parse_stats['failed']++;
 				if ( count( $parse_stats['failed_examples'] ) < 3 ) {
 					$parse_stats['failed_examples'][] = array(
@@ -450,7 +450,7 @@ class NS_Tour_Price_DataSourceCsv implements NS_Tour_Price_DataSourceInterface {
 	}
 
 	public function getName() {
-		return __( 'CSV Files', 'ns-tour-price' );
+		return __( 'CSV Files', 'andw-tour-price' );
 	}
 
 	private function readCsvFile( $filename ) {

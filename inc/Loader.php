@@ -2,14 +2,14 @@
 /**
  * Data Source Loader
  *
- * @package NS_Tour_Price
+ * @package Andw_Tour_Price
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class NS_Tour_Price_Loader {
+class Andw_Tour_Price_Loader {
 
 	private $data_sources = array();
 	private $active_source = null;
@@ -21,15 +21,15 @@ class NS_Tour_Price_Loader {
 
 	private function registerDataSources() {
 		$this->data_sources = array(
-			'csv' => new NS_Tour_Price_DataSourceCsv(),
-			'sheets' => new NS_Tour_Price_DataSourceSheets(),
+			'csv' => new Andw_Tour_Price_DataSourceCsv(),
+			'sheets' => new Andw_Tour_Price_DataSourceSheets(),
 		);
 
-		$this->data_sources = apply_filters( 'ns_tour_price_data_sources', $this->data_sources );
+		$this->data_sources = apply_filters( 'andw_tour_price_data_sources', $this->data_sources );
 	}
 
 	private function setActiveSource() {
-		$options = get_option( 'ns_tour_price_options', array() );
+		$options = get_option( 'andw_tour_price_options', array() );
 		$preferred_source = $options['data_source'] ?? 'csv';
 
 		// 希望するデータソースが利用可能かチェック
@@ -92,9 +92,9 @@ class NS_Tour_Price_Loader {
 
 		$this->active_source = $this->data_sources[ $source_key ];
 		
-		$options = get_option( 'ns_tour_price_options', array() );
+		$options = get_option( 'andw_tour_price_options', array() );
 		$options['data_source'] = $source_key;
-		update_option( 'ns_tour_price_options', $options );
+		update_option( 'andw_tour_price_options', $options );
 
 		return true;
 	}
@@ -106,6 +106,6 @@ class NS_Tour_Price_Loader {
 	 */
 	public function getHeatmapColors() {
 		// 色の取得はSeasonColorMapに一元化
-		return NS_Tour_Price_SeasonColorMap::get_palette();
+		return Andw_Tour_Price_SeasonColorMap::get_palette();
 	}
 }

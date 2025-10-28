@@ -2,14 +2,14 @@
 /**
  * Heatmap Generator
  *
- * @package NS_Tour_Price
+ * @package Andw_Tour_Price
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class NS_Tour_Price_Heatmap {
+class Andw_Tour_Price_Heatmap {
 
 	private $levels = 10;
 
@@ -273,7 +273,7 @@ class NS_Tour_Price_Heatmap {
 	 * @return array 色パレット（安→高）
 	 */
 	public function getHeatmapColors(): array {
-		$loader = new NS_Tour_Price_Loader();
+		$loader = new Andw_Tour_Price_Loader();
 		return $loader->getHeatmapColors();
 	}
 

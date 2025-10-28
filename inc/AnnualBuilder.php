@@ -3,23 +3,23 @@
  * Annual View Builder
  * 年間価格概要（12ヶ月ミニカレンダー + シーズン料金表）を生成
  *
- * @package NS_Tour_Price
+ * @package Andw_Tour_Price
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class NS_Tour_Price_Annual_Builder {
+class Andw_Tour_Price_Annual_Builder {
 
 	private $repo;
 	private $heatmap;
-	/** @var NS_Tour_Price_Season_Color_Service|null */
+	/** @var Andw_Tour_Price_Season_Color_Service|null */
 	private $season_color_service = null;
 
 	public function __construct() {
-		$this->repo = NS_Tour_Price_Repo::getInstance();
-		$this->heatmap = new NS_Tour_Price_Heatmap();
+		$this->repo = Andw_Tour_Price_Repo::getInstance();
+		$this->heatmap = new Andw_Tour_Price_Heatmap();
 	}
 
 	/**
@@ -43,7 +43,7 @@ class NS_Tour_Price_Annual_Builder {
 		// Repo依存を削除してデータ有無チェックを簡素化
 		// if ( ! $this->repo->isDataAvailable() ) {
 		//	return array(
-		//		'html' => $this->buildErrorView( __( 'データが見つかりません', 'ns-tour-price' ) ),
+		//		'html' => $this->buildErrorView( __( 'データが見つかりません', 'andw-tour-price' ) ),
 		//		'meta' => array(),
 		//	);
 		// }
@@ -94,7 +94,7 @@ class NS_Tour_Price_Annual_Builder {
 		$yearly_prices = $this->getYearlyPricesDirectly( $tour, $duration, $year );
 		
 		// 統一シーズン色マップを使用
-		$season_map_data = NS_Tour_Price_SeasonColorMap::map( $tour, $year, $duration );
+		$season_map_data = Andw_Tour_Price_SeasonColorMap::map( $tour, $year, $duration );
 		$season_color_map = array();
 		foreach ( $season_map_data['season_to_hp'] as $season => $hp_level ) {
 			$season_color_map[ $season ] = 'hp-' . $hp_level;
@@ -178,7 +178,7 @@ class NS_Tour_Price_Annual_Builder {
 	/*
 	private function generateSeasonColorMap( $tour, $duration ) {
 		// 統一SeasonColorMapクラスを使用
-		$map = NS_Tour_Price_SeasonColorMap::map( $tour, date('Y'), $duration );
+		$map = Andw_Tour_Price_SeasonColorMap::map( $tour, date('Y'), $duration );
 		$season_colors = array();
 		foreach ( $map['season_to_hp'] as $season => $hp_level ) {
 			$season_colors[ $season ] = 'hp-' . $hp_level;
@@ -254,8 +254,8 @@ class NS_Tour_Price_Annual_Builder {
 	 * シーズン要約を直接CSVから生成
 	 */
 	private function getSeasonSummaryDirectly( $tour_id, $year, $duration ) {
-		$seasons_path = NS_TOUR_PRICE_PLUGIN_DIR . 'data/seasons.csv';
-		$prices_path = NS_TOUR_PRICE_PLUGIN_DIR . 'data/base_prices.csv';
+		$seasons_path = ANDW_TOUR_PRICE_PLUGIN_DIR . 'data/seasons.csv';
+		$prices_path = ANDW_TOUR_PRICE_PLUGIN_DIR . 'data/base_prices.csv';
 		
 		if ( ! file_exists( $seasons_path ) || ! file_exists( $prices_path ) ) {
 			return array();
@@ -406,7 +406,7 @@ class NS_Tour_Price_Annual_Builder {
 	 * シーズン色マップから色取得
 	 */
 	private function getSeasonColorFromMap( $season_code ) {
-		$season_colors = get_option( 'ns_tour_price_season_colors', array() );
+		$season_colors = get_option( 'andw_tour_price_season_colors', array() );
 		
 		if ( isset( $season_colors[ $season_code ] ) ) {
 			return $season_colors[ $season_code ];
@@ -428,8 +428,8 @@ class NS_Tour_Price_Annual_Builder {
 	private function getSeasonPeriodsForYear( $season, $year ) {
 		$periods = array();
 		
-		$start_date = NS_Tour_Price_Helpers::normalize_date( $season['date_start'] );
-		$end_date = NS_Tour_Price_Helpers::normalize_date( $season['date_end'] );
+		$start_date = Andw_Tour_Price_Helpers::normalize_date( $season['date_start'] );
+		$end_date = Andw_Tour_Price_Helpers::normalize_date( $season['date_end'] );
 		
 		if ( false === $start_date || false === $end_date ) {
 			return $periods;
@@ -491,7 +491,7 @@ class NS_Tour_Price_Annual_Builder {
 				<h3 class="tpc-annual-title">
 					<?php
 					/* translators: 1: year, 2: tour name, 3: duration in days */
-					printf( esc_html__( '%1$d年 年間価格概要 - %2$s（%3$d日間）', 'ns-tour-price' ), esc_html( absint( $year ) ), esc_html( $tour ), esc_html( absint( $duration ) ) ); ?>
+					printf( esc_html__( '%1$d年 年間価格概要 - %2$s（%3$d日間）', 'andw-tour-price' ), esc_html( absint( $year ) ), esc_html( $tour ), esc_html( absint( $duration ) ) ); ?>
 				</h3>
 				<?php
 				// 対象期間統計をコメントとして保存
@@ -569,7 +569,7 @@ class NS_Tour_Price_Annual_Builder {
 
 			<?php
 			// 年間ビュー用期間タブの表示
-			$repo = NS_Tour_Price_Repo::getInstance();
+			$repo = Andw_Tour_Price_Repo::getInstance();
 			$available_durations = $repo->getAvailableDurations( $tour );
 			$current_duration = intval( $duration );
 			
@@ -579,7 +579,7 @@ class NS_Tour_Price_Annual_Builder {
 					<?php foreach ( $available_durations as $duration_option ) : 
 						$is_active = ( $duration_option === $current_duration );
 						// 年間ビュー用の相対クエリURL生成
-						$tab_href = NS_Tour_Price_Helpers::build_relative_query( array( 'tpc_duration' => $duration_option ) );
+						$tab_href = Andw_Tour_Price_Helpers::build_relative_query( array( 'tpc_duration' => $duration_option ) );
 						
 						$tab_classes = array( 'tpc-duration-tab', 'tpc-nav-link' );
 						if ( $is_active ) {
@@ -592,10 +592,10 @@ class NS_Tour_Price_Annual_Builder {
 						   <?php if ( $is_active ) : ?>aria-current="page"<?php endif; ?>
 						   aria-label="<?php
 						   /* translators: %d is the number of days for tour duration */
-						   printf( esc_attr__( '%d日間に切替', 'ns-tour-price' ), esc_attr( absint( $duration_option ) ) ); ?>">
+						   printf( esc_attr__( '%d日間に切替', 'andw-tour-price' ), esc_attr( absint( $duration_option ) ) ); ?>">
 							<?php
 							/* translators: %d is the number of days for tour duration */
-							printf( esc_html__( '%d日間', 'ns-tour-price' ), esc_html( absint( $duration_option ) ) ); ?>
+							printf( esc_html__( '%d日間', 'andw-tour-price' ), esc_html( absint( $duration_option ) ) ); ?>
 						</a>
 					<?php endforeach; ?>
 				</div>
@@ -607,9 +607,9 @@ class NS_Tour_Price_Annual_Builder {
 					<table class="tpc-season-table">
 						<thead>
 							<tr>
-								<th><?php esc_html_e( 'シーズン', 'ns-tour-price' ); ?></th>
-								<th><?php esc_html_e( '期間', 'ns-tour-price' ); ?></th>
-								<th><?php esc_html_e( '料金', 'ns-tour-price' ); ?></th>
+								<th><?php esc_html_e( 'シーズン', 'andw-tour-price' ); ?></th>
+								<th><?php esc_html_e( '期間', 'andw-tour-price' ); ?></th>
+								<th><?php esc_html_e( '料金', 'andw-tour-price' ); ?></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -672,7 +672,7 @@ class NS_Tour_Price_Annual_Builder {
 	 */
 	private function formatPrice( $price ) {
 		if ( null === $price || $price <= 0 ) {
-			return __( '設定なし', 'ns-tour-price' );
+			return __( '設定なし', 'andw-tour-price' );
 		}
 
 		return '¥' . number_format( $price );
@@ -691,8 +691,8 @@ class NS_Tour_Price_Annual_Builder {
 		$yearly_prices = array();
 		
 		// seasons.csvを読み込み
-		$seasons_path = NS_TOUR_PRICE_PLUGIN_DIR . 'data/seasons.csv';
-		$prices_path = NS_TOUR_PRICE_PLUGIN_DIR . 'data/base_prices.csv';
+		$seasons_path = ANDW_TOUR_PRICE_PLUGIN_DIR . 'data/seasons.csv';
+		$prices_path = ANDW_TOUR_PRICE_PLUGIN_DIR . 'data/base_prices.csv';
 		
 		error_log( "getYearlyPricesDirectly: seasons_path=$seasons_path" );
 		error_log( "getYearlyPricesDirectly: prices_path=$prices_path" );
@@ -823,18 +823,18 @@ class NS_Tour_Price_Annual_Builder {
 	 */
 	private function getMonthName( $month ) {
 		$names = array(
-			1 => __( '1月', 'ns-tour-price' ),
-			2 => __( '2月', 'ns-tour-price' ),
-			3 => __( '3月', 'ns-tour-price' ),
-			4 => __( '4月', 'ns-tour-price' ),
-			5 => __( '5月', 'ns-tour-price' ),
-			6 => __( '6月', 'ns-tour-price' ),
-			7 => __( '7月', 'ns-tour-price' ),
-			8 => __( '8月', 'ns-tour-price' ),
-			9 => __( '9月', 'ns-tour-price' ),
-			10 => __( '10月', 'ns-tour-price' ),
-			11 => __( '11月', 'ns-tour-price' ),
-			12 => __( '12月', 'ns-tour-price' ),
+			1 => __( '1月', 'andw-tour-price' ),
+			2 => __( '2月', 'andw-tour-price' ),
+			3 => __( '3月', 'andw-tour-price' ),
+			4 => __( '4月', 'andw-tour-price' ),
+			5 => __( '5月', 'andw-tour-price' ),
+			6 => __( '6月', 'andw-tour-price' ),
+			7 => __( '7月', 'andw-tour-price' ),
+			8 => __( '8月', 'andw-tour-price' ),
+			9 => __( '9月', 'andw-tour-price' ),
+			10 => __( '10月', 'andw-tour-price' ),
+			11 => __( '11月', 'andw-tour-price' ),
+			12 => __( '12月', 'andw-tour-price' ),
 		);
 
 		return $names[ $month ] ?? (string) $month;

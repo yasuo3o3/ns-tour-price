@@ -2,14 +2,14 @@
 /**
  * Data Source Interface
  *
- * @package NS_Tour_Price
+ * @package Andw_Tour_Price
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-interface NS_Tour_Price_DataSourceInterface {
+interface Andw_Tour_Price_DataSourceInterface {
 
 	/**
 	 * データソースを初期化（必要に応じて）

@@ -2,7 +2,7 @@
 /**
  * REST API Controllers Loader
  *
- * @package NS_Tour_Price
+ * @package Andw_Tour_Price
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * REST API Controller Class
  */
-class NS_Tour_Price_Rest {
+class Andw_Tour_Price_Rest {
 
 	private static $controllers = array();
 
@@ -21,12 +21,12 @@ class NS_Tour_Price_Rest {
 	 */
 	public static function init() {
 		// Load controller classes
-		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Rest/Quote_Controller.php';
-		require_once NS_TOUR_PRICE_PLUGIN_DIR . 'inc/Rest/Annual_Controller.php';
+		require_once ANDW_TOUR_PRICE_PLUGIN_DIR . 'inc/Rest/Quote_Controller.php';
+		require_once ANDW_TOUR_PRICE_PLUGIN_DIR . 'inc/Rest/Annual_Controller.php';
 
 		// Instantiate controllers
-		self::$controllers['quote'] = new NS_Tour_Price_Quote_Controller();
-		self::$controllers['annual'] = new NS_Tour_Price_Annual_Controller();
+		self::$controllers['quote'] = new Andw_Tour_Price_Quote_Controller();
+		self::$controllers['annual'] = new Andw_Tour_Price_Annual_Controller();
 	}
 
 	/**
@@ -48,4 +48,4 @@ class NS_Tour_Price_Rest {
 }
 
 // Initialize on load
-NS_Tour_Price_Rest::init();
+Andw_Tour_Price_Rest::init();
